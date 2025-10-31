@@ -29,8 +29,6 @@ public class HotelService {
     @Autowired
     private final RoomMapper roomMapper;
 
-    @Autowired
-    private RoomRepository roomRepository;
 
     private final Logger logger = LoggerFactory.getLogger(HotelService.class);
 
@@ -58,6 +56,13 @@ public class HotelService {
     }
 
     @Transactional(readOnly = true)
+    public List<Hotel> getAllHotels(){
+        return hotelRepository.findAll().stream()
+                .map(hotelMapper :: toHotelModel)
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
     public List<Room> getRoomsByHotelId(Long id){
         HotelEntity hotelEntity = hotelRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Hotel not found with id -> " + id));
@@ -65,21 +70,6 @@ public class HotelService {
         return hotelEntity.getRooms().stream()
                 .map(roomMapper :: toRoomModel)
                 .toList();
-    }
-
-    @Transactional
-    public Room addRoomByHotelId(Long id, Room room){
-        HotelEntity hotelEntity = hotelRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Hotel not found with id -> " + id));
-
-        RoomEntity roomEntity = roomMapper.toRoomEntity(room);
-
-        roomEntity.setHotel(hotelEntity);
-        hotelEntity.getRooms().add(roomEntity);
-
-        RoomEntity saved = roomRepository.save(roomEntity);
-
-        return roomMapper.toRoomModel(saved);
     }
 
     @Transactional

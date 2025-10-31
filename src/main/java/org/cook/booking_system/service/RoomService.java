@@ -1,6 +1,9 @@
 package org.cook.booking_system.service;
 
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
+import org.cook.booking_system.entity.HotelEntity;
+import org.cook.booking_system.repository.HotelRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,27 +17,30 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class RoomService {
 
     @Autowired
     private final RoomRepository roomRepository;
 
     @Autowired
+    private final HotelRepository hotelRepository;
+
+    @Autowired
     private final RoomMapper roomMapper;
 
     private final Logger logger = LoggerFactory.getLogger(RoomService.class);
 
-    public RoomService(RoomRepository roomRepository, RoomMapper roomMapper) {
-        this.roomRepository = roomRepository;
-        this.roomMapper = roomMapper;
-    }
-
     @Transactional
-    public Room createRoom(Room room){
-        RoomEntity entity = roomMapper.toRoomEntity(room);
-        RoomEntity saved = roomRepository.save(entity);
+    public Room createRoomForHotel(Long hotelId, Room room){
+        HotelEntity hotelEntity = hotelRepository.findById(hotelId)
+                .orElseThrow(() -> new EntityNotFoundException("Hotel not found with id -> " + hotelId));
+
+        RoomEntity roomEntity = roomMapper.toRoomEntity(room);
+        hotelEntity.getRooms().add(roomEntity);
+
         logger.info("Room with id -> {} is created", room.getId());
-        return roomMapper.toRoomModel(saved);
+        return roomMapper.toRoomModel(roomRepository.save(roomEntity));
     }
 
     @Transactional(readOnly = true)

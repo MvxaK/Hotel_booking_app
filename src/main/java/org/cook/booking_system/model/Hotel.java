@@ -18,6 +18,8 @@ public class Hotel {
     private String name;
     @NotNull
     private String address;
+    @NotNull
+    private String description;
     private List<RoomEntity> rooms;
     private List<ImageEntity> images;
 }

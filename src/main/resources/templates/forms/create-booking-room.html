@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Бронирование комнаты</title>
+    <th:block layout:fragment="page-specific-head">
+        <link rel="stylesheet" href="/forms.css">
+        <meta name="_csrf" th:content="${_csrf.token}">
+        <meta name="_csrf_header" th:content="${_csrf.headerName}">
+    </th:block>
+</head>
+<body layout:fragment="content" class="bg-gray-50">
+
+<div class="container mt-5">
+    <div class="card shadow-lg p-4 rounded-3">
+        <h2 class="text-center mb-4 fw-bold">Бронирование комнаты</h2>
+
+        <form id="roomBookingForm">
+            <div class="mb-3">
+                <label for="hotelSelect" class="form-label">Выберите отель</label>
+                <select id="hotelSelect" class="form-select" required>
+                    <option value="">Отель</option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label for="roomSelect" class="form-label">Выберите комнату</label>
+                <select id="roomSelect" class="form-select" required disabled>
+                    <option value="">-- Сначала выберите отель --</option>
+                </select>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="checkInDate" class="form-label">Дата заезда</label>
+                    <input type="date" id="checkInDate" class="form-control" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="checkOutDate" class="form-label">Дата выезда</label>
+                    <input type="date" id="checkOutDate" class="form-control" required>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Предварительная сумма:</label>
+                <span id="totalPrice" class="fw-bold text-success">0 ₸</span>
+            </div>
+
+            <button type="submit" id="submitBtn" class="btn btn-warning w-100 fw-semibold">Забронировать</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", async () => {
+        // ✅ блокируем повторное выполнение
+        if (window.roomBookingScriptInitialized) return;
+        window.roomBookingScriptInitialized = true;
+
+        const hotelSelect = document.getElementById("hotelSelect");
+        const roomSelect = document.getElementById("roomSelect");
+        const totalPriceEl = document.getElementById("totalPrice");
+        const form = document.getElementById("roomBookingForm");
+        const submitBtn = document.getElementById("submitBtn");
+        let selectedRoom = null;
+
+        const token = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+        const header = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+
+        // Загрузка отелей
+        try {
+            const response = await fetch("/api/hotels");
+            if (response.ok) {
+                const hotels = await response.json();
+                hotelSelect.innerHTML = '<option value="">Выберите отель</option>';
+                hotels.forEach(hotel => {
+                    const opt = document.createElement("option");
+                    opt.value = hotel.id;
+                    opt.textContent = `${hotel.name} — ${hotel.address}`;
+                    hotelSelect.appendChild(opt);
+                });
+            } else {
+                hotelSelect.innerHTML = '<option>Ошибка загрузки отелей</option>';
+            }
+        } catch (err) {
+            console.error("Ошибка загрузки отелей:", err);
+            hotelSelect.innerHTML = '<option>Ошибка сервера</option>';
+        }
+
+        hotelSelect.addEventListener("change", async () => {
+            const hotelId = hotelSelect.value;
+            if (!hotelId) {
+                roomSelect.disabled = true;
+                roomSelect.innerHTML = '<option value="">Сначала выберите отель</option>';
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/hotels/${hotelId}/rooms`);
+                if (response.ok) {
+                    const rooms = await response.json();
+                    roomSelect.disabled = false;
+                    roomSelect.innerHTML = '<option value="">Выберите комнату</option>';
+                    rooms.forEach(room => {
+                        const opt = document.createElement("option");
+                        opt.value = room.id;
+                        opt.textContent = `${room.roomNumber} — ${room.pricePerNight} ₸/ночь`;
+                        roomSelect.appendChild(opt);
+                    });
+                } else {
+                    roomSelect.innerHTML = '<option>Ошибка загрузки комнат</option>';
+                }
+            } catch (err) {
+                console.error("Ошибка загрузки комнат:", err);
+                roomSelect.innerHTML = '<option>Ошибка сервера</option>';
+            }
+        });
+
+        roomSelect.addEventListener("change", async () => {
+            const id = roomSelect.value;
+            if (!id) return selectedRoom = null;
+            const resp = await fetch(`/api/rooms/${id}`);
+            if (resp.ok) selectedRoom = await resp.json();
+            calculateTotal();
+        });
+
+        function calculateTotal() {
+            const checkIn = new Date(document.getElementById("checkInDate").value);
+            const checkOut = new Date(document.getElementById("checkOutDate").value);
+            if (selectedRoom && checkOut > checkIn) {
+                const days = (checkOut - checkIn) / (1000 * 3600 * 24);
+                const total = days * selectedRoom.pricePerNight;
+                totalPriceEl.textContent = `${total.toFixed(2)} ₸`;
+            } else {
+                totalPriceEl.textContent = "0 ₸";
+            }
+        }
+
+        document.getElementById("checkInDate").addEventListener("change", calculateTotal);
+        document.getElementById("checkOutDate").addEventListener("change", calculateTotal);
+
+        // ✅ Обработчик формы с защитой от двойного нажатия
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            if (!selectedRoom) return alert("Выберите комнату для бронирования!");
+
+            const checkIn = document.getElementById("checkInDate").value;
+            const checkOut = document.getElementById("checkOutDate").value;
+            const total = totalPriceEl.textContent;
+
+            if (!confirm(`Подтвердите бронирование:\nКомната: ${roomSelect.options[roomSelect.selectedIndex].text}\n` +
+                `Заезд: ${checkIn}\nВыезд: ${checkOut}\nСумма: ${total}`)) return;
+
+            // 🔒 блокируем кнопку
+            submitBtn.disabled = true;
+
+            const data = {
+                accommodationId: parseInt(roomSelect.value),
+                checkInDate: checkIn,
+                checkOutDate: checkOut
+            };
+
+            try {
+                const response = await fetch("/api/booking", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        [header]: token
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                if (response.ok) {
+                    alert("Бронирование успешно создано!");
+                    form.reset();
+                    totalPriceEl.textContent = "0 ₸";
+                    selectedRoom = null;
+                    roomSelect.disabled = true;
+                } else if (response.status === 403) {
+                    alert("Ошибка 403: нет доступа или истекла сессия");
+                } else {
+                    const errorText = await response.text();
+                    alert("Ошибка сервера: " + errorText);
+                }
+            } catch (err) {
+                console.error("Ошибка бронирования:", err);
+                alert("Ошибка соединения с сервером");
+            } finally {
+                setTimeout(() => submitBtn.disabled = false, 1500);
+            }
+        });
+    });
+</script>
+</body>
+</html>

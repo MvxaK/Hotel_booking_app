@@ -20,6 +20,8 @@ public abstract class Accommodation {
     @NotNull
     private int capacity;
     @NotNull
+    private String description;
+    @NotNull
     private BigDecimal pricePerNight;
     @NotNull
     private boolean available;

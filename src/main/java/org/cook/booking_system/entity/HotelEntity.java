@@ -1,5 +1,6 @@
 package org.cook.booking_system.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,6 +13,7 @@ import java.util.List;
 @Table(name = "hotels")
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class HotelEntity {
 
     @Id
@@ -23,6 +25,9 @@ public class HotelEntity {
 
     @Column(name = "address")
     private String address;
+
+    @Column(name = "description", nullable = false, length = 10000)
+    private String description;
 
     @OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<RoomEntity> rooms;

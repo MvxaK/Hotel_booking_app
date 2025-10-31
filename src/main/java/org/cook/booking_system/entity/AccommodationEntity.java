@@ -15,8 +15,8 @@ import java.util.List;
 @Table(name = "accommodation")
 @Inheritance(strategy = InheritanceType.JOINED)
 @SuperBuilder
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor(force = true)
 public abstract class AccommodationEntity {
 
     @Id
@@ -25,6 +25,9 @@ public abstract class AccommodationEntity {
 
     @Column(name = "capacity", nullable = false)
     private int capacity;
+
+    @Column(name = "description", nullable = false, length = 10000)
+    private String description;
 
     @Column(name = "price_per_night", nullable = false)
     private BigDecimal pricePerNight;

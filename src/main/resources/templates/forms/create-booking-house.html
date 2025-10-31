@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Бронирование дома</title>
+    <th:block layout:fragment="page-specific-head">
+        <link rel="stylesheet" href="/forms.css">
+        <meta name="_csrf" th:content="${_csrf.token}">
+        <meta name="_csrf_header" th:content="${_csrf.headerName}">
+    </th:block>
+</head>
+<body layout:fragment="content" class="bg-gray-50">
+
+<div class="container mt-5">
+    <div class="card shadow-lg p-4 rounded-3">
+        <h2 class="text-center mb-4 fw-bold text-dark">Бронирование дома</h2>
+
+        <form id="houseBookingForm">
+            <div class="mb-3">
+                <label for="houseSelect" class="form-label">Выберите дом</label>
+                <select id="houseSelect" class="form-select" required>
+                    <option value="">-- Загрузка домов... --</option>
+                </select>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="checkInDate" class="form-label">Дата заезда</label>
+                    <input type="date" id="checkInDate" class="form-control" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="checkOutDate" class="form-label">Дата выезда</label>
+                    <input type="date" id="checkOutDate" class="form-control" required>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Предварительная сумма:</label>
+                <span id="totalPrice" class="fw-bold text-success">0 ₸</span>
+            </div>
+
+            <button type="submit" class="btn btn-warning w-100 fw-semibold">Забронировать</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    if (!window.bookingScriptInitialized) {
+        window.bookingScriptInitialized = true;
+        document.addEventListener("DOMContentLoaded", async () => {
+            const houseSelect = document.getElementById("houseSelect");
+            const totalPriceEl = document.getElementById("totalPrice");
+            let selectedHouse = null;
+
+            const token = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+            const header = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+
+            try {
+                const response = await fetch("/api/houses");
+                if (response.ok) {
+                    const houses = await response.json();
+                    houseSelect.innerHTML = '<option value="">-- Выберите дом --</option>';
+                    houses.forEach(house => {
+                        const opt = document.createElement("option");
+                        opt.value = house.id;
+                        opt.textContent = `${house.name} — ${house.location} (${house.pricePerNight} ₸/ночь)`;
+                        houseSelect.appendChild(opt);
+                    });
+                } else {
+                    houseSelect.innerHTML = '<option>Ошибка загрузки домов</option>';
+                }
+            } catch (err) {
+                console.error("Ошибка загрузки домов:", err);
+                houseSelect.innerHTML = '<option>Ошибка сервера</option>';
+            }
+
+            function calculateTotal() {
+                const checkIn = new Date(document.getElementById("checkInDate").value);
+                const checkOut = new Date(document.getElementById("checkOutDate").value);
+                if (selectedHouse && checkOut > checkIn) {
+                    const days = (checkOut - checkIn) / (1000 * 3600 * 24);
+                    const total = days * selectedHouse.pricePerNight;
+                    totalPriceEl.textContent = `${total.toFixed(2)} ₸`;
+                } else {
+                    totalPriceEl.textContent = "0 ₸";
+                }
+            }
+
+            houseSelect.addEventListener("change", async () => {
+                const id = houseSelect.value;
+                if (!id) return selectedHouse = null;
+                const resp = await fetch(`/api/houses/${id}`);
+                if (resp.ok) selectedHouse = await resp.json();
+                calculateTotal();
+            });
+
+            document.getElementById("checkInDate").addEventListener("change", calculateTotal);
+            document.getElementById("checkOutDate").addEventListener("change", calculateTotal);
+
+            document.getElementById("houseBookingForm").addEventListener("submit", async (e) => {
+                e.preventDefault();
+
+                if (!selectedHouse) return alert("Выберите дом для бронирования!");
+
+                const checkIn = document.getElementById("checkInDate").value;
+                const checkOut = document.getElementById("checkOutDate").value;
+                const total = totalPriceEl.textContent;
+
+                const confirmBooking = confirm(
+                    `Подтвердите бронирование:\nДом: ${houseSelect.options[houseSelect.selectedIndex].text}\n` +
+                    `Заезд: ${checkIn}\nВыезд: ${checkOut}\nСумма: ${total}`
+                );
+
+                if (!confirmBooking) return;
+
+                const data = {
+                    accommodationId: parseInt(houseSelect.value),
+                    checkInDate: checkIn,
+                    checkOutDate: checkOut
+                };
+
+                try {
+                    const response = await fetch("/api/booking", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            [header]: token
+                        },
+                        body: JSON.stringify(data)
+                    });
+
+                    if (response.ok) {
+                        alert("Бронирование создано!");
+                        e.target.reset();
+                        totalPriceEl.textContent = "0 ₸";
+                    } else if (response.status === 403) {
+                        alert("Ошибка 403: нет доступа или истекла сессия");
+                    } else {
+                        const errorText = await response.text();
+                        alert("Ошибка сервера: " + errorText);
+                    }
+                } catch (err) {
+                    console.error("Ошибка бронирования:", err);
+                    alert("Ошибка соединения с сервером");
+                }
+            });
+        });
+    }
+</script>
+
+</body>
+</html>

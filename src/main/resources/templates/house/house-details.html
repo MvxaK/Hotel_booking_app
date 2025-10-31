@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+<head>
+    <title th:text="${house.name} + ' - Luxury Hotel'">Отель - Luxury Hotel</title>
+    <th:block layout:fragment="page-specific-head">
+        <link rel="stylesheet" href="/hotel-details.css">
+        <meta name="_csrf" th:content="${_csrf.token}">
+        <meta name="_csrf_header" th:content="${_csrf.headerName}">
+    </th:block>
+</head>
+
+<body class="hotel-details-page">
+<main layout:fragment="content">
+    <div class="container py-5">
+
+        <div class="mb-5">
+            <h1 class="fw-bold text-dark mb-3" th:text="${house.name}">Название дома</h1>
+            <p class="text-muted mb-4" th:text="${house.location}">Адрес дома</p>
+
+            <div class="row g-3">
+                <div class="col-12 col-lg-8">
+                    <img th:if="${house.images != null and !house.images.isEmpty()}"
+                         th:src="@{${house.images[0].url}}"
+                         alt="house main image"
+                         class="img-fluid rounded shadow w-100"
+                         style="height: 400px; object-fit: cover;">
+                </div>
+                <div class="col-12 col-lg-4">
+                    <div class="row g-2">
+                        <div th:each="img, iter : ${house.images}"
+                             th:if="${iter.index > 0}"
+                             class="col-6 col-sm-4 col-lg-6">
+                            <img th:src="@{${img.url}}"
+                                 alt="Hotel image"
+                                 class="img-fluid rounded shadow-sm w-100 gallery-thumb"
+                                 style="height:120px; object-fit:cover;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <section class="mb-5 hotel-description">
+            <h3 class="fw-semibold mb-3 text-warning">Описание</h3>
+            <p class="text-dark mb-0" th:text="${house.description}"></p>
+        </section>
+    </div>
+</main>
+</body>
+</html>

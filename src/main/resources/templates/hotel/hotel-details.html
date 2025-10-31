@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+<head>
+    <title th:text="${hotel.name} + ' - Luxury Hotel'">Отель - Luxury Hotel</title>
+    <th:block layout:fragment="page-specific-head">
+        <link rel="stylesheet" href="/hotel-details.css">
+        <meta name="_csrf" th:content="${_csrf.token}">
+        <meta name="_csrf_header" th:content="${_csrf.headerName}">
+    </th:block>
+</head>
+
+<body class="hotel-details-page">
+<main layout:fragment="content">
+    <div class="container py-5">
+
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a th:href="@{/}">Главная</a></li>
+                <li class="breadcrumb-item"><a th:href="@{/hotels}">Отели</a></li>
+                <li class="breadcrumb-item active" aria-current="page" th:text="${hotel.name}">Отель</li>
+            </ol>
+        </nav>
+
+        <div class="mb-5">
+            <h1 class="fw-bold text-dark mb-3" th:text="${hotel.name}">Название отеля</h1>
+            <p class="text-muted mb-4" th:text="${hotel.address}">Адрес отеля</p>
+
+            <div class="row g-3">
+                <div class="col-12 col-lg-8">
+                    <img th:if="${hotel.images != null and !hotel.images.isEmpty()}"
+                         th:src="@{${hotel.images[0].url}}"
+                         alt="Hotel main image"
+                         class="img-fluid rounded shadow w-100"
+                         style="height: 400px; object-fit: cover;">
+                </div>
+                <div class="col-12 col-lg-4">
+                    <div class="row g-2">
+                        <div th:each="img, iter : ${hotel.images}"
+                             th:if="${iter.index > 0}"
+                             class="col-6 col-sm-4 col-lg-6">
+                            <img th:src="@{${img.url}}"
+                                 alt="Hotel image"
+                                 class="img-fluid rounded shadow-sm w-100 gallery-thumb"
+                                 style="height:120px; object-fit:cover;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <section class="mb-5 hotel-description">
+            <h3 class="fw-semibold mb-3 text-warning">Описание</h3>
+            <p class="text-dark mb-0" th:text="${hotel.description}">
+                Современный отель с видом на город, утренними завтраками и просторными номерами.
+            </p>
+        </section>
+
+        <section>
+            <h3 class="fw-bold text-dark mb-4">Доступные номера</h3>
+
+            <div class="row g-4">
+                <div class="col-12 col-sm-6 col-lg-4" th:each="room : ${rooms}">
+                    <div class="card border-0 shadow h-100 hotel-room-card">
+                        <img th:if="${room.images != null and !room.images.isEmpty()}"
+                             th:src="@{${room.images[0].url}}"
+                             class="card-img-top"
+                             alt="Room image"
+                             style="height: 220px; object-fit: cover;">
+                        <div class="card-body d-flex flex-column">
+                            <div class="flex-grow-1">
+                                <h5 class="fw-semibold text-dark" th:text="'Комната №' + ${room.roomNumber}">Комната №101</h5>
+                                <p class="text-muted small mb-3" th:text="${#strings.abbreviate(room.description, 100)}">Описание комнаты</p>
+                                <p class="fw-bold text-warning fs-5 mb-2" th:text="${room.pricePerNight} + ' ₽/ночь'">5000 ₽/ночь</p>
+                                <p class="text-muted small mb-2" th:text="'Вместимость: ' + ${room.capacity} + ' чел.'">Вместимость: 2 чел.</p>
+                                <span th:if="${room.available}" class="badge bg-success">Доступна</span>
+                                <span th:if="${!room.available}" class="badge bg-danger">Занята</span>
+                            </div>
+
+                            <div class="mt-3">
+                                <a th:if="${room.available}"
+                                   th:href="@{'/rooms/' + ${room.id}}"
+                                   class="btn btn-custom-warning">Подробнее о номере</a>
+
+                                <button th:if="${!room.available}" class="btn btn-custom-secondary" disabled>Недоступна</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</main>
+</body>
+</html>

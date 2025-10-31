@@ -1,6 +1,7 @@
 package org.cook.booking_system.service;
 
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.cook.booking_system.entity.HouseEntity;
 import org.cook.booking_system.mapper.HouseMapper;
 import org.cook.booking_system.model.House;
@@ -14,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class HouseService {
 
     @Autowired
@@ -24,15 +26,11 @@ public class HouseService {
 
     private final Logger logger = LoggerFactory.getLogger(HouseService.class);
 
-    public HouseService(HouseRepository houseRepository, HouseMapper houseMapper) {
-        this.houseRepository = houseRepository;
-        this.houseMapper = houseMapper;
-    }
-
     @Transactional
     public House createHouse(House house){
         HouseEntity houseEntity = houseMapper.toHouseEntity(house);
         HouseEntity saved = houseRepository.save(houseEntity);
+
         logger.info("The house with id-> {} is created", house.getId());
         return houseMapper.toHouseModel(saved);
     }

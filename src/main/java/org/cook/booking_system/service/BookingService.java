@@ -1,14 +1,19 @@
 package org.cook.booking_system.service;
 
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
+import org.cook.booking_system.entity.AccommodationEntity;
 import org.cook.booking_system.entity.BookingEntity;
+import org.cook.booking_system.entity.UserEntity;
 import org.cook.booking_system.mapper.BookingMapper;
 import org.cook.booking_system.mapper.UserMapper;
 import org.cook.booking_system.model.Accommodation;
 import org.cook.booking_system.model.Booking;
+import org.cook.booking_system.model.BookingRequest;
 import org.cook.booking_system.model.Status;
-import org.cook.booking_system.model.User;
+import org.cook.booking_system.repository.AccommodationRepository;
 import org.cook.booking_system.repository.BookingRepository;
+import org.cook.booking_system.repository.UserRepository;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +27,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class BookingService {
 
     @Autowired
@@ -31,41 +37,39 @@ public class BookingService {
     private final BookingMapper bookingMapper;
 
     @Autowired
-    private final UserService userService;
+    private final UserRepository userRepository;
 
     @Autowired
-    private final UserMapper userMapper;
+    private final AccommodationRepository accommodationRepository;
 
     private final Logger logger = LoggerFactory.getLogger(BookingService.class);
 
-    public BookingService(BookingRepository bookingRepository, BookingMapper bookingMapper, UserService userService, UserMapper userMapper) {
-        this.bookingRepository = bookingRepository;
-        this.bookingMapper = bookingMapper;
-        this.userService = userService;
-        this.userMapper = userMapper;
-    }
-
     @Transactional
-    public Booking createbooking(Booking booking){
-        if(isAvailable(booking.getAccommodation(), booking.getCheckInDate(), booking.getCheckOutDate())){
+    public Booking createBookingForUser(Long userId, BookingRequest bookingRequest){
+        UserEntity userEntity = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with id -> " + userId));
+
+        AccommodationEntity accommodationEntity = accommodationRepository.findById(bookingRequest.getAccommodationId())
+                .orElseThrow(() -> new EntityNotFoundException("Accommodation not found with id -> " + bookingRequest.getAccommodationId()));
+
+        if(!isAvailable(bookingRequest.getAccommodationId(), bookingRequest.getCheckInDate(), bookingRequest.getCheckOutDate())){
             throw new IllegalArgumentException("Accommodation is not free on this date. Please try other date.");
         }
 
-        if(booking.getStatus() != null){
-            throw new IllegalArgumentException("Status should be empty");
-        }
-
-        if(booking.getCheckInDate().isAfter(booking.getCheckOutDate())){
+        if(bookingRequest.getCheckInDate().isAfter(bookingRequest.getCheckOutDate())){
             throw new IllegalArgumentException("Start date should be at least one day before than Checkout Date. Please try other date");
         }
 
-
-        BookingEntity bookingEntity = bookingMapper.toBookingEntity(booking);
+        BookingEntity bookingEntity = new BookingEntity();
+        bookingEntity.setAccommodation(accommodationEntity);
+        bookingEntity.setCheckInDate(bookingRequest.getCheckInDate());
+        bookingEntity.setCheckOutDate(bookingRequest.getCheckOutDate());
         bookingEntity.setStatus(Status.RESERVED);
         bookingEntity.setTotalPrice(calculateTotalPrice(bookingEntity));
 
-
-        logger.info("Booking with id = {} is created", booking.getId());
+        userEntity.getBookings().add(bookingEntity);
+        bookingEntity.setUser(userEntity);
+        logger.info("Booking with id = {} is created", bookingEntity.getId());
         return bookingMapper.toBookingModel(bookingRepository.save(bookingEntity));
     }
 
@@ -78,12 +82,12 @@ public class BookingService {
     }
 
     @Transactional(readOnly = true)
-    public List<Booking> getGetAllBookingByUser(User user){
-        List<Booking> bookings = bookingRepository.findByUserId(user.getId()).stream()
+    public List<Booking> getAllBookingByUserId(Long userId){
+        List<Booking> bookings = bookingRepository.findByUserId(userId).stream()
                 .map(bookingMapper :: toBookingModel)
                 .toList();
 
-        logger.info("Getting all bookings with User.id = {}", user.getId());
+        logger.info("Getting all bookings with User.id = {}", userId);
         return bookings;
     }
 
@@ -93,7 +97,7 @@ public class BookingService {
         BookingEntity bookingEntity = bookingRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("There is no entity with id -> " + id));
 
-        if(isAvailable(bookingToUpdate.getAccommodation(), bookingToUpdate.getCheckInDate(), bookingToUpdate.getCheckOutDate())){
+        if(isAvailable(bookingToUpdate.getAccommodation().getId(), bookingToUpdate.getCheckInDate(), bookingToUpdate.getCheckOutDate())){
             throw new IllegalArgumentException("Accommodation is not free on this date. Please try other date.");
         }
 
@@ -131,24 +135,17 @@ public class BookingService {
     }
 
 
-    private boolean isAvailable(@NotNull Accommodation accommodation, LocalDate checkInDate, LocalDate checkOutDate){
+    private boolean isAvailable(Long accommodationId, LocalDate checkInDate, LocalDate checkOutDate){
         boolean available = true;
-        List<BookingEntity> bookingEntityList = bookingRepository.findByAccommodationIdAndStatusIn(accommodation.getId(), Status.RESERVED);
+        List<BookingEntity> bookingEntityList = bookingRepository.findByAccommodationIdAndStatus(accommodationId, Status.RESERVED);
 
-        for (BookingEntity booking : bookingEntityList){
-            if(booking.getCheckInDate().isBefore(checkInDate) && booking.getCheckOutDate().isAfter(checkOutDate)){
-                available = false;
-                break;
-            }
-            if(booking.getCheckInDate().isBefore(checkInDate) && booking.getCheckOutDate().isBefore(checkOutDate)){
-                available = false;
-                break;
-            }
-            if(booking.getCheckInDate().isAfter(checkInDate) && booking.getCheckOutDate().isBefore(checkOutDate)){
-                available = false;
-                break;
-            }
-            if(booking.getCheckInDate().isAfter(checkInDate) && booking.getCheckOutDate().isAfter(checkOutDate)){
+        for (BookingEntity booking : bookingEntityList) {
+            LocalDate existingStart = booking.getCheckInDate();
+            LocalDate existingEnd = booking.getCheckOutDate();
+
+            boolean overlap = !checkOutDate.isBefore(existingStart) && !checkInDate.isAfter(existingEnd);
+
+            if (overlap) {
                 available = false;
                 break;
             }

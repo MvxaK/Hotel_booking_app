@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Добавить отель</title>
+    <th:block layout:fragment="page-specific-head">
+        <link rel="stylesheet" href="/forms.css">
+        <meta name="_csrf" th:content="${_csrf.token}">
+        <meta name="_csrf_header" th:content="${_csrf.headerName}">
+    </th:block>
+</head>
+<body layout:fragment="content" class="bg-gray-50">
+
+<div class="container mt-5">
+  <div class="card shadow-lg p-4 rounded-3">
+    <h2 class="text-center mb-4 fw-bold">Добавить новый отель</h2>
+
+    <form id="hotelForm">
+      <div class="mb-3">
+        <label class="form-label">Название отеля</label>
+        <input type="text" class="form-control" id="name" required>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Адрес</label>
+        <input type="text" class="form-control" id="address" required>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Описание</label>
+        <textarea class="form-control" id="description" rows="3" placeholder="Введите описание отеля..."></textarea>
+      </div>
+
+      <button type="submit" class="btn btn-warning w-100 fw-semibold">Сохранить</button>
+    </form>
+  </div>
+</div>
+
+<script>
+  document.getElementById('hotelForm').addEventListener('submit', async function (e) {
+    e.preventDefault();
+
+    const data = {
+      name: document.getElementById('name').value,
+      address: document.getElementById('address').value,
+      description: document.getElementById('description').value
+    };
+
+    const token = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+    const header = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+
+    try {
+      const response = await fetch('/api/hotels', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          [header]: token
+        },
+        body: JSON.stringify(data)
+      });
+
+      if (response.ok) {
+        alert('Отель успешно создан!');
+        e.target.reset();
+      } else {
+        const text = await response.text();
+        alert('Ошибка: ' + text);
+      }
+    } catch (err) {
+      alert('Ошибка соединения с сервером');
+      console.error(err);
+    }
+  });
+</script>
+</body>
+</html>
