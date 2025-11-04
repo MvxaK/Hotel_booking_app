@@ -23,18 +23,10 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class UserService {
 
-    @Autowired
     private final UserRepository userRepository;
-
-    @Autowired
     private final RoleRepository roleRepository;
-
-    @Autowired
     private final UserMapper userMapper;
-
-    @Autowired
     private final PasswordEncoder passwordEncoder;
-
     private final Logger logger = LoggerFactory.getLogger(UserService.class);
 
 
@@ -53,22 +45,21 @@ public class UserService {
         RoleEntity userRole = roleRepository.findByRole(Role.ROLE_USER);
         userEntity.setRoles(Set.of(userRole));
 
-
         logger.info("User with id = {} is created ", userEntity.getId());
-        return userMapper.toUserModel(userRepository.save(userEntity));
+        return userMapper.toModel(userRepository.save(userEntity));
     }
 
     @Transactional(readOnly = true)
     public User getUserName(String username){
         return userRepository.findByUserName(username)
-                .map(userMapper :: toUserModel)
+                .map(userMapper ::toModel)
                 .orElseThrow(() -> new EntityNotFoundException("User not found with username -> " + username));
     }
 
     @Transactional(readOnly = true)
     public User getUserById(Long id){
         return userRepository.findById(id)
-                .map(userMapper :: toUserModel)
+                .map(userMapper ::toModel)
                 .orElseThrow(() -> new EntityNotFoundException("User not found with id -> " + id));
     }
 
@@ -77,7 +68,7 @@ public class UserService {
         UserEntity userEntity = userRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("User not found with id -> " + id));
 
-        if(!userEntity.getPassword().equals(password)){
+        if(passwordCheck(id, password)){
            throw new IllegalArgumentException("Invalid password");
         }
 
@@ -89,7 +80,7 @@ public class UserService {
         userEntity.setEmail(userToUpdate.getEmail());
 
         logger.info("User with id = {} is updated", id);
-        return userMapper.toUserModel(userRepository.save(userEntity));
+        return userMapper.toModel(userRepository.save(userEntity));
     }
 
     @Transactional
@@ -97,7 +88,7 @@ public class UserService {
         UserEntity userEntity = userRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("User not found with id -> " + id));
 
-        if(!userEntity.getPassword().equals(password)){
+        if(passwordCheck(id, password)){
             throw new IllegalArgumentException("Invalid password");
         }
 
@@ -111,9 +102,7 @@ public class UserService {
             throw new EntityNotFoundException("User not found with id -> " + id);
         }
 
-        UserEntity userEntity = userRepository.findById(id)
-                .orElseThrow();
-        if(!userEntity.getPassword().equals(password)){
+        if(passwordCheck(id, password)){
             throw new IllegalArgumentException("Invalid password");
         }
 
@@ -141,5 +130,12 @@ public class UserService {
                 .orElse(null);
 
         return userByEmail == null;
+    }
+
+    public boolean passwordCheck(Long id, String password){
+        UserEntity userEntity = userRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("There is no user with id -> " + id));
+
+        return userEntity.getPassword().equals(passwordEncoder.encode(password));
     }
 }

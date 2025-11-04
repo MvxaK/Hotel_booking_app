@@ -5,7 +5,6 @@ import org.cook.booking_system.model.Hotel;
 import org.cook.booking_system.model.Room;
 import org.cook.booking_system.service.HotelService;
 import org.cook.booking_system.service.RoomService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -17,10 +16,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class RoomViewController {
 
-    @Autowired
     private final RoomService roomService;
-
-    @Autowired
     private final HotelService hotelService;
 
     @GetMapping("/{id}")

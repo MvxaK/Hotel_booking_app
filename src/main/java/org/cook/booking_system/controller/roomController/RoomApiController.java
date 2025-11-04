@@ -3,7 +3,6 @@ package org.cook.booking_system.controller.roomController;
 import lombok.RequiredArgsConstructor;
 import org.cook.booking_system.model.Room;
 import org.cook.booking_system.service.RoomService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,9 +15,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class RoomApiController {
 
-    @Autowired
     private final RoomService roomService;
-
 
     @GetMapping
     public ResponseEntity<List<Room>> getAllRooms(){
@@ -48,8 +45,7 @@ public class RoomApiController {
     public ResponseEntity<Room> updateRoom(@PathVariable Long id, @RequestBody Room roomToUpdate){
         Room room = roomService.updateRoom(id, roomToUpdate);
 
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(room);
+        return ResponseEntity.ok(room);
     }
 
     @DeleteMapping("/{id}")

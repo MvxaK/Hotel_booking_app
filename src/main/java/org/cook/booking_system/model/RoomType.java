@@ -1,22 +1,24 @@
 package org.cook.booking_system.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
-import org.cook.booking_system.entity.ImageEntity;
+import lombok.ToString;
 
 import java.math.BigDecimal;
 import java.util.List;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-@SuperBuilder
-public abstract class Accommodation {
+@NoArgsConstructor
+public class RoomType {
 
     private Long id;
+    @NotNull
+    private String name;
     @NotNull
     private int capacity;
     @NotNull
@@ -24,7 +26,11 @@ public abstract class Accommodation {
     @NotNull
     private BigDecimal pricePerNight;
     @NotNull
-    private boolean available;
-    private List<ImageEntity> images;
+    private int bedsCount;
 
+    @NotNull
+    private Hotel hotel;
+    private List<Room> rooms;
+
+    private List<String> imagesUrl;
 }

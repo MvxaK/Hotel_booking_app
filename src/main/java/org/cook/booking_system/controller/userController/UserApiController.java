@@ -4,21 +4,16 @@ import lombok.RequiredArgsConstructor;
 import org.cook.booking_system.model.User;
 import org.cook.booking_system.security.auth.RegisterRequest;
 import org.cook.booking_system.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
 public class UserApiController {
 
-    @Autowired
     private final UserService userService;
 
     @GetMapping("/{id}")

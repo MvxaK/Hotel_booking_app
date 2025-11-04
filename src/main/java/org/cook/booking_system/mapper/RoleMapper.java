@@ -7,16 +7,17 @@ import org.mapstruct.Mapper;
 @Mapper(componentModel = "spring")
 public interface RoleMapper {
 
-    default Role toRoleModel(RoleEntity roleEntity){
+    default Role toModel(RoleEntity roleEntity){
         if(roleEntity == null)
             return null;
 
         return roleEntity.getRole();
     }
 
-    default RoleEntity toRoleEntity(Role role){
+    default RoleEntity toEntity(Role role){
         if(role == null)
             return null;
+
         RoleEntity roleEntity = new RoleEntity();
         roleEntity.setRole(role);
 

@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class AuthApiController {
 
-    @Autowired
     private final UserService userService;
 
     @PostMapping("/register")

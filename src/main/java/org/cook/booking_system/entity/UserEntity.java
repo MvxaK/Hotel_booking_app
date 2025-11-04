@@ -1,9 +1,12 @@
 package org.cook.booking_system.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
+import org.cook.booking_system.entity.booking.BookingHouseEntity;
+import org.cook.booking_system.entity.booking.BookingRoomEntity;
 
 import java.util.HashSet;
 import java.util.List;
@@ -13,7 +16,7 @@ import java.util.Set;
 @Data
 @Table(name = "users")
 @NoArgsConstructor
-@SuperBuilder
+@AllArgsConstructor
 public class UserEntity {
 
     @Id
@@ -30,7 +33,10 @@ public class UserEntity {
     private String password;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<BookingEntity> bookings;
+    private List<BookingRoomEntity> roomBookings;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<BookingHouseEntity> houseBookings;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(

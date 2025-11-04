@@ -1,16 +1,18 @@
 package org.cook.booking_system.model;
 
-import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import org.cook.booking_system.entity.ImageEntity;
-import org.cook.booking_system.entity.RoomEntity;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.util.List;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class Hotel {
 
     private Long id;
@@ -20,6 +22,8 @@ public class Hotel {
     private String address;
     @NotNull
     private String description;
-    private List<RoomEntity> rooms;
-    private List<ImageEntity> images;
+    private List<Room> rooms;
+    private List<RoomType> roomTypes;
+
+    private List<String> imagesUrl;
 }

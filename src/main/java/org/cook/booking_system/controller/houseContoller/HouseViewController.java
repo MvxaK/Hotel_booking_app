@@ -3,9 +3,6 @@ package org.cook.booking_system.controller.houseContoller;
 import lombok.RequiredArgsConstructor;
 import org.cook.booking_system.model.House;
 import org.cook.booking_system.service.HouseService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -17,7 +14,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class HouseViewController {
 
-    @Autowired
     private final HouseService houseService;
 
     @GetMapping("/")

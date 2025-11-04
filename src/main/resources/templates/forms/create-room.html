@@ -2,56 +2,48 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
 <head>
     <meta charset="UTF-8">
-    <title>Добавить комнату</title>
+    <title>Add Room</title>
     <th:block layout:fragment="page-specific-head">
         <link rel="stylesheet" href="/forms.css">
         <meta name="_csrf" th:content="${_csrf.token}">
         <meta name="_csrf_header" th:content="${_csrf.headerName}">
     </th:block>
 </head>
-<body layout:fragment="content" class="bg-gray-50">
+<body layout:fragment="content">
 
 <div class="container mt-5">
-    <div class="card shadow-lg p-4 rounded-3">
-        <h2 class="text-center mb-4 fw-bold">Добавить комнату</h2>
+    <div class="card shadow p-4 rounded">
+        <h2 class="text-center mb-4 fw-bold">Add Room</h2>
 
         <form id="roomForm">
             <div class="mb-3">
-                <label class="form-label">Номер комнаты</label>
+                <label class="form-label">Room number</label>
                 <input type="text" class="form-control" id="roomNumber" required>
             </div>
 
             <div class="mb-3">
-                <label class="form-label">Вместимость</label>
-                <input type="number" class="form-control" id="capacity" required>
-            </div>
-
-            <div class="mb-3">
-                <label class="form-label">Цена за ночь</label>
-                <input type="number" step="0.01" class="form-control" id="pricePerNight" required>
-            </div>
-
-            <div class="mb-3">
-                <label class="form-label">Описание</label>
-                <textarea class="form-control" id="description" rows="3" placeholder="Введите описание комнаты..."></textarea>
-            </div>
-
-            <div class="mb-3">
-                <label class="form-label">Доступно</label>
-                <select class="form-select" id="available">
-                    <option value="true">Да</option>
-                    <option value="false">Нет</option>
-                </select>
-            </div>
-
-            <div class="mb-3">
-                <label class="form-label">Выберите отель</label>
+                <label class="form-label">Select hotel</label>
                 <select id="hotelId" class="form-select" required>
-                    <option value="">Выберите...</option>
+                    <option value="">Select...</option>
                 </select>
             </div>
 
-            <button type="submit" class="btn btn-warning w-100 fw-semibold">Сохранить</button>
+            <div class="mb-3">
+                <label class="form-label">Room type</label>
+                <select class="form-select" id="roomType" required disabled>
+                    <option value="">First select a hotel</option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Available</label>
+                <select class="form-select" id="available">
+                    <option value="true">Yes</option>
+                    <option value="false">No</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-warning w-100 fw-semibold">Save</button>
         </form>
     </div>
 </div>
@@ -65,9 +57,7 @@
 
         const data = {
             roomNumber: document.getElementById('roomNumber').value,
-            capacity: parseInt(document.getElementById('capacity').value),
-            pricePerNight: parseFloat(document.getElementById('pricePerNight').value),
-            description: document.getElementById('description').value,
+            roomType: document.getElementById('roomType').value,
             available: document.getElementById('available').value === 'true',
             hotel: { id: parseInt(document.getElementById('hotelId').value) }
         };
@@ -83,33 +73,79 @@
             });
 
             if (response.ok) {
-                alert('Комната успешно добавлена!');
+                alert('Room successfully added!');
                 e.target.reset();
+                // Reset room types dropdown
+                document.getElementById('roomType').innerHTML = '<option value="">First select a hotel</option>';
+                document.getElementById('roomType').disabled = true;
             } else {
                 const text = await response.text();
-                alert('Ошибка: ' + text);
+                alert('Error: ' + text);
             }
         } catch (err) {
-            alert('Ошибка соединения с сервером');
+            alert('Server connection error');
             console.error(err);
         }
     });
 
     async function loadHotels() {
-        const response = await fetch('/api/hotels');
-        if (response.ok) {
-            const hotels = await response.json();
-            const select = document.getElementById('hotelId');
-            select.innerHTML = '<option value="">Выберите...</option>';
-            hotels.forEach(hotel => {
-                const opt = document.createElement('option');
-                opt.value = hotel.id;
-                opt.textContent = `${hotel.name} — ${hotel.address}`;
-                select.appendChild(opt);
-            });
+        try {
+            const response = await fetch('/api/hotels');
+            if (response.ok) {
+                const hotels = await response.json();
+                const select = document.getElementById('hotelId');
+                select.innerHTML = '<option value="">Select...</option>';
+                hotels.forEach(hotel => {
+                    const opt = document.createElement('option');
+                    opt.value = hotel.id;
+                    opt.textContent = `${hotel.name} — ${hotel.address}`;
+                    select.appendChild(opt);
+                });
+            }
+        } catch (err) {
+            console.error('Error loading hotels:', err);
         }
     }
 
+    async function loadRoomTypes(hotelId) {
+        try {
+            const response = await fetch(`/api/hotels/${hotelId}/room-types`);
+            if (response.ok) {
+                const roomTypes = await response.json();
+                const roomTypeSelect = document.getElementById('roomType');
+
+                roomTypeSelect.innerHTML = '<option value="">Select room type...</option>';
+                roomTypes.forEach(roomType => {
+                    const opt = document.createElement('option');
+                    opt.value = roomType;
+                    opt.textContent = formatRoomType(roomType);
+                    roomTypeSelect.appendChild(opt);
+                });
+                roomTypeSelect.disabled = false;
+            } else {
+                document.getElementById('roomType').innerHTML = '<option value="">No room types available</option>';
+            }
+        } catch (err) {
+            console.error('Error loading room types:', err);
+            document.getElementById('roomType').innerHTML = '<option value="">Error loading room types</option>';
+        }
+    }
+
+    function formatRoomType(roomType) {
+        return roomType.charAt(0) + roomType.slice(1).toLowerCase().replace('_', ' ');
+    }
+
+    document.getElementById('hotelId').addEventListener('change', function() {
+        const hotelId = this.value;
+        if (hotelId) {
+            loadRoomTypes(hotelId);
+        } else {
+            document.getElementById('roomType').innerHTML = '<option value="">First select a hotel</option>';
+            document.getElementById('roomType').disabled = true;
+        }
+    });
+
+    // Initialize on page load
     window.addEventListener('DOMContentLoaded', loadHotels);
 </script>
 </body>

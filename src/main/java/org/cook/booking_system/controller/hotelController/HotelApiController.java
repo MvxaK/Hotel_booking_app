@@ -3,9 +3,8 @@ package org.cook.booking_system.controller.hotelController;
 import lombok.RequiredArgsConstructor;
 import org.cook.booking_system.model.Hotel;
 import org.cook.booking_system.model.Room;
+import org.cook.booking_system.model.RoomType;
 import org.cook.booking_system.service.HotelService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +17,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class HotelApiController {
 
-    @Autowired
     private final HotelService hotelService;
 
     @GetMapping
@@ -57,6 +55,13 @@ public class HotelApiController {
         List<Room> rooms = hotelService.getRoomsByHotelId(id);
 
         return ResponseEntity.ok(rooms);
+    }
+
+    @GetMapping("/{id}/room-types")
+    public ResponseEntity<List<RoomType>> getRoomTypesByHotelId(@PathVariable Long id) {
+        List<RoomType> roomTypes = hotelService.getRoomTypesByHotelId(id);
+
+        return ResponseEntity.ok(roomTypes);
     }
 
     @DeleteMapping("/{id}")

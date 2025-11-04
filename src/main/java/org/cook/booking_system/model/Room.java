@@ -1,19 +1,26 @@
 package org.cook.booking_system.model;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.validation.constraints.NotNull;
-import lombok.experimental.SuperBuilder;
-import org.cook.booking_system.entity.HotelEntity;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@EqualsAndHashCode(callSuper = true)
 @Data
 @NoArgsConstructor
-@SuperBuilder
-public class Room extends Accommodation{
+@AllArgsConstructor
+public class Room {
+
+    private Long id;
     @NotNull
     private String roomNumber;
     @NotNull
-    private HotelEntity hotel;
+    private boolean available;
+
+    @NotNull
+    private Hotel hotel;
+
+    @NotNull
+    private RoomType roomType;
 }

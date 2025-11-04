@@ -1,16 +1,17 @@
-package org.cook.booking_system.entity;
+package org.cook.booking_system.entity.images;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.cook.booking_system.entity.HotelEntity;
 
 @Entity
 @Data
-@Table(name = "images")
+@Table(name = "hotel_images")
 @NoArgsConstructor
 @AllArgsConstructor
-public class ImageEntity {
+public class HotelImageEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,9 +23,5 @@ public class ImageEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "hotel_id")
     private HotelEntity hotel;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "accommodation_id")
-    private AccommodationEntity accommodation;
 
 }

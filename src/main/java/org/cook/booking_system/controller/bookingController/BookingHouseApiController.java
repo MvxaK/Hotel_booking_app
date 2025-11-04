@@ -1,0 +1,56 @@
+package org.cook.booking_system.controller.bookingController;
+
+import lombok.RequiredArgsConstructor;
+import org.cook.booking_system.model.User;
+import org.cook.booking_system.model.booking.BookingHouse;
+import org.cook.booking_system.model.booking.BookingHouseRequest;
+import org.cook.booking_system.service.booking.BookingHouseService;
+import org.cook.booking_system.service.UserService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.*;
+
+import java.net.URI;
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/booking/house")
+@RequiredArgsConstructor
+public class BookingHouseApiController {
+
+    private final BookingHouseService bookingHouseService;
+    private final UserService userService;
+
+    @GetMapping("/{id}")
+    public ResponseEntity<BookingHouse> getBookingById(@PathVariable Long id) {
+        BookingHouse booking = bookingHouseService.getBookingById(id);
+
+        return ResponseEntity.ok(booking);
+    }
+
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<BookingHouse>> getAllBookingsByUserId(@PathVariable Long userId) {
+        List<BookingHouse> bookings = bookingHouseService.getAllBookingByUserId(userId);
+
+        return ResponseEntity.ok(bookings);
+    }
+
+    @PostMapping
+    public ResponseEntity<BookingHouse> createBooking(@RequestBody BookingHouseRequest bookingRequest, Authentication authentication) {
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        User user = userService.getUserName(userDetails.getUsername());
+
+        BookingHouse booking = bookingHouseService.createBookingForUser(user.getId(), bookingRequest);
+        URI location = URI.create("/api/booking/house/" + booking.getId());
+
+        return ResponseEntity.created(location).body(booking);
+    }
+
+    @DeleteMapping("/{id}/cancel")
+    public ResponseEntity<Void> cancelBooking(@PathVariable Long id) {
+        bookingHouseService.cancelBooking(id);
+
+        return ResponseEntity.noContent().build();
+    }
+}

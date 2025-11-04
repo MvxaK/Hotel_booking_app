@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.cook.booking_system.entity.images.HotelImageEntity;
 
 import java.util.List;
 
@@ -13,7 +14,6 @@ import java.util.List;
 @Table(name = "hotels")
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class HotelEntity {
 
     @Id
@@ -33,5 +33,8 @@ public class HotelEntity {
     private List<RoomEntity> rooms;
 
     @OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ImageEntity> images;
+    private List<RoomTypeEntity> roomTypes;
+
+    @OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<HotelImageEntity> images;
 }

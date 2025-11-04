@@ -16,7 +16,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class HouseApiController {
 
-    @Autowired
     private final HouseService houseService;
 
     @GetMapping

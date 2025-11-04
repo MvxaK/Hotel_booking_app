@@ -6,15 +6,22 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
+import org.cook.booking_system.entity.images.HouseImageEntity;
+
+import java.math.BigDecimal;
+import java.util.List;
 
 
-@EqualsAndHashCode(callSuper = true)
 @Entity
 @Data
 @Table(name = "houses")
-@SuperBuilder
 @NoArgsConstructor
-public class HouseEntity extends AccommodationEntity{
+@AllArgsConstructor
+public class HouseEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @Column(name = "house_name", nullable = false)
     private String name;
@@ -22,4 +29,27 @@ public class HouseEntity extends AccommodationEntity{
     @Column(name = "location", nullable = false)
     private String location;
 
+    @Column(name = "capacity", nullable = false)
+    private int capacity;
+
+    @Column(name = "price_per_night", nullable = false)
+    private BigDecimal pricePerNight;
+
+    @Column(name = "rooms_number", nullable = false)
+    private int roomsNumber;
+
+    @Column(name = "beds_count", nullable = false)
+    private int bedsCount;
+
+    @Column(name = "parking_slots", nullable = false)
+    private int parkingSlots;
+
+    @Column(name = "description", nullable = false, length = 10000)
+    private String description;
+
+    @Column(name = "is_available", nullable = false)
+    private boolean available;
+
+    @OneToMany(mappedBy = "house", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<HouseImageEntity> images;
 }
