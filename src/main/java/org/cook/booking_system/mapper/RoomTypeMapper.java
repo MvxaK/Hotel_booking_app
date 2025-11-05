@@ -12,9 +12,13 @@ import java.util.List;
 public interface RoomTypeMapper {
 
     @Mapping(target = "imagesUrl", expression = "java(mapImages(entity.getImages()))")
+    @Mapping(target = "hotelId", expression = "java(EntityIdUtils.extractId(entity.getHotel()))")
+    @Mapping(target = "roomIds", expression = "java(EntityIdUtils.extractIds(entity.getRooms()))")
     RoomType toModel(RoomTypeEntity entity);
 
     @Mapping(target = "images", ignore = true)
+    @Mapping(target = "hotel", ignore = true)
+    @Mapping(target = "rooms", ignore = true)
     RoomTypeEntity toEntity(RoomType model);
 
     default List<String> mapImages(List<RoomTypeImageEntity> images) {
@@ -25,5 +29,4 @@ public interface RoomTypeMapper {
                 .map(RoomTypeImageEntity::getUrl)
                 .toList();
     }
-
 }

@@ -1,7 +1,5 @@
 package org.cook.booking_system.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,8 +17,8 @@ public class Room {
     private boolean available;
 
     @NotNull
-    private Hotel hotel;
+    private Long hotelId;
 
     @NotNull
-    private RoomType roomType;
+    private Long roomTypeId;
 }

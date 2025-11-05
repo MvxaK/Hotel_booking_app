@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.cook.booking_system.entity.images.HotelImageEntity;
 
 import java.util.List;
@@ -14,6 +15,7 @@ import java.util.List;
 @Table(name = "hotels")
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString(exclude = {"roomTypes", "rooms"})
 public class HotelEntity {
 
     @Id

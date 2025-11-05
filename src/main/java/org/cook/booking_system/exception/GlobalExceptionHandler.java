@@ -18,6 +18,7 @@ public class GlobalExceptionHandler {
                 "Entity not found",
                 LocalDateTime.now()
         );
+
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(dto);
     }
 

@@ -1,12 +1,9 @@
 package org.cook.booking_system.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -29,8 +26,8 @@ public class RoomType {
     private int bedsCount;
 
     @NotNull
-    private Hotel hotel;
-    private List<Room> rooms;
+    private Long hotelId;
+    private List<Long> roomIds;
 
     private List<String> imagesUrl;
 }

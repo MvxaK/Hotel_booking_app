@@ -10,14 +10,15 @@ import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface HotelMapper {
+
     @Mapping(target = "imagesUrl", expression = "java(mapImages(entity.getImages()))")
-    @Mapping(target = "roomTypes[].images", ignore = true)
-    @Mapping(target = "rooms[].roomType.images", ignore = true)
+    @Mapping(target = "roomIds", expression = "java(EntityIdUtils.extractIds(entity.getRooms()))")
+    @Mapping(target = "roomTypeIds", expression = "java(EntityIdUtils.extractIds(entity.getRoomTypes()))")
     Hotel toModel(HotelEntity entity);
 
     @Mapping(target = "images", ignore = true)
-    @Mapping(target = "roomTypes[].images", ignore = true)
-    @Mapping(target = "rooms[].roomType.images", ignore = true)
+    @Mapping(target = "rooms", ignore = true)
+    @Mapping(target = "roomTypes", ignore = true)
     HotelEntity toEntity(Hotel model);
 
     default List<String> mapImages(List<HotelImageEntity> images) {
@@ -28,5 +29,4 @@ public interface HotelMapper {
                 .map(HotelImageEntity::getUrl)
                 .toList();
     }
-
 }

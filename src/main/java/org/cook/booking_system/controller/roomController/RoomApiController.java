@@ -32,13 +32,11 @@ public class RoomApiController {
     }
 
     @PostMapping
-    public ResponseEntity<Room> createRoomForHotel(@RequestBody Room roomToCreate){
-        Room room = roomService.createRoomForHotel(roomToCreate.getHotel().getId(), roomToCreate);
+    public ResponseEntity<Room> createRoomForHotel(@RequestBody Room roomToCreate) {
+        Room room = roomService.createRoomForHotel(roomToCreate.getHotelId(), roomToCreate);
 
         URI location = URI.create("/api/rooms/" + room.getId());
-
-        return ResponseEntity.created(location)
-                .body(room);
+        return ResponseEntity.created(location).body(room);
     }
 
     @PutMapping("/{id}")

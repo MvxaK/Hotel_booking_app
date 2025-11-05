@@ -21,7 +21,7 @@ public class MainController {
     public String index(Model model){
         Hotel grandHotel = hotelService.getHotelById(1L);
         Hotel TwF = hotelService.getHotelById(2L);
-        House house = houseService.getHouseById(19L);
+        House house = houseService.getHouseById(1L);
 
         model.addAttribute("grandHotel", grandHotel);
         model.addAttribute("TwF", TwF);

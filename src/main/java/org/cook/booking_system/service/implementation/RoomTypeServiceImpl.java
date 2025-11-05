@@ -1,4 +1,4 @@
-package org.cook.booking_system.service;
+package org.cook.booking_system.service.implementation;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -16,8 +16,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class RoomTypeService {
-
+public class RoomTypeServiceImpl {
     private final RoomTypeRepository roomTypeRepository;
     private final RoomTypeMapper roomTypeMapper;
     private final RoomMapper roomMapper;

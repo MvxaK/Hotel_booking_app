@@ -22,7 +22,7 @@ public class RoomViewController {
     @GetMapping("/{id}")
     public String showRoomDetails(@PathVariable Long id, Model model){
         Room room = roomService.getRoomById(id);
-        Hotel hotel = hotelService.getHotelById(room.getHotel().getId());
+        Hotel hotel = hotelService.getHotelById(room.getHotelId());
         model.addAttribute("room", room);
         model.addAttribute("hotel", hotel);
 

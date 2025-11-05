@@ -5,14 +5,14 @@ import org.cook.booking_system.model.Room;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-@Mapper(componentModel = "spring", uses = {RoomTypeMapper.class, HotelMapper.class})
+@Mapper(componentModel = "spring")
 public interface RoomMapper {
 
-    @Mapping(target = "roomType.imagesUrl", ignore = true)
-    @Mapping(target = "hotel.imagesUrl", ignore = true)
+    @Mapping(target = "hotelId", expression = "java(EntityIdUtils.extractId(entity.getHotel()))")
+    @Mapping(target = "roomTypeId", expression = "java(EntityIdUtils.extractId(entity.getRoomType()))")
     Room toModel(RoomEntity entity);
 
-    @Mapping(target = "hotel.images", ignore = true)
-    @Mapping(target = "roomType.images", ignore = true)
+    @Mapping(target = "hotel", ignore = true)
+    @Mapping(target = "roomType", ignore = true)
     RoomEntity toEntity(Room model);
 }

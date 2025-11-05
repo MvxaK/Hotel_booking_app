@@ -44,7 +44,7 @@ public class HotelApiController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Hotel> updateHotel(@PathVariable Long id, @RequestBody Hotel hotelToUpdate, Model model){
+    public ResponseEntity<Hotel> updateHotel(@PathVariable Long id, @RequestBody Hotel hotelToUpdate){
         Hotel hotel = hotelService.updateHotel(id, hotelToUpdate);
 
         return ResponseEntity.ok(hotel);
