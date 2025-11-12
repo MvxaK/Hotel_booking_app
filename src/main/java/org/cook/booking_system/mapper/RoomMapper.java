@@ -1,6 +1,7 @@
 package org.cook.booking_system.mapper;
 
 import org.cook.booking_system.entity.RoomEntity;
+import org.cook.booking_system.mapper.EntityIdUtils;
 import org.cook.booking_system.model.Room;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

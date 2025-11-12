@@ -6,7 +6,7 @@ import org.cook.booking_system.entity.HouseEntity;
 import org.cook.booking_system.mapper.HouseMapper;
 import org.cook.booking_system.model.House;
 import org.cook.booking_system.repository.HouseRepository;
-import org.cook.booking_system.service.HouseService;
+import org.cook.booking_system.service.service_interface.HouseService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -16,7 +16,8 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class HouseServiceImpl {
+public class HouseServiceImpl implements HouseService{
+
     private final HouseRepository houseRepository;
     private final HouseMapper houseMapper;
     private final Logger logger = LoggerFactory.getLogger(HouseServiceImpl.class);

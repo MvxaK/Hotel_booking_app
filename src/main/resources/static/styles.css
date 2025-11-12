@@ -11,16 +11,3 @@
     height: 200px;
     object-fit: cover;
 }
-
-.navbar .nav-link {
-    color: #fff !important;
-    transition: color 0.3s ease;
-}
-.navbar .nav-link:hover {
-    color: #ffc107 !important;
-}
-
-footer a:hover {
-    color: #f8d568 !important;
-    transition: color 0.3s ease;
-}

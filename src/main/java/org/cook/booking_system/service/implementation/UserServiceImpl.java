@@ -5,12 +5,16 @@ import lombok.RequiredArgsConstructor;
 import org.cook.booking_system.entity.RoleEntity;
 import org.cook.booking_system.entity.UserEntity;
 import org.cook.booking_system.mapper.UserMapper;
+import org.cook.booking_system.mapper.booking.BookingRoomMapper;
 import org.cook.booking_system.model.Role;
 import org.cook.booking_system.model.User;
 import org.cook.booking_system.repository.RoleRepository;
 import org.cook.booking_system.repository.UserRepository;
+import org.cook.booking_system.repository.booking.BookingHouseRepository;
+import org.cook.booking_system.repository.booking.BookingRoomRepository;
 import org.cook.booking_system.security.auth.RegisterRequest;
-import org.cook.booking_system.service.UserService;
+import org.cook.booking_system.service.service_interface.UserService;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -21,7 +25,8 @@ import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
-public class UserServiceImpl {
+public class UserServiceImpl implements UserService{
+
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final UserMapper userMapper;
@@ -56,23 +61,27 @@ public class UserServiceImpl {
     }
 
     @Transactional(readOnly = true)
-    public User getUserById(Long id){
+    public User getUserById(Long id) {
         return userRepository.findById(id)
-                .map(userMapper ::toModel)
+                .map(userMapper::toModel)
                 .orElseThrow(() -> new EntityNotFoundException("User not found with id -> " + id));
     }
 
     @Transactional
-    public User updateUserInfo(Long id, User userToUpdate, String password){
+    public User updateUserInfo(Long id, User userToUpdate, String currentPassword){
         UserEntity userEntity = userRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("User not found with id -> " + id));
 
-        if(passwordCheck(id, password)){
+        if(!passwordEncoder.matches(currentPassword, userEntity.getPassword())){
             throw new IllegalArgumentException("Invalid password");
         }
 
         if(!emailUpdateCheck(id, userToUpdate.getEmail())){
             throw new IllegalArgumentException("This email already exists");
+        }
+
+        if(!userNameCheck(id, userToUpdate.getUserName())){
+            throw new IllegalArgumentException("This username already exists");
         }
 
         userEntity.setUserName(userToUpdate.getUserName());
@@ -83,16 +92,16 @@ public class UserServiceImpl {
     }
 
     @Transactional
-    public void updateUserPassword(Long id, String password, String newPassword){
+    public void updateUserPassword(Long id, String currentPassword, String newPassword){
         UserEntity userEntity = userRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("User not found with id -> " + id));
 
-        if(passwordCheck(id, password)){
+        if(!passwordEncoder.matches(currentPassword, userEntity.getPassword())){
             throw new IllegalArgumentException("Invalid password");
         }
 
         logger.info("User with id = {} updated password", id);
-        userEntity.setPassword(newPassword);
+        userEntity.setPassword(passwordEncoder.encode(newPassword));
     }
 
     @Transactional
@@ -101,7 +110,7 @@ public class UserServiceImpl {
             throw new EntityNotFoundException("User not found with id -> " + id);
         }
 
-        if(passwordCheck(id, password)){
+        if(passwordEncoder.matches(password, userRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("There is no user with id -> " + id)).getPassword())){
             throw new IllegalArgumentException("Invalid password");
         }
 
@@ -109,19 +118,28 @@ public class UserServiceImpl {
         userRepository.deleteById(id);
     }
 
-    public Boolean emailUpdateCheck(Long id, String email){
+    public Boolean emailUpdateCheck(Long id, String email) {
         UserEntity user = userRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("There is no user with id -> " + id));
 
-        UserEntity userByEmail = userRepository.findByEmail(email)
-                .orElse(null);
+        UserEntity userByEmail = userRepository.findByEmail(email).orElse(null);
 
-        if(user.getId().equals(userByEmail != null ? userByEmail.getId() : null))
+        if (userByEmail == null)
             return true;
-        else if(userByEmail == null)
+
+        return user.getId().equals(userByEmail.getId());
+    }
+
+    public Boolean userNameCheck(Long id, String userName) {
+        UserEntity user = userRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("There is no user with id -> " + id));
+
+        UserEntity userByUsername = userRepository.findByUserName(userName).orElse(null);
+
+        if (userByUsername == null)
             return true;
-        else
-            return false;
+
+        return user.getId().equals(userByUsername.getId());
     }
 
     public Boolean emailCheck(String email){
@@ -129,12 +147,5 @@ public class UserServiceImpl {
                 .orElse(null);
 
         return userByEmail == null;
-    }
-
-    public boolean passwordCheck(Long id, String password){
-        UserEntity userEntity = userRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("There is no user with id -> " + id));
-
-        return userEntity.getPassword().equals(passwordEncoder.encode(password));
     }
 }

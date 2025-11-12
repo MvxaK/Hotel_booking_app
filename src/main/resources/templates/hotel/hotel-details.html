@@ -1,44 +1,56 @@
 <!DOCTYPE html>
-<html lang="ru" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
 <head>
-    <title th:text="${hotel.name} + ' - Luxury Hotel'">Отель - Luxury Hotel</title>
+    <title th:text="${hotel.name}">Hotel</title>
     <th:block layout:fragment="page-specific-head">
         <link rel="stylesheet" href="/hotel-details.css">
-        <meta name="_csrf" th:content="${_csrf.token}">
-        <meta name="_csrf_header" th:content="${_csrf.headerName}">
     </th:block>
 </head>
 
 <body class="hotel-details-page">
 <main layout:fragment="content">
     <div class="container py-5">
-
         <nav aria-label="breadcrumb" class="mb-4">
             <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a th:href="@{/}">Главная</a></li>
-                <li class="breadcrumb-item"><a th:href="@{/hotels}">Отели</a></li>
-                <li class="breadcrumb-item active" aria-current="page" th:text="${hotel.name}">Отель</li>
+                <li class="breadcrumb-item"><a th:href="@{/}">Home</a></li>
+                <li class="breadcrumb-item"><a th:href="@{/hotels}">Hotels</a></li>
+                <li class="breadcrumb-item active" th:text="${hotel.name}">Hotel</li>
             </ol>
         </nav>
 
-        <div class="mb-5">
-            <h1 class="fw-bold text-dark mb-3" th:text="${hotel.name}">Название отеля</h1>
-            <p class="text-muted mb-4" th:text="${hotel.address}">Адрес отеля</p>
+        <div class="d-flex justify-content-between align-items-start mb-5">
+            <div class="flex-grow-1">
+                <h1 class="fw-bold text-dark mb-3" th:text="${hotel.name}">Hotel Name</h1>
+                <p class="text-muted mb-0" th:text="${hotel.address}">Hotel Address</p>
+            </div>
+            <div class="ms-3">
+                <a th:href="@{'/hotels/' + ${hotel.id} + '/update'}"
+                   class="btn btn-outline-warning">
+                    <i class="bi bi-pencil-square me-2"></i>Edit Hotel
+                </a>
+            </div>
+        </div>
 
+        <div class="mb-5">
             <div class="row g-3">
                 <div class="col-12 col-lg-8">
-                    <img th:if="${hotel.images != null and !hotel.images.isEmpty()}"
-                         th:src="@{${hotel.images[0].url}}"
+                    <img th:if="${hotel.imagesUrl != null and !hotel.imagesUrl.isEmpty()}"
+                         th:src="@{${hotel.imagesUrl[0]}}"
                          alt="Hotel main image"
+                         class="img-fluid rounded shadow w-100"
+                         style="height: 400px; object-fit: cover;">
+                    <img th:unless="${hotel.imagesUrl != null and !hotel.imagesUrl.isEmpty()}"
+                         src="https://picsum.photos/600/400?random=1"
+                         alt="No image available"
                          class="img-fluid rounded shadow w-100"
                          style="height: 400px; object-fit: cover;">
                 </div>
                 <div class="col-12 col-lg-4">
                     <div class="row g-2">
-                        <div th:each="img, iter : ${hotel.images}"
-                             th:if="${iter.index > 0}"
+                        <div th:each="imgUrl, iter : ${hotel.imagesUrl}"
+                             th:if="${iter.index > 0 and iter.index < 5}"
                              class="col-6 col-sm-4 col-lg-6">
-                            <img th:src="@{${img.url}}"
+                            <img th:src="@{${imgUrl}}"
                                  alt="Hotel image"
                                  class="img-fluid rounded shadow-sm w-100 gallery-thumb"
                                  style="height:120px; object-fit:cover;">
@@ -49,43 +61,70 @@
         </div>
 
         <section class="mb-5 hotel-description">
-            <h3 class="fw-semibold mb-3 text-warning">Описание</h3>
+            <h3 class="fw-semibold mb-3 text-warning">About This Hotel</h3>
             <p class="text-dark mb-0" th:text="${hotel.description}">
-                Современный отель с видом на город, утренними завтраками и просторными номерами.
+                A modern hotel with city views, morning breakfast service, and spacious rooms.
             </p>
         </section>
 
         <section>
-            <h3 class="fw-bold text-dark mb-4">Доступные номера</h3>
+            <h3 class="fw-bold text-dark mb-4">Available Rooms</h3>
 
             <div class="row g-4">
                 <div class="col-12 col-sm-6 col-lg-4" th:each="room : ${rooms}">
                     <div class="card border-0 shadow h-100 hotel-room-card">
-                        <img th:if="${room.images != null and !room.images.isEmpty()}"
-                             th:src="@{${room.images[0].url}}"
-                             class="card-img-top"
-                             alt="Room image"
-                             style="height: 220px; object-fit: cover;">
-                        <div class="card-body d-flex flex-column">
-                            <div class="flex-grow-1">
-                                <h5 class="fw-semibold text-dark" th:text="'Комната №' + ${room.roomNumber}">Комната №101</h5>
-                                <p class="text-muted small mb-3" th:text="${#strings.abbreviate(room.description, 100)}">Описание комнаты</p>
-                                <p class="fw-bold text-warning fs-5 mb-2" th:text="${room.pricePerNight} + ' ₽/ночь'">5000 ₽/ночь</p>
-                                <p class="text-muted small mb-2" th:text="'Вместимость: ' + ${room.capacity} + ' чел.'">Вместимость: 2 чел.</p>
-                                <span th:if="${room.available}" class="badge bg-success">Доступна</span>
-                                <span th:if="${!room.available}" class="badge bg-danger">Занята</span>
-                            </div>
+                        <div th:with="roomType=${roomTypeMap[room.roomTypeId]}">
 
-                            <div class="mt-3">
-                                <a th:if="${room.available}"
-                                   th:href="@{'/rooms/' + ${room.id}}"
-                                   class="btn btn-custom-warning">Подробнее о номере</a>
+                            <img th:if="${roomType != null and roomType.imagesUrl != null and !roomType.imagesUrl.isEmpty()}"
+                                 th:src="@{${roomType.imagesUrl[0]}}"
+                                 class="card-img-top"
+                                 alt="Room image"
+                                 style="height: 220px; object-fit: cover;">
+                            <img th:unless="${roomType != null and roomType.imagesUrl != null and !roomType.imagesUrl.isEmpty()}"
+                                 src="https://picsum.photos/600/400?random=1"
+                                 class="card-img-top"
+                                 alt="No room image available"
+                                 style="height: 220px; object-fit: cover;">
 
-                                <button th:if="${!room.available}" class="btn btn-custom-secondary" disabled>Недоступна</button>
+                            <div class="card-body d-flex flex-column">
+                                <div class="flex-grow-1">
+                                    <h5 class="fw-semibold text-dark" th:text="'Room ' + ${room.roomNumber}">Room 101</h5>
+
+                                    <div th:if="${roomType != null}">
+                                        <p class="text-muted small mb-2" th:text="${roomType.name}">Standard Room</p>
+                                        <p class="text-muted small mb-3" th:text="${#strings.abbreviate(roomType.description, 100)}">Room description</p>
+                                        <p class="fw-bold text-warning fs-5 mb-2" th:text="${roomType.pricePerNight} + ' ₸/night'">5000 ₸/night</p>
+                                        <p class="text-muted small mb-2" th:text="'Capacity: ' + ${roomType.capacity} + ' guests'">Capacity: 2 guests</p>
+                                        <p class="text-muted small mb-2" th:text="'Beds: ' + ${roomType.bedsCount}">Beds: 2</p>
+                                    </div>
+                                    <div th:unless="${roomType != null}">
+                                        <p class="text-muted small mb-2">Room Type Not Specified</p>
+                                        <p class="text-muted small mb-3">No description available</p>
+                                        <p class="fw-bold text-warning fs-5 mb-2">Price not available</p>
+                                        <p class="text-muted small mb-2">Capacity: Not specified</p>
+                                    </div>
+
+                                    <p class="text-muted small mb-2"> Status:
+                                        <span th:if="${room.available}" class="badge bg-success">Available</span>
+                                        <span th:if="${!room.available}" class="badge bg-danger">Occupied</span>
+                                    </p>
+                                </div>
+
+                                <div class="mt-3">
+                                    <a th:if="${room.available}"
+                                       th:href="@{'/rooms/' + ${room.id}}"
+                                       class="btn btn-custom-warning">View Room Details</a>
+                                    <button th:if="${!room.available}" class="btn btn-custom-secondary" disabled>Not Available</button>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
+            </div>
+
+            <div th:if="${rooms == null or rooms.isEmpty()}" class="text-center py-5">
+                <h4 class="text-muted">No rooms available at the moment</h4>
+                <p class="text-muted">Please check back later for available accommodations.</p>
             </div>
         </section>
     </div>

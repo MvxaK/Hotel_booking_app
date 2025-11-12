@@ -2,7 +2,7 @@ package org.cook.booking_system.controller.houseContoller;
 
 import lombok.RequiredArgsConstructor;
 import org.cook.booking_system.model.House;
-import org.cook.booking_system.service.HouseService;
+import org.cook.booking_system.service.implementation.HouseServiceImpl;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -14,14 +14,14 @@ import java.util.List;
 @RequiredArgsConstructor
 public class HouseViewController {
 
-    private final HouseService houseService;
+    private final HouseServiceImpl houseService;
 
-    @GetMapping("/")
+    @GetMapping
     public String showAllHouses(Model model){
         List<House> houses = houseService.getAllHouses();
         model.addAttribute("houses", houses);
 
-        return "";
+        return "house/houses";
     }
 
     @GetMapping("/{id}")
@@ -38,4 +38,11 @@ public class HouseViewController {
         return "forms/create-house";
     }
 
+    @GetMapping("/{id}/update")
+    public String showHouseUpdateForm(@PathVariable Long id, Model model){
+        House house = houseService.getHouseById(id);
+        model.addAttribute("house", house);
+
+        return "forms/update-house";
+    }
 }

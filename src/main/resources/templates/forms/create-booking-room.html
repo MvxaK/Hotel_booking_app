@@ -79,38 +79,124 @@
             const totalPriceEl = document.getElementById("totalPrice");
             const form = document.getElementById("roomBookingForm");
             const submitBtn = document.getElementById("submitBtn");
+
             let selectedRoom = null;
+            let selectedRoomType = null;
+            let allRooms = [];
 
             const token = document.querySelector('meta[name="_csrf"]').getAttribute('content');
             const header = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
 
-            try {
-                const response = await fetch("/api/hotels");
-                if (response.ok) {
-                    const hotels = await response.json();
-                    hotelSelect.innerHTML = '<option value="">Select a hotel</option>';
-                    hotels.forEach(hotel => {
-                        const opt = document.createElement("option");
-                        opt.value = hotel.id;
-                        opt.textContent = `${hotel.name} — ${hotel.address}`;
-                        hotelSelect.appendChild(opt);
-                    });
-                } else {
-                    hotelSelect.innerHTML = '<option>Error loading hotels</option>';
+            const urlParams = new URLSearchParams(window.location.search);
+            const preSelectedRoomId = urlParams.get('roomId');
+
+            async function loadHotels() {
+                try {
+                    const response = await fetch("/api/hotels");
+                    if (response.ok) {
+                        const hotels = await response.json();
+                        hotelSelect.innerHTML = '<option value="">Select a hotel</option>';
+                        hotels.forEach(hotel => {
+                            const opt = document.createElement("option");
+                            opt.value = hotel.id;
+                            opt.textContent = `${hotel.name} — ${hotel.address}`;
+                            hotelSelect.appendChild(opt);
+                        });
+
+                        if (preSelectedRoomId) {
+                            findAndSelectRoom(preSelectedRoomId);
+                        }
+                    }
+                } catch (err) {
+                    hotelSelect.innerHTML = '<option>Server error</option>';
                 }
-            } catch (err) {
-                console.error("Error loading hotels:", err);
-                hotelSelect.innerHTML = '<option>Server error</option>';
             }
 
-            function updateRoomDetails(room) {
-                if (room && room.roomType) {
+            async function findAndSelectRoom(roomId) {
+                try {
+                    const roomResponse = await fetch(`/api/rooms/${roomId}`);
+                    if (roomResponse.ok) {
+                        const room = await roomResponse.json();
+
+                        const hotelResponse = await fetch(`/api/hotels/${room.hotelId}`);
+                        if (hotelResponse.ok) {
+                            const hotel = await hotelResponse.json();
+                            hotelSelect.value = hotel.id;
+
+                            await loadRoomsForHotel(hotel.id, roomId);
+                        }
+                    }
+                } catch (err) {
+                    console.error("Error finding room:", err);
+                }
+            }
+
+            async function loadRoomsForHotel(hotelId, preSelectedRoomId = null) {
+                try {
+                    const response = await fetch(`/api/hotels/${hotelId}/rooms`);
+                    if (response.ok) {
+                        const rooms = await response.json();
+                        allRooms = rooms;
+
+                        roomSelect.disabled = false;
+                        roomSelect.innerHTML = '<option value="">Select a room</option>';
+
+                        rooms.forEach(room => {
+                            const opt = document.createElement("option");
+                            opt.value = room.id;
+                            opt.textContent = `Room ${room.roomNumber}`;
+                            opt.disabled = !room.available;
+
+                            if (preSelectedRoomId && room.id == preSelectedRoomId) {
+                                opt.selected = true;
+                                setTimeout(() => loadRoomDetails(room.id), 100);
+                            }
+
+                            roomSelect.appendChild(opt);
+                        });
+                    }
+                } catch (err) {
+                    roomSelect.innerHTML = '<option>Server error</option>';
+                }
+            }
+
+            async function loadRoomType(roomTypeId) {
+                try {
+                    const response = await fetch(`/api/room-types/${roomTypeId}`);
+                    if (response.ok) return await response.json();
+                } catch (err) {
+                    return null;
+                }
+            }
+
+            async function loadRoomDetails(roomId) {
+                try {
+                    const roomResponse = await fetch(`/api/rooms/${roomId}`);
+                    if (roomResponse.ok) {
+                        selectedRoom = await roomResponse.json();
+
+                        if (selectedRoom.roomTypeId) {
+                            selectedRoomType = await loadRoomType(selectedRoom.roomTypeId);
+                        } else {
+                            selectedRoomType = null;
+                        }
+
+                        updateRoomDetails(selectedRoom, selectedRoomType);
+                        calculateTotal();
+                    }
+                } catch (err) {
+                    console.error("Error loading room details:", err);
+                }
+            }
+
+            function updateRoomDetails(room, roomType) {
+                if (room && roomType) {
                     document.getElementById("roomNumber").textContent = room.roomNumber;
-                    document.getElementById("roomType").textContent = room.roomType.name;
-                    document.getElementById("roomCapacity").textContent = room.roomType.capacity;
-                    document.getElementById("roomBeds").textContent = room.roomType.bedsCount;
-                    document.getElementById("roomPrice").textContent = room.roomType.pricePerNight + ' ₸';
-                    document.getElementById("roomDescription").textContent = room.roomType.description || 'No description available';
+                    document.getElementById("roomType").textContent = roomType.name;
+                    document.getElementById("roomCapacity").textContent = roomType.capacity;
+                    document.getElementById("roomBeds").textContent = roomType.bedsCount;
+                    document.getElementById("roomPrice").textContent = roomType.pricePerNight + ' ₸';
+                    document.getElementById("roomDescription").textContent = roomType.description || 'No description available';
 
                     const statusBadge = document.getElementById("roomStatus");
                     statusBadge.textContent = room.available ? 'Available' : 'Occupied';
@@ -127,9 +213,10 @@
             function calculateTotal() {
                 const checkIn = new Date(document.getElementById("checkInDate").value);
                 const checkOut = new Date(document.getElementById("checkOutDate").value);
-                if (selectedRoom && selectedRoom.roomType && checkOut > checkIn) {
+
+                if (selectedRoom && selectedRoomType && checkOut > checkIn) {
                     const days = Math.ceil((checkOut - checkIn) / (1000 * 3600 * 24));
-                    const total = days * selectedRoom.roomType.pricePerNight;
+                    const total = days * selectedRoomType.pricePerNight;
                     totalPriceEl.textContent = `${total.toFixed(2)} ₸`;
                 } else {
                     totalPriceEl.textContent = "0 ₸";
@@ -142,51 +229,24 @@
                     roomSelect.disabled = true;
                     roomSelect.innerHTML = '<option value="">First select a hotel</option>';
                     selectedRoom = null;
-                    updateRoomDetails(null);
+                    selectedRoomType = null;
+                    updateRoomDetails(null, null);
                     return;
                 }
 
-                try {
-                    const response = await fetch(`/api/hotels/${hotelId}/rooms`);
-                    if (response.ok) {
-                        const rooms = await response.json();
-                        roomSelect.disabled = false;
-                        roomSelect.innerHTML = '<option value="">Select a room</option>';
-                        rooms.forEach(room => {
-                            const opt = document.createElement("option");
-                            opt.value = room.id;
-                            const status = room.available ? 'Yes' : 'No';
-                            opt.textContent = `${status} Room ${room.roomNumber} — ${room.roomType?.pricePerNight || 0} ₸/night`;
-                            opt.disabled = !room.available;
-                            roomSelect.appendChild(opt);
-                        });
-                    } else {
-                        roomSelect.innerHTML = '<option>Error loading rooms</option>';
-                    }
-                } catch (err) {
-                    console.error("Error loading rooms:", err);
-                    roomSelect.innerHTML = '<option>Server error</option>';
-                }
+                await loadRoomsForHotel(hotelId);
             });
 
             roomSelect.addEventListener("change", async () => {
-                const id = roomSelect.value;
-                if (!id) {
+                const roomId = roomSelect.value;
+                if (!roomId) {
                     selectedRoom = null;
-                    updateRoomDetails(null);
+                    selectedRoomType = null;
+                    updateRoomDetails(null, null);
                     return;
                 }
 
-                try {
-                    const resp = await fetch(`/api/rooms/${id}`);
-                    if (resp.ok) {
-                        selectedRoom = await resp.json();
-                        updateRoomDetails(selectedRoom);
-                        calculateTotal();
-                    }
-                } catch (err) {
-                    console.error("Error loading room details:", err);
-                }
+                await loadRoomDetails(roomId);
             });
 
             document.getElementById("checkInDate").addEventListener("change", calculateTotal);
@@ -218,12 +278,10 @@
                 }
 
                 const days = Math.ceil((new Date(checkOut) - new Date(checkIn)) / (1000 * 3600 * 24));
-                const total = days * selectedRoom.roomType.pricePerNight;
+                const pricePerNight = selectedRoomType?.pricePerNight || 0;
+                const total = days * pricePerNight;
 
-                if (!confirm(`Confirm Booking:\nRoom: ${selectedRoom.roomNumber}\n` +
-                    `Type: ${selectedRoom.roomType.name}\n` +
-                    `Check-in: ${checkIn}\nCheck-out: ${checkOut}\n` +
-                    `Duration: ${days} days\nTotal: ${total.toFixed(2)} ₸`)) return;
+                if (!confirm(`Confirm Booking:\nRoom: ${selectedRoom.roomNumber}\nType: ${selectedRoomType?.name || 'Unknown'}\nCheck-in: ${checkIn}\nCheck-out: ${checkOut}\nDuration: ${days} days\nTotal: ${total.toFixed(2)} ₸`)) return;
 
                 submitBtn.disabled = true;
                 submitBtn.textContent = "Booking...";
@@ -235,7 +293,7 @@
                 };
 
                 try {
-                    const response = await fetch("/api/booking/room", {
+                    const response = await fetch("/api/bookings/rooms", {
                         method: "POST",
                         headers: {
                             "Content-Type": "application/json",
@@ -245,27 +303,27 @@
                     });
 
                     if (response.ok) {
-                        const booking = await response.json();
+                        await response.json();
                         alert("Booking created successfully!");
                         form.reset();
                         totalPriceEl.textContent = "0 ₸";
                         selectedRoom = null;
-                        updateRoomDetails(null);
+                        selectedRoomType = null;
+                        updateRoomDetails(null, null);
                         roomSelect.disabled = true;
-                    } else if (response.status === 403) {
-                        alert("Error 403: Access denied or session expired");
                     } else {
                         const errorText = await response.text();
                         alert("Server error: " + errorText);
                     }
                 } catch (err) {
-                    console.error("Booking error:", err);
                     alert("Server connection error");
                 } finally {
                     submitBtn.disabled = false;
                     submitBtn.textContent = "Book Now";
                 }
             });
+
+            loadHotels();
         });
     }
 </script>

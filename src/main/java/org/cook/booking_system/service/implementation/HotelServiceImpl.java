@@ -11,7 +11,7 @@ import org.cook.booking_system.model.Hotel;
 import org.cook.booking_system.model.Room;
 import org.cook.booking_system.model.RoomType;
 import org.cook.booking_system.repository.HotelRepository;
-import org.cook.booking_system.service.HotelService;
+import org.cook.booking_system.service.service_interface.HotelService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -21,7 +21,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class HotelServiceImpl {
+public class HotelServiceImpl implements HotelService{
 
     private final HotelRepository hotelRepository;
     private final HotelMapper hotelMapper;

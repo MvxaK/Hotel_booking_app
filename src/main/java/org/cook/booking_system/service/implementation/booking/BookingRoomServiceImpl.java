@@ -9,12 +9,13 @@ import org.cook.booking_system.entity.booking.BookingRoomEntity;
 import org.cook.booking_system.mapper.booking.BookingRoomMapper;
 import org.cook.booking_system.model.Status;
 import org.cook.booking_system.model.booking.BookingRoom;
+import org.cook.booking_system.model.booking.BookingRoomDetails;
 import org.cook.booking_system.model.booking.BookingRoomRequest;
 import org.cook.booking_system.repository.RoomRepository;
 import org.cook.booking_system.repository.RoomTypeRepository;
 import org.cook.booking_system.repository.UserRepository;
 import org.cook.booking_system.repository.booking.BookingRoomRepository;
-import org.cook.booking_system.service.booking.BookingRoomService;
+import org.cook.booking_system.service.service_interface.booking.BookingRoomService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -27,13 +28,14 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class BookingRoomServiceImpl {
+public class BookingRoomServiceImpl implements BookingRoomService{
+
     private final BookingRoomRepository bookingRoomRepository;
     private final BookingRoomMapper bookingRoomMapper;
     private final UserRepository userRepository;
     private final RoomTypeRepository roomTypeRepository;
     private final RoomRepository roomRepository;
-    private final Logger logger = LoggerFactory.getLogger(BookingRoomService.class);
+    private final Logger logger = LoggerFactory.getLogger(BookingRoomServiceImpl.class);
 
     @Transactional
     public BookingRoom createBookingForUser(Long userId, BookingRoomRequest bookingRequest) {
@@ -77,7 +79,13 @@ public class BookingRoomServiceImpl {
     @Transactional(readOnly = true)
     public List<BookingRoom> getAllBookingByUserId(Long userId) {
         return bookingRoomRepository.findByUserId(userId).stream()
-                .map(bookingRoomMapper::toModel).toList();
+                .map(bookingRoomMapper::toModel)
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<BookingRoomDetails> getAllBookingWithDetailsByUserId(Long userId){
+        return bookingRoomRepository.findBookingsWithDetailsByUserId(userId);
     }
 
     @Transactional

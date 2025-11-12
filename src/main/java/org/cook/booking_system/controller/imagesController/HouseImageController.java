@@ -2,7 +2,7 @@ package org.cook.booking_system.controller.imagesController;
 
 import lombok.RequiredArgsConstructor;
 import org.cook.booking_system.model.images.HouseImage;
-import org.cook.booking_system.service.images.HouseImageService;
+import org.cook.booking_system.service.implementation.images.HouseImageServiceImpl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,7 +13,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class HouseImageController {
 
-    private final HouseImageService houseImageService;
+    private final HouseImageServiceImpl houseImageService;
 
     @PostMapping
     public ResponseEntity<HouseImage> addImage(@PathVariable Long houseId, @RequestParam String imageUrl) {

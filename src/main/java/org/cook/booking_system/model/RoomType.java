@@ -24,10 +24,8 @@ public class RoomType {
     private BigDecimal pricePerNight;
     @NotNull
     private int bedsCount;
-
     @NotNull
     private Long hotelId;
     private List<Long> roomIds;
-
     private List<String> imagesUrl;
 }

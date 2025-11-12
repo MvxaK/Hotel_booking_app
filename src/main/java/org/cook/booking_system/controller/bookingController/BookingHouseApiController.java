@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.cook.booking_system.model.User;
 import org.cook.booking_system.model.booking.BookingHouse;
 import org.cook.booking_system.model.booking.BookingHouseRequest;
-import org.cook.booking_system.service.booking.BookingHouseService;
-import org.cook.booking_system.service.UserService;
+import org.cook.booking_system.service.implementation.UserServiceImpl;
+import org.cook.booking_system.service.implementation.booking.BookingHouseServiceImpl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,12 +15,12 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/booking/house")
+@RequestMapping("/api/bookings/houses")
 @RequiredArgsConstructor
 public class BookingHouseApiController {
 
-    private final BookingHouseService bookingHouseService;
-    private final UserService userService;
+    private final BookingHouseServiceImpl bookingHouseService;
+    private final UserServiceImpl userService;
 
     @GetMapping("/{id}")
     public ResponseEntity<BookingHouse> getBookingById(@PathVariable Long id) {
@@ -29,7 +29,7 @@ public class BookingHouseApiController {
         return ResponseEntity.ok(booking);
     }
 
-    @GetMapping("/user/{userId}")
+    @GetMapping("/users/{userId}")
     public ResponseEntity<List<BookingHouse>> getAllBookingsByUserId(@PathVariable Long userId) {
         List<BookingHouse> bookings = bookingHouseService.getAllBookingByUserId(userId);
 
@@ -42,7 +42,7 @@ public class BookingHouseApiController {
         User user = userService.getUserName(userDetails.getUsername());
 
         BookingHouse booking = bookingHouseService.createBookingForUser(user.getId(), bookingRequest);
-        URI location = URI.create("/api/booking/house/" + booking.getId());
+        URI location = URI.create("/api/bookings/houses/" + booking.getId());
 
         return ResponseEntity.created(location).body(booking);
     }

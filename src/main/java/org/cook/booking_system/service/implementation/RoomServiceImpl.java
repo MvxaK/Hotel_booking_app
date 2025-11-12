@@ -9,7 +9,7 @@ import org.cook.booking_system.mapper.RoomMapper;
 import org.cook.booking_system.model.Room;
 import org.cook.booking_system.repository.HotelRepository;
 import org.cook.booking_system.repository.RoomRepository;
-import org.cook.booking_system.service.RoomService;
+import org.cook.booking_system.service.service_interface.RoomService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -19,7 +19,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class RoomServiceImpl {
+public class RoomServiceImpl implements RoomService{
     private final RoomRepository roomRepository;
     private final HotelRepository hotelRepository;
     private final RoomMapper roomMapper;

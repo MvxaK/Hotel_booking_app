@@ -1,4 +1,4 @@
-package org.cook.booking_system.service.images;
+package org.cook.booking_system.service.implementation.images;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -7,6 +7,7 @@ import org.cook.booking_system.mapper.images.RoomTypeImageMapper;
 import org.cook.booking_system.model.images.RoomTypeImage;
 import org.cook.booking_system.repository.RoomTypeRepository;
 import org.cook.booking_system.repository.images.RoomTypeImageRepository;
+import org.cook.booking_system.service.service_interface.images.RoomTypeImageService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,11 +15,11 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class RoomTypeImageService {
+public class RoomTypeImageServiceImpl implements RoomTypeImageService {
 
-    private final RoomTypeImageRepository repository;
+    private final RoomTypeImageRepository roomTypeImageRepository;
     private final RoomTypeRepository roomTypeRepository;
-    private final RoomTypeImageMapper mapper;
+    private final RoomTypeImageMapper roomTypeImageMapper;
 
     @Transactional
     public RoomTypeImage addImage(Long roomTypeId, String imageUrl) {
@@ -29,19 +30,19 @@ public class RoomTypeImageService {
         entity.setRoomType(roomType);
         entity.setUrl(imageUrl);
 
-        return mapper.toModel(repository.save(entity));
+        return roomTypeImageMapper.toModel(roomTypeImageRepository.save(entity));
     }
 
     @Transactional(readOnly = true)
     public List<RoomTypeImage> getImages(Long roomTypeId) {
-        return repository.findByRoomTypeId(roomTypeId)
+        return roomTypeImageRepository.findByRoomTypeId(roomTypeId)
                 .stream()
-                .map(mapper::toModel)
+                .map(roomTypeImageMapper::toModel)
                 .toList();
     }
 
     @Transactional
     public void deleteImage(Long id) {
-        repository.deleteById(id);
+        roomTypeImageRepository.deleteById(id);
     }
 }

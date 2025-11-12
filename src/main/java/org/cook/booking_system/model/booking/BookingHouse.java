@@ -19,14 +19,15 @@ public class BookingHouse {
 
     private Long id;
     @NotNull
-    private User user;
+    private Long userId;
     @NotNull
-    private House house;
+    private Long houseId;
     @NotNull @FutureOrPresent
     private LocalDate checkInDate;
     @NotNull @FutureOrPresent
     private LocalDate checkOutDate;
-
+    @NotNull
     private BigDecimal totalPrice;
+    @NotNull
     private Status status;
 }

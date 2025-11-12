@@ -12,14 +12,19 @@
 <body>
 <main layout:fragment="content">
     <div class="container py-4">
-        <h1 class="text-center mb-5 fw-bold text-dark">Наши отели</h1>
+        <h1 class="text-center mb-5 fw-bold text-dark">Hotels</h1>
 
         <div class="row g-4">
             <div th:each="hotel : ${hotels}" class="col-12 col-sm-6 col-lg-4">
                 <div class="card hotel-card-custom h-100">
-                    <img th:if="${hotel.images != null and !hotel.images.isEmpty()}"
-                         th:src="@{${hotel.images[0].url}}"
+                    <img th:if="${hotel.imagesUrl != null and !hotel.imagesUrl.isEmpty()}"
+                         th:src="@{${hotel.imagesUrl[0]}}"
                          alt="Hotel image"
+                         class="card-img-top">
+
+                    <img th:unless="${hotel.imagesUrl != null and !hotel.imagesUrl.isEmpty()}"
+                         src="https://picsum.photos/600/400?random=1"
+                         alt="No image available"
                          class="card-img-top">
 
                     <div class="card-body d-flex flex-column">
@@ -29,7 +34,7 @@
 
                         <div class="mt-auto pt-3">
                             <a th:href="@{'/hotels/' + ${hotel.id}}" class="btn btn-custom-warning">
-                                Подробнее
+                                Details
                             </a>
                         </div>
                     </div>

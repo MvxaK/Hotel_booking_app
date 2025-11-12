@@ -8,11 +8,12 @@ import org.cook.booking_system.entity.booking.BookingHouseEntity;
 import org.cook.booking_system.mapper.booking.BookingHouseMapper;
 import org.cook.booking_system.model.Status;
 import org.cook.booking_system.model.booking.BookingHouse;
+import org.cook.booking_system.model.booking.BookingHouseDetails;
 import org.cook.booking_system.model.booking.BookingHouseRequest;
 import org.cook.booking_system.repository.HouseRepository;
 import org.cook.booking_system.repository.UserRepository;
 import org.cook.booking_system.repository.booking.BookingHouseRepository;
-import org.cook.booking_system.service.booking.BookingHouseService;
+import org.cook.booking_system.service.service_interface.booking.BookingHouseService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -25,12 +26,13 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class BookingHouseServiceImpl {
+public class BookingHouseServiceImpl implements BookingHouseService{
+
     private final BookingHouseRepository bookingHouseRepository;
     private final BookingHouseMapper bookingHouseMapper;
     private final UserRepository userRepository;
     private final HouseRepository houseRepository;
-    private final Logger logger = LoggerFactory.getLogger(BookingHouseService.class);
+    private final Logger logger = LoggerFactory.getLogger(BookingHouseServiceImpl.class);
 
     @Transactional
     public BookingHouse createBookingForUser(Long userId, BookingHouseRequest bookingRequest) {
@@ -68,6 +70,11 @@ public class BookingHouseServiceImpl {
     public List<BookingHouse> getAllBookingByUserId(Long userId) {
         return bookingHouseRepository.findByUserId(userId).stream()
                 .map(bookingHouseMapper::toModel).toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<BookingHouseDetails> getAllBookingWithDetailsByUserId(Long userId){
+        return bookingHouseRepository.findBookingDetailsByUserId(userId);
     }
 
     @Transactional

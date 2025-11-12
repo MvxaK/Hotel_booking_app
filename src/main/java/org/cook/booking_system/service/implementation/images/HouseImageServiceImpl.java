@@ -8,6 +8,7 @@ import org.cook.booking_system.mapper.images.HouseImageMapper;
 import org.cook.booking_system.model.images.HouseImage;
 import org.cook.booking_system.repository.HouseRepository;
 import org.cook.booking_system.repository.images.HouseImageRepository;
+import org.cook.booking_system.service.service_interface.images.HouseImageService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,7 +16,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class HouseImageServiceImpl {
+public class HouseImageServiceImpl implements HouseImageService{
     private final HouseImageRepository houseImageRepository;
     private final HouseRepository houseRepository;
     private final HouseImageMapper houseImageMapper;

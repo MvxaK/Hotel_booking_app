@@ -3,7 +3,7 @@ package org.cook.booking_system.controller.userController;
 import lombok.RequiredArgsConstructor;
 import org.cook.booking_system.model.User;
 import org.cook.booking_system.security.auth.RegisterRequest;
-import org.cook.booking_system.service.UserService;
+import org.cook.booking_system.service.implementation.UserServiceImpl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,7 +14,7 @@ import java.net.URI;
 @RequiredArgsConstructor
 public class UserApiController {
 
-    private final UserService userService;
+    private final UserServiceImpl userService;
 
     @GetMapping("/{id}")
     public ResponseEntity<User> getUserById(@PathVariable Long id){
@@ -31,9 +31,9 @@ public class UserApiController {
 
         return ResponseEntity.created(location)
                 .body(user);
-    }
+    } 
 
-    @PutMapping("/{id}/update")
+    @PutMapping("/{id}/update-info")
     public ResponseEntity<User> updateUserInfo(@PathVariable Long id, @RequestBody User userToUpdate, @RequestParam String password){
         User user = userService.updateUserInfo(id, userToUpdate, password);
 
@@ -41,8 +41,8 @@ public class UserApiController {
                 .body(user);
     }
 
-    @PatchMapping("/{id}/update")
-    public ResponseEntity<Void> updateUserPassword(@PathVariable Long id, @RequestParam String newPassword, String password){
+    @PatchMapping("/{id}/update-password")
+    public ResponseEntity<Void> updateUserPassword(@PathVariable Long id, @RequestParam String newPassword, @RequestParam String password){
         userService.updateUserPassword(id, newPassword, password);
 
         return ResponseEntity.noContent()

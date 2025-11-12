@@ -74,6 +74,9 @@
             const token = document.querySelector('meta[name="_csrf"]').getAttribute('content');
             const header = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
 
+            const urlParams = new URLSearchParams(window.location.search);
+            const preSelectedHouseId = urlParams.get('houseId');
+
             try {
                 const response = await fetch("/api/houses");
                 if (response.ok) {
@@ -83,6 +86,12 @@
                         const opt = document.createElement("option");
                         opt.value = house.id;
                         opt.textContent = `${house.name} — ${house.location} (${house.pricePerNight} ₸/night)`;
+
+                        if (preSelectedHouseId && house.id == preSelectedHouseId) {
+                            opt.selected = true;
+                            setTimeout(() => loadHouseDetails(house.id), 100);
+                        }
+
                         houseSelect.appendChild(opt);
                     });
                 } else {
@@ -108,6 +117,19 @@
                 }
             }
 
+            async function loadHouseDetails(houseId) {
+                try {
+                    const resp = await fetch(`/api/houses/${houseId}`);
+                    if (resp.ok) {
+                        selectedHouse = await resp.json();
+                        updateHouseDetails(selectedHouse);
+                        calculateTotal();
+                    }
+                } catch (err) {
+                    console.error("Error loading house details:", err);
+                }
+            }
+
             function calculateTotal() {
                 const checkIn = new Date(document.getElementById("checkInDate").value);
                 const checkOut = new Date(document.getElementById("checkOutDate").value);
@@ -127,17 +149,7 @@
                     updateHouseDetails(null);
                     return;
                 }
-
-                try {
-                    const resp = await fetch(`/api/houses/${id}`);
-                    if (resp.ok) {
-                        selectedHouse = await resp.json();
-                        updateHouseDetails(selectedHouse);
-                        calculateTotal();
-                    }
-                } catch (err) {
-                    console.error("Error loading house details:", err);
-                }
+                await loadHouseDetails(id);
             });
 
             document.getElementById("checkInDate").addEventListener("change", calculateTotal);
@@ -181,7 +193,7 @@
                 };
 
                 try {
-                    const response = await fetch("/api/booking/house", {
+                    const response = await fetch("/api/bookings/houses", {
                         method: "POST",
                         headers: {
                             "Content-Type": "application/json",

@@ -57,9 +57,9 @@
 
         const data = {
             roomNumber: document.getElementById('roomNumber').value,
-            roomType: document.getElementById('roomType').value,
+            roomTypeId: parseInt(document.getElementById('roomType').value), // Исправлено на roomTypeId
             available: document.getElementById('available').value === 'true',
-            hotel: { id: parseInt(document.getElementById('hotelId').value) }
+            hotelId: parseInt(document.getElementById('hotelId').value) // Исправлено на hotelId
         };
 
         try {
@@ -75,7 +75,6 @@
             if (response.ok) {
                 alert('Room successfully added!');
                 e.target.reset();
-                // Reset room types dropdown
                 document.getElementById('roomType').innerHTML = '<option value="">First select a hotel</option>';
                 document.getElementById('roomType').disabled = true;
             } else {
@@ -117,7 +116,7 @@
                 roomTypeSelect.innerHTML = '<option value="">Select room type...</option>';
                 roomTypes.forEach(roomType => {
                     const opt = document.createElement('option');
-                    opt.value = roomType;
+                    opt.value = roomType.id;
                     opt.textContent = formatRoomType(roomType);
                     roomTypeSelect.appendChild(opt);
                 });
@@ -132,7 +131,15 @@
     }
 
     function formatRoomType(roomType) {
-        return roomType.charAt(0) + roomType.slice(1).toLowerCase().replace('_', ' ');
+        if (!roomType)
+            return 'Unknown Type';
+
+        let formattedName = roomType.name || 'Unnamed';
+        if (typeof formattedName === 'string') {
+            formattedName = formattedName.charAt(0).toUpperCase() + formattedName.slice(1).toLowerCase();
+        }
+
+        return `${formattedName} - ${roomType.pricePerNight || '0'} ₸`;
     }
 
     document.getElementById('hotelId').addEventListener('change', function() {
@@ -145,7 +152,6 @@
         }
     });
 
-    // Initialize on page load
     window.addEventListener('DOMContentLoaded', loadHotels);
 </script>
 </body>

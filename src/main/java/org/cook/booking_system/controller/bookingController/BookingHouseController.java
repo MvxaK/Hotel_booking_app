@@ -2,7 +2,7 @@ package org.cook.booking_system.controller.bookingController;
 
 import lombok.RequiredArgsConstructor;
 import org.cook.booking_system.model.booking.BookingHouse;
-import org.cook.booking_system.service.booking.BookingHouseService;
+import org.cook.booking_system.service.implementation.booking.BookingHouseServiceImpl;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,11 +10,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-@RequestMapping("/booking/house")
+@RequestMapping("/bookings/houses")
 @RequiredArgsConstructor
 public class BookingHouseController {
 
-    private final BookingHouseService bookingHouseService;
+    private final BookingHouseServiceImpl bookingHouseService;
 
     @GetMapping("/{id}")
     public String showBookingDetails(@PathVariable Long id, Model model){
@@ -24,7 +24,7 @@ public class BookingHouseController {
         return "";
     }
 
-    @GetMapping("/new_booking_house")
+    @GetMapping("/new")
     public String showBookingHouseForm(){
 
         return "forms/create-booking-house";

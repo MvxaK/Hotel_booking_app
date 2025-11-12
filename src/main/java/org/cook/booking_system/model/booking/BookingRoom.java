@@ -17,14 +17,15 @@ public class BookingRoom {
 
     private Long id;
     @NotNull
-    private User user;
+    private Long userId;
     @NotNull
-    private RoomType roomType;
+    private Long roomTypeId;
     @NotNull @FutureOrPresent
     private LocalDate checkInDate;
     @NotNull @FutureOrPresent
     private LocalDate checkOutDate;
-
+    @NotNull
     private BigDecimal totalPrice;
+    @NotNull
     private Status status;
 }

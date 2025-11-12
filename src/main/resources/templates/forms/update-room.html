@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+<head>
+  <meta charset="UTF-8">
+  <title>Update Room</title>
+  <th:block layout:fragment="page-specific-head">
+    <link rel="stylesheet" href="/forms.css">
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}">
+  </th:block>
+</head>
+<body layout:fragment="content">
+
+<div class="container mt-5">
+  <div class="card shadow p-4 rounded">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h2 class="fw-bold mb-0">Update Room</h2>
+      <a th:href="@{'/rooms/' + ${room.id}}" class="btn btn-outline-secondary">
+        ← Back to room
+      </a>
+    </div>
+
+    <form id="roomForm">
+      <input type="hidden" id="roomId" th:value="${room.id}">
+
+      <div class="mb-3">
+        <label class="form-label">Room number</label>
+        <input type="text" class="form-control" id="roomNumber" th:value="${room.roomNumber}" required>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Hotel</label>
+        <input type="text" class="form-control" th:value="${hotel.name + ' - ' + hotel.address}" disabled>
+        <input type="hidden" id="hotelId" th:value="${hotel.id}">
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Room type</label>
+        <select class="form-select" id="roomType" required>
+          <option value="">Select room type...</option>
+        </select>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Available</label>
+        <select class="form-select" id="available">
+          <option value="true" th:selected="${room.available}">Yes</option>
+          <option value="false" th:selected="${!room.available}">No</option>
+        </select>
+      </div>
+
+      <div class="d-grid gap-2">
+        <button type="submit" class="btn btn-warning fw-semibold">Update Room</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const hotelId = document.getElementById('hotelId').value;
+        const currentRoomTypeId = /*[[${room.roomTypeId}]]*/ null;
+
+        if (hotelId) {
+            loadRoomTypes(hotelId, currentRoomTypeId);
+        }
+    });
+
+    document.getElementById('roomForm').addEventListener('submit', async function (e) {
+        e.preventDefault();
+
+        const roomId = document.getElementById('roomId').value;
+        const token = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+        const header = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+
+        const data = {
+            roomNumber: document.getElementById('roomNumber').value,
+            roomTypeId: parseInt(document.getElementById('roomType').value),
+            available: document.getElementById('available').value === 'true',
+            hotelId: parseInt(document.getElementById('hotelId').value)
+        };
+
+        try {
+            const response = await fetch(`/api/rooms/${roomId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    [header]: token
+                },
+                body: JSON.stringify(data)
+            });
+
+            if (response.ok) {
+                alert('Room updated successfully!');
+                window.location.href = '/rooms/' + roomId;
+            } else {
+                const text = await response.text();
+                alert('Error: ' + text);
+            }
+          } catch (err) {
+              alert('Server connection error');
+              console.error(err);
+          }
+      });
+
+    async function loadRoomTypes(hotelId, currentRoomTypeId) {
+        try {
+            const response = await fetch(`/api/hotels/${hotelId}/room-types`);
+            if (response.ok) {
+                const roomTypes = await response.json();
+                const roomTypeSelect = document.getElementById('roomType');
+
+                roomTypeSelect.innerHTML = '<option value="">Select room type...</option>';
+                roomTypes.forEach(roomType => {
+                    const opt = document.createElement('option');
+                    opt.value = roomType.id;
+                    opt.textContent = formatRoomType(roomType);
+                    if (roomType.id === currentRoomTypeId) {
+                      opt.selected = true;
+                    }
+                    roomTypeSelect.appendChild(opt);
+                });
+            } else {
+              document.getElementById('roomType').innerHTML = '<option value="">No room types available</option>';
+            }
+        } catch (err) {
+            console.error('Error loading room types:', err);
+            document.getElementById('roomType').innerHTML = '<option value="">Error loading room types</option>';
+        }
+    }
+
+    function formatRoomType(roomType) {
+        if (!roomType)
+            return 'Unknown Type';
+
+        let formattedName = roomType.name || 'Unnamed';
+        if (typeof formattedName === 'string') {
+            formattedName = formattedName.charAt(0).toUpperCase() + formattedName.slice(1).toLowerCase();
+        }
+
+        return `${formattedName} - ${roomType.pricePerNight || '0'} ₸ - Capacity: ${roomType.capacity || '0'}`;
+    }
+</script>
+</body>
+</html>

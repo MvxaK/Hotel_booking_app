@@ -2,9 +2,7 @@ package org.cook.booking_system.controller.houseContoller;
 
 import lombok.RequiredArgsConstructor;
 import org.cook.booking_system.model.House;
-import org.cook.booking_system.service.HouseService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import org.cook.booking_system.service.implementation.HouseServiceImpl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,7 +14,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class HouseApiController {
 
-    private final HouseService houseService;
+    private final HouseServiceImpl houseService;
 
     @GetMapping
     private ResponseEntity<List<House>> getAllHouses(){

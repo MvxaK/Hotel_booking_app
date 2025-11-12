@@ -2,7 +2,7 @@ package org.cook.booking_system.controller.imagesController;
 
 import lombok.RequiredArgsConstructor;
 import org.cook.booking_system.model.images.HotelImage;
-import org.cook.booking_system.service.images.HotelImageService;
+import org.cook.booking_system.service.implementation.images.HotelImageServiceImpl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,7 +14,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class HotelImageController {
 
-    private final HotelImageService hotelImageService;
+    private final HotelImageServiceImpl hotelImageService;
 
     @GetMapping
     public ResponseEntity<List<HotelImage>> getHotelImages(@PathVariable Long hotelId) {

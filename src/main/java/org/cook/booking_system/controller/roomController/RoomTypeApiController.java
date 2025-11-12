@@ -2,7 +2,7 @@ package org.cook.booking_system.controller.roomController;
 
 import lombok.RequiredArgsConstructor;
 import org.cook.booking_system.model.RoomType;
-import org.cook.booking_system.service.RoomTypeService;
+import org.cook.booking_system.service.implementation.RoomTypeServiceImpl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,15 +10,15 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/room-type")
+@RequestMapping("/api/room-types")
 @RequiredArgsConstructor
 public class RoomTypeApiController {
 
-    private final RoomTypeService roomTypeService;
+    private final RoomTypeServiceImpl roomTypeService;
 
     @GetMapping("/{id}")
     public ResponseEntity<RoomType> getRoomTypeById(@PathVariable Long id){
-        RoomType roomType = roomTypeService.getById(id);
+        RoomType roomType = roomTypeService.getRoomTypeById(id);
 
         return ResponseEntity.ok(roomType);
     }
@@ -34,7 +34,7 @@ public class RoomTypeApiController {
     public ResponseEntity<RoomType> createRoomType(RoomType roomTypeToCreate){
         RoomType roomType = roomTypeService.create(roomTypeToCreate);
 
-        URI location = URI.create("/api/room-type/" + roomType.getId());
+        URI location = URI.create("/api/room-types/" + roomType.getId());
 
         return ResponseEntity.created(location).build();
     }

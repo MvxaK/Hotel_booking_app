@@ -1,6 +1,7 @@
 package org.cook.booking_system.model;
 
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Null;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -21,6 +22,5 @@ public class Hotel {
     private String description;
     private List<Long> roomIds;
     private List<Long> roomTypeIds;
-
     private List<String> imagesUrl;
 }

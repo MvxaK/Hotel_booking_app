@@ -3,8 +3,8 @@ package org.cook.booking_system.controller;
 import lombok.RequiredArgsConstructor;
 import org.cook.booking_system.model.Hotel;
 import org.cook.booking_system.model.House;
-import org.cook.booking_system.service.HotelService;
-import org.cook.booking_system.service.HouseService;
+import org.cook.booking_system.service.implementation.HotelServiceImpl;
+import org.cook.booking_system.service.implementation.HouseServiceImpl;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 @RequiredArgsConstructor
 public class MainController {
 
-    private final HouseService houseService;
-    private final HotelService hotelService;
+    private final HouseServiceImpl houseService;
+    private final HotelServiceImpl hotelService;
 
     @GetMapping("/")
     public String index(Model model){

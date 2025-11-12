@@ -2,8 +2,7 @@ package org.cook.booking_system.controller.roomController;
 
 import lombok.RequiredArgsConstructor;
 import org.cook.booking_system.model.Room;
-import org.cook.booking_system.service.RoomService;
-import org.springframework.http.HttpStatus;
+import org.cook.booking_system.service.implementation.RoomServiceImpl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,7 +14,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class RoomApiController {
 
-    private final RoomService roomService;
+    private final RoomServiceImpl roomService;
 
     @GetMapping
     public ResponseEntity<List<Room>> getAllRooms(){

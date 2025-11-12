@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.cook.booking_system.model.User;
 import org.cook.booking_system.model.booking.BookingRoom;
 import org.cook.booking_system.model.booking.BookingRoomRequest;
-import org.cook.booking_system.service.booking.BookingRoomService;
-import org.cook.booking_system.service.UserService;
+import org.cook.booking_system.service.implementation.UserServiceImpl;
+import org.cook.booking_system.service.implementation.booking.BookingRoomServiceImpl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,12 +15,12 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/booking/room")
+@RequestMapping("/api/bookings/rooms")
 @RequiredArgsConstructor
 public class BookingRoomApiController {
 
-    private final BookingRoomService bookingRoomService;
-    private final UserService userService;
+    private final BookingRoomServiceImpl bookingRoomService;
+    private final UserServiceImpl userService;
 
     @GetMapping("/{id}")
     public ResponseEntity<BookingRoom> getBookingById(@PathVariable Long id) {
@@ -28,7 +28,7 @@ public class BookingRoomApiController {
         return ResponseEntity.ok(booking);
     }
 
-    @GetMapping("/user/{userId}")
+    @GetMapping("/users/{userId}")
     public ResponseEntity<List<BookingRoom>> getAllBookingsByUserId(@PathVariable Long userId) {
         List<BookingRoom> bookings = bookingRoomService.getAllBookingByUserId(userId);
 
@@ -41,7 +41,7 @@ public class BookingRoomApiController {
         User user = userService.getUserName(userDetails.getUsername());
 
         BookingRoom booking = bookingRoomService.createBookingForUser(user.getId(), bookingRequest);
-        URI location = URI.create("/api/booking/room/" + booking.getId());
+        URI location = URI.create("/api/bookings/rooms/" + booking.getId());
 
         return ResponseEntity.created(location).body(booking);
     }

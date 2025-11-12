@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Update House</title>
+    <th:block layout:fragment="page-specific-head">
+        <link rel="stylesheet" href="/forms.css">
+        <meta name="_csrf" th:content="${_csrf.token}">
+        <meta name="_csrf_header" th:content="${_csrf.headerName}">
+    </th:block>
+</head>
+<body layout:fragment="content">
+
+<div class="container mt-5">
+    <div class="card shadow p-4 rounded">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="fw-bold mb-0">Update House</h2>
+            <a th:href="@{'/houses/' + ${house.id}}" class="btn btn-outline-secondary">← Back to house</a>
+        </div>
+
+        <form id="houseForm">
+            <input type="hidden" id="houseId" th:value="${house.id}">
+
+            <div class="mb-3">
+                <label class="form-label">Name</label>
+                <input type="text" class="form-control" id="name" th:value="${house.name}" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Location</label>
+                <input type="text" class="form-control" id="location" th:value="${house.location}" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Capacity</label>
+                <input type="number" class="form-control" id="capacity" th:value="${house.capacity}" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Price per night</label>
+                <input type="number" step="0.01" class="form-control" id="pricePerNight" th:value="${house.pricePerNight}" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Number of rooms</label>
+                <input type="number" class="form-control" id="roomsNumber" th:value="${house.roomsNumber}" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Number of beds</label>
+                <input type="number" class="form-control" id="bedsCount" th:value="${house.bedsCount}" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Parking slots</label>
+                <input type="number" class="form-control" id="parkingSlots" th:value="${house.parkingSlots}" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Description</label>
+                <textarea class="form-control" id="description" rows="3" placeholder="Enter house description..." th:text="${house.description}"></textarea>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Available</label>
+                <select class="form-select" id="available">
+                    <option value="true" th:selected="${house.available}">Yes</option>
+                    <option value="false" th:selected="${!house.available}">No</option>
+                </select>
+            </div>
+
+            <div class="d-grid gap-2">
+                <button type="submit" class="btn btn-warning fw-semibold">Update House</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.getElementById('houseForm').addEventListener('submit', async function (e) {
+        e.preventDefault();
+
+        const houseId = document.getElementById('houseId').value;
+
+        const data = {
+            name: document.getElementById('name').value,
+            location: document.getElementById('location').value,
+            capacity: parseInt(document.getElementById('capacity').value),
+            pricePerNight: parseFloat(document.getElementById('pricePerNight').value),
+            roomsNumber: parseInt(document.getElementById('roomsNumber').value),
+            bedsCount: parseInt(document.getElementById('bedsCount').value),
+            parkingSlots: parseInt(document.getElementById('parkingSlots').value),
+            description: document.getElementById('description').value,
+            available: document.getElementById('available').value === 'true'
+        };
+
+        const token = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+        const header = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+
+        try {
+            const response = await fetch(`/api/houses/${houseId}`, {
+                method: 'PUT',
+                headers: {
+                  'Content-Type': 'application/json',
+                  [header]: token
+                },
+                body: JSON.stringify(data)
+            });
+
+            if (response.ok) {
+                alert('House updated successfully!');
+                window.location.href = '/houses/' + houseId;
+            } else {
+                const text = await response.text();
+                alert('Error: ' + text);
+            }
+        } catch (err) {
+            alert('Server connection error');
+            console.error(err);
+        }
+    });
+</script>
+</body>
+</html>

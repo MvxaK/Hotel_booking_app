@@ -4,9 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.cook.booking_system.model.Hotel;
 import org.cook.booking_system.model.Room;
 import org.cook.booking_system.model.RoomType;
-import org.cook.booking_system.service.HotelService;
+import org.cook.booking_system.service.implementation.HotelServiceImpl;
 import org.springframework.http.ResponseEntity;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -17,7 +16,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class HotelApiController {
 
-    private final HotelService hotelService;
+    private final HotelServiceImpl hotelService;
 
     @GetMapping
     public ResponseEntity<List<Hotel>> getAllHotels(){
@@ -71,4 +70,5 @@ public class HotelApiController {
         return ResponseEntity.noContent()
                 .build();
     }
+
 }

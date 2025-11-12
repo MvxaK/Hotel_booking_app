@@ -9,6 +9,7 @@ import org.cook.booking_system.mapper.RoomTypeMapper;
 import org.cook.booking_system.model.Room;
 import org.cook.booking_system.model.RoomType;
 import org.cook.booking_system.repository.RoomTypeRepository;
+import org.cook.booking_system.service.service_interface.RoomTypeService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,7 +17,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class RoomTypeServiceImpl {
+public class RoomTypeServiceImpl implements RoomTypeService {
     private final RoomTypeRepository roomTypeRepository;
     private final RoomTypeMapper roomTypeMapper;
     private final RoomMapper roomMapper;
@@ -30,7 +31,7 @@ public class RoomTypeServiceImpl {
     }
 
     @Transactional(readOnly = true)
-    public RoomType getById(Long id) {
+    public RoomType getRoomTypeById(Long id) {
         return roomTypeRepository.findById(id)
                 .map(roomTypeMapper::toModel)
                 .orElseThrow(() -> new EntityNotFoundException("RoomType not found -> " + id));

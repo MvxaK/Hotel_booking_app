@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+<head>
+    <title>User Profile</title>
+    <th:block layout:fragment="page-specific-head">
+        <link rel="stylesheet" href="/hotel-details.css">
+        <meta name="_csrf" th:content="${_csrf.token}">
+        <meta name="_csrf_header" th:content="${_csrf.headerName}">
+    </th:block>
+</head>
+
+<body class="hotel-details-page">
+<main layout:fragment="content">
+    <div class="container py-5">
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a th:href="@{/}">Home</a></li>
+                <li class="breadcrumb-item active" aria-current="page">My Profile</li>
+            </ol>
+        </nav>
+
+        <div class="row">
+            <div class="col-lg-4 mb-4">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body">
+                        <h3 class="fw-bold text-dark mb-4">Profile Information</h3>
+                        <div class="mb-4">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5 class="fw-semibold text-dark mb-0" th:text="${user.userName}">Username</h5>
+                                <span class="badge bg-warning text-dark">Active</span>
+                            </div>
+                            <div class="user-details">
+                                <div class="mb-3">
+                                    <strong class="text-dark d-block mb-1">Email:</strong>
+                                    <span class="text-muted" th:text="${user.email}">user@example.com</span>
+                                </div>
+                                <div class="mb-3">
+                                    <strong class="text-dark d-block mb-1">User ID:</strong>
+                                    <span class="text-muted" th:text="${user.id}">#12345</span>
+                                </div>
+                                <div class="mb-3">
+                                    <strong class="text-dark d-block mb-1">Role:</strong>
+                                    <span class="text-muted" th:each="role : ${user.roles}" th:text="${role}">ROLE_USER</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="quick-stats border-top pt-3">
+                            <div class="row text-center">
+                                <div class="col-6">
+                                    <div class="stat-item">
+                                        <h4 class="fw-bold text-warning mb-1" th:text="${bookingRooms != null ? bookingRooms.size() : 0}">5</h4>
+                                        <small class="text-muted">Room Bookings</small>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="stat-item">
+                                        <h4 class="fw-bold text-warning mb-1" th:text="${bookingHouses != null ? bookingHouses.size() : 0}">3</h4>
+                                        <small class="text-muted">House Bookings</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-8">
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-body">
+                        <h4 class="fw-bold text-dark mb-3">Account Management</h4>
+
+                        <div class="mb-4">
+                            <h5 class="fw-semibold text-warning mb-3">Update Profile Information</h5>
+                            <form id="updateProfileForm" class="row g-3">
+                                <div class="col-md-6">
+                                    <label for="newUsername" class="form-label">Username</label>
+                                    <input type="text" class="form-control" id="newUsername" th:value="${user.userName}" placeholder="New username" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="newEmail" class="form-label">Email</label>
+                                    <input type="email" class="form-control" id="newEmail" th:value="${user.email}" placeholder="New email address" required>
+                                </div>
+                                <div class="col-12">
+                                    <label for="profileCurrentPassword" class="form-label">Current Password</label>
+                                    <input type="password" class="form-control" id="profileCurrentPassword" placeholder="Current password" required>
+                                </div>
+                                <div class="col-12">
+                                    <button type="button" class="btn btn-outline-warning" id="updateProfileBtn">
+                                        Update Profile
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div>
+                            <h5 class="fw-semibold text-warning mb-3">Change Password</h5>
+                            <form id="updatePasswordForm" class="row g-3">
+                                <div class="col-md-6">
+                                    <label for="newPassword" class="form-label">New Password</label>
+                                    <input type="password" class="form-control" id="newPassword" placeholder="New password" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="passwordCurrentPassword" class="form-label">Current Password</label>
+                                    <input type="password" class="form-control" id="passwordCurrentPassword" placeholder="Current password" required>
+                                </div>
+                                <div class="col-12">
+                                    <button type="button" class="btn btn-outline-warning" id="updatePasswordBtn">
+                                        Change Password
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h4 class="fw-bold text-dark mb-0">Room Bookings</h4>
+                            <span class="badge bg-warning text-dark" th:text="${bookingRooms != null ? bookingRooms.size() : 0}">5</span>
+                        </div>
+                        <div th:if="${bookingRooms != null and !bookingRooms.isEmpty()}">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                    <tr>
+                                        <th>Room</th>
+                                        <th>Hotel</th>
+                                        <th>Type</th>
+                                        <th>Check-in</th>
+                                        <th>Check-out</th>
+                                        <th>Total</th>
+                                        <th>Status</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr th:each="booking : ${bookingRooms}">
+                                        <td th:text="${booking.roomNumber}"></td>
+                                        <td th:text="${booking.hotelName}"></td>
+                                        <td th:text="${booking.roomTypeName}"></td>
+                                        <td th:text="${#temporals.format(booking.checkInDate, 'dd/MM/yyyy')}"></td>
+                                        <td th:text="${#temporals.format(booking.checkOutDate, 'dd/MM/yyyy')}"></td>
+                                        <td th:text="${booking.totalPrice} + ' ₸'"></td>
+                                        <td>
+                                            <span th:if="${booking.status == 'RESERVED'}" class="badge bg-success" th:text="${booking.status}">RESERVED</span>
+                                            <span th:if="${booking.status == 'CANCELLED'}" class="badge bg-danger" th:text="${booking.status}">CANCELLED</span>
+                                            <span th:if="${booking.status == 'COMPLETED'}" class="badge bg-secondary" th:text="${booking.status}">COMPLETED</span>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div th:if="${bookingRooms == null or bookingRooms.isEmpty()}" class="text-center py-4">
+                            <p class="text-muted mb-0">No room bookings found</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h4 class="fw-bold text-dark mb-0">House Bookings</h4>
+                            <span class="badge bg-warning text-dark" th:text="${bookingHouses != null ? bookingHouses.size() : 0}">3</span>
+                        </div>
+                        <div th:if="${bookingHouses != null and !bookingHouses.isEmpty()}">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                    <tr>
+                                        <th>House</th>
+                                        <th>Check-in</th>
+                                        <th>Check-out</th>
+                                        <th>Total</th>
+                                        <th>Status</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr th:each="booking : ${bookingHouses}">
+                                        <td th:text="${booking.houseName}">Beach Villa</td>
+                                        <td th:text="${#temporals.format(booking.checkInDate, 'dd/MM/yyyy')}">10/12/2024</td>
+                                        <td th:text="${#temporals.format(booking.checkOutDate, 'dd/MM/yyyy')}">15/12/2024</td>
+                                        <td th:text="${booking.totalPrice} + ' ₸'">75000 ₸</td>
+                                        <td>
+                                            <span th:if="${booking.status == 'RESERVED'}" class="badge bg-success" th:text="${booking.status}">RESERVED</span>
+                                            <span th:if="${booking.status == 'CANCELLED'}" class="badge bg-danger" th:text="${booking.status}">CANCELLED</span>
+                                            <span th:if="${booking.status == 'COMPLETED'}" class="badge bg-secondary" th:text="${booking.status}">COMPLETED</span>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div th:if="${bookingHouses == null or bookingHouses.isEmpty()}" class="text-center py-4">
+                            <p class="text-muted mb-0">No house bookings found</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<th:block layout:fragment="page-specific-scripts-bottom">
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded - attaching event listeners');
+
+            // Кнопка обновления профиля
+            const updateProfileBtn = document.getElementById('updateProfileBtn');
+            if (updateProfileBtn) {
+                updateProfileBtn.addEventListener('click', function() {
+                    console.log('Update Profile button clicked');
+
+                    const newUsername = document.getElementById('newUsername').value;
+                    const newEmail = document.getElementById('newEmail').value;
+                    const currentPassword = document.getElementById('profileCurrentPassword').value;
+
+                    if (!newUsername || !newEmail || !currentPassword) {
+                        alert('Please fill all fields');
+                        return;
+                    }
+
+                    const token = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+                    const header = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+                    const userId = /*[[${user.id}]]*/ '1';
+
+                    fetch(`/api/users/${userId}/update-info?password=${encodeURIComponent(currentPassword)}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            [header]: token
+                        },
+                        body: JSON.stringify({
+                            userName: newUsername,
+                            email: newEmail
+                        })
+                    })
+                        .then(response => {
+                            console.log('Response status:', response.status);
+                            if (response.ok) {
+                                alert('Profile updated successfully!');
+                                document.getElementById('profileCurrentPassword').value = '';
+                                location.reload();
+                            } else {
+                                return response.text().then(error => {
+                                    alert('Error: ' + error);
+                                });
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert('Server connection error');
+                        });
+                });
+            } else {
+                console.error('Update Profile button not found!');
+            }
+
+            // Кнопка обновления пароля
+            const updatePasswordBtn = document.getElementById('updatePasswordBtn');
+            if (updatePasswordBtn) {
+                updatePasswordBtn.addEventListener('click', function() {
+                    console.log('Update Password button clicked');
+
+                    const newPassword = document.getElementById('newPassword').value;
+                    const currentPassword = document.getElementById('passwordCurrentPassword').value;
+
+                    if (!newPassword || !currentPassword) {
+                        alert('Please fill all fields');
+                        return;
+                    }
+
+                    const token = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+                    const header = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+                    const userId = /*[[${user.id}]]*/ '1';
+
+                    fetch(`/api/users/${userId}/update-password?newPassword=${encodeURIComponent(newPassword)}&password=${encodeURIComponent(currentPassword)}`, {
+                        method: 'PATCH',
+                        headers: {
+                            [header]: token
+                        }
+                    })
+                        .then(response => {
+                            console.log('Password response status:', response.status);
+                            if (response.ok) {
+                                alert('Password updated successfully!');
+                                document.getElementById('newPassword').value = '';
+                                document.getElementById('passwordCurrentPassword').value = '';
+                            } else {
+                                return response.text().then(error => {
+                                    alert('Error: ' + error);
+                                });
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert('Server connection error');
+                        });
+                });
+            } else {
+                console.error('Update Password button not found!');
+            }
+        });
+    </script>
+</th:block>
+</body>
+</html>

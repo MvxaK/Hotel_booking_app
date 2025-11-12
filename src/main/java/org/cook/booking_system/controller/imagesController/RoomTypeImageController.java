@@ -2,7 +2,7 @@ package org.cook.booking_system.controller.imagesController;
 
 import lombok.RequiredArgsConstructor;
 import org.cook.booking_system.model.images.RoomTypeImage;
-import org.cook.booking_system.service.images.RoomTypeImageService;
+import org.cook.booking_system.service.implementation.images.RoomTypeImageServiceImpl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,7 +14,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class RoomTypeImageController {
 
-    private final RoomTypeImageService service;
+    private final RoomTypeImageServiceImpl roomTypeImageService;
 
     @PostMapping
     public ResponseEntity<RoomTypeImage> addImage(@PathVariable Long roomTypeId, @RequestBody Map<String, String> request) {
@@ -23,17 +23,17 @@ public class RoomTypeImageController {
             return ResponseEntity.badRequest().build();
         }
 
-        return ResponseEntity.ok(service.addImage(roomTypeId, imageUrl));
+        return ResponseEntity.ok(roomTypeImageService.addImage(roomTypeId, imageUrl));
     }
 
     @GetMapping
     public ResponseEntity<List<RoomTypeImage>> getImages(@PathVariable Long roomTypeId) {
-        return ResponseEntity.ok(service.getImages(roomTypeId));
+        return ResponseEntity.ok(roomTypeImageService.getImages(roomTypeId));
     }
 
     @DeleteMapping("/{imageId}")
     public ResponseEntity<Void> deleteImage(@PathVariable Long roomTypeId, @PathVariable Long imageId) {
-        service.deleteImage(imageId);
+        roomTypeImageService.deleteImage(imageId);
 
         return ResponseEntity.noContent().build();
     }
