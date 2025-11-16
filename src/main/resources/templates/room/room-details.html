@@ -3,9 +3,7 @@
 <head>
     <title th:text="'Room ' + ${room.roomNumber} + ' - ' + ${hotel.name}"></title>
     <th:block layout:fragment="page-specific-head">
-        <link rel="stylesheet" href="/hotel-details.css">
-        <meta name="_csrf" th:content="${_csrf.token}">
-        <meta name="_csrf_header" th:content="${_csrf.headerName}">
+        <link rel="stylesheet" href="/css/hotel-details.css">
     </th:block>
 </head>
 

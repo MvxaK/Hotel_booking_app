@@ -17,4 +17,5 @@ public interface HotelService {
     List<RoomType> getRoomTypesByHotelId(Long id);
     Hotel updateHotel(Long id, Hotel hotelToUpdate);
     void deleteHotel(Long id);
+
 }

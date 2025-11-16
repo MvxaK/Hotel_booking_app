@@ -4,9 +4,7 @@
     <meta charset="UTF-8">
     <title>Update House</title>
     <th:block layout:fragment="page-specific-head">
-        <link rel="stylesheet" href="/forms.css">
-        <meta name="_csrf" th:content="${_csrf.token}">
-        <meta name="_csrf_header" th:content="${_csrf.headerName}">
+        <link rel="stylesheet" href="/css/forms.css">
     </th:block>
 </head>
 <body layout:fragment="content">
@@ -16,6 +14,11 @@
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2 class="fw-bold mb-0">Update House</h2>
             <a th:href="@{'/houses/' + ${house.id}}" class="btn btn-outline-secondary">← Back to house</a>
+        </div>
+
+        <div id="adminAlert" class="alert alert-warning d-none" role="alert">
+            <i class="bi bi-shield-exclamation me-2"></i>
+            Administrator access required to update houses.
         </div>
 
         <form id="houseForm">
@@ -33,27 +36,27 @@
 
             <div class="mb-3">
                 <label class="form-label">Capacity</label>
-                <input type="number" class="form-control" id="capacity" th:value="${house.capacity}" required>
+                <input type="number" class="form-control" id="capacity" th:value="${house.capacity}" min="1" required>
             </div>
 
             <div class="mb-3">
                 <label class="form-label">Price per night</label>
-                <input type="number" step="0.01" class="form-control" id="pricePerNight" th:value="${house.pricePerNight}" required>
+                <input type="number" step="0.01" class="form-control" id="pricePerNight" th:value="${house.pricePerNight}" min="0" required>
             </div>
 
             <div class="mb-3">
                 <label class="form-label">Number of rooms</label>
-                <input type="number" class="form-control" id="roomsNumber" th:value="${house.roomsNumber}" required>
+                <input type="number" class="form-control" id="roomsNumber" th:value="${house.roomsNumber}" min="1" required>
             </div>
 
             <div class="mb-3">
                 <label class="form-label">Number of beds</label>
-                <input type="number" class="form-control" id="bedsCount" th:value="${house.bedsCount}" required>
+                <input type="number" class="form-control" id="bedsCount" th:value="${house.bedsCount}" min="1" required>
             </div>
 
             <div class="mb-3">
                 <label class="form-label">Parking slots</label>
-                <input type="number" class="form-control" id="parkingSlots" th:value="${house.parkingSlots}" required>
+                <input type="number" class="form-control" id="parkingSlots" th:value="${house.parkingSlots}" min="0" required>
             </div>
 
             <div class="mb-3">
@@ -70,54 +73,171 @@
             </div>
 
             <div class="d-grid gap-2">
-                <button type="submit" class="btn btn-warning fw-semibold">Update House</button>
+                <button type="submit" class="btn btn-warning fw-semibold" id="submitBtn">Update House</button>
             </div>
         </form>
     </div>
 </div>
 
 <script>
-    document.getElementById('houseForm').addEventListener('submit', async function (e) {
-        e.preventDefault();
+    document.addEventListener('DOMContentLoaded', function() {
+        const houseForm = document.getElementById('houseForm');
+        const adminAlert = document.getElementById('adminAlert');
+        const submitBtn = document.getElementById('submitBtn');
 
-        const houseId = document.getElementById('houseId').value;
-
-        const data = {
-            name: document.getElementById('name').value,
-            location: document.getElementById('location').value,
-            capacity: parseInt(document.getElementById('capacity').value),
-            pricePerNight: parseFloat(document.getElementById('pricePerNight').value),
-            roomsNumber: parseInt(document.getElementById('roomsNumber').value),
-            bedsCount: parseInt(document.getElementById('bedsCount').value),
-            parkingSlots: parseInt(document.getElementById('parkingSlots').value),
-            description: document.getElementById('description').value,
-            available: document.getElementById('available').value === 'true'
-        };
-
-        const token = document.querySelector('meta[name="_csrf"]').getAttribute('content');
-        const header = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
-
-        try {
-            const response = await fetch(`/api/houses/${houseId}`, {
-                method: 'PUT',
-                headers: {
-                  'Content-Type': 'application/json',
-                  [header]: token
-                },
-                body: JSON.stringify(data)
-            });
-
-            if (response.ok) {
-                alert('House updated successfully!');
-                window.location.href = '/houses/' + houseId;
+        // Используем функции из common.js
+        function updateUIForAdminAccess() {
+            const isAdmin = checkAdminAccess();
+            if (!isAdmin) {
+                adminAlert.classList.remove('d-none');
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Admin Access Required';
             } else {
-                const text = await response.text();
-                alert('Error: ' + text);
+                adminAlert.classList.add('d-none');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Update House';
             }
-        } catch (err) {
-            alert('Server connection error');
-            console.error(err);
+            return isAdmin;
         }
+
+        updateUIForAdminAccess();
+
+        houseForm.addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            if (!updateUIForAdminAccess()) {
+                alert('Administrator access is required to update houses.');
+                return;
+            }
+
+            const houseId = document.getElementById('houseId').value;
+
+            const capacity = parseInt(document.getElementById('capacity').value);
+            const pricePerNight = parseFloat(document.getElementById('pricePerNight').value);
+            const roomsNumber = parseInt(document.getElementById('roomsNumber').value);
+            const bedsCount = parseInt(document.getElementById('bedsCount').value);
+            const parkingSlots = parseInt(document.getElementById('parkingSlots').value);
+
+            const data = {
+                name: document.getElementById('name').value.trim(),
+                location: document.getElementById('location').value.trim(),
+                capacity: capacity,
+                pricePerNight: pricePerNight,
+                roomsNumber: roomsNumber,
+                bedsCount: bedsCount,
+                parkingSlots: parkingSlots,
+                description: document.getElementById('description').value.trim(),
+                available: document.getElementById('available').value === 'true'
+            };
+
+            if (!data.name || !data.location) {
+                alert('Please fill in all required fields.');
+                return;
+            }
+
+            if (capacity < 1 || roomsNumber < 1 || bedsCount < 1 || parkingSlots < 0) {
+                alert('Please enter valid numbers (capacity, rooms, and beds must be at least 1).');
+                return;
+            }
+
+            if (pricePerNight < 0) {
+                alert('Price per night cannot be negative.');
+                return;
+            }
+
+            const originalData = {
+                name: /*[[${house.name}]]*/ '',
+                location: /*[[${house.location}]]*/ '',
+                capacity: /*[[${house.capacity}]]*/ 0,
+                pricePerNight: /*[[${house.pricePerNight}]]*/ 0,
+                roomsNumber: /*[[${house.roomsNumber}]]*/ 0,
+                bedsCount: /*[[${house.bedsCount}]]*/ 0,
+                parkingSlots: /*[[${house.parkingSlots}]]*/ 0,
+                description: /*[[${house.description}]]*/ '',
+                available: /*[[${house.available}]]*/ true
+            };
+
+            let hasChanges = false;
+            for (const key in data) {
+                if (data[key] !== originalData[key]) {
+                    hasChanges = true;
+                    break;
+                }
+            }
+
+            if (!hasChanges) {
+                alert('No changes detected.');
+                return;
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Updating...';
+
+            try {
+                const response = await fetch(`/api/houses/${houseId}`, {
+                    method: 'PUT',
+                    headers: getAuthHeaders(), // Используем общую функцию
+                    body: JSON.stringify(data)
+                });
+
+                if (response.ok) {
+                    const updatedHouse = await response.json();
+                    alert('House updated successfully!');
+
+                    setTimeout(() => {
+                        window.location.href = `/houses/${houseId}`;
+                    }, 1000);
+
+                } else if (response.status === 401 || response.status === 403) {
+                    alert('Access denied. Please log in as administrator.');
+                    logout(); // Используем общую функцию
+                } else if (response.status === 404) {
+                    alert('House not found. It may have been deleted.');
+                    window.location.href = '/houses';
+                } else {
+                    const errorText = await response.text();
+                    alert('Error: ' + (errorText || 'Failed to update house'));
+                }
+            } catch (err) {
+                console.error('Server connection error:', err);
+                alert('Error connecting to server. Please try again.');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Update House';
+            }
+        });
+
+        window.addEventListener('storage', function(e) {
+            if (e.key === 'token' || e.key === 'user') {
+                updateUIForAdminAccess();
+            }
+        });
+
+        let formChanged = false;
+        const formInputs = houseForm.querySelectorAll('input, textarea, select');
+
+        formInputs.forEach(input => {
+            input.addEventListener('input', function() {
+                formChanged = true;
+            });
+        });
+
+        houseForm.addEventListener('submit', function() {
+            formChanged = false;
+        });
+
+        window.addEventListener('beforeunload', function(e) {
+            if (formChanged) {
+                e.preventDefault();
+                e.returnValue = 'You have unsaved changes. Are you sure you want to leave?';
+            }
+        });
+
+        document.getElementById('capacity').min = 1;
+        document.getElementById('roomsNumber').min = 1;
+        document.getElementById('bedsCount').min = 1;
+        document.getElementById('parkingSlots').min = 0;
+        document.getElementById('pricePerNight').min = 0;
     });
 </script>
 </body>

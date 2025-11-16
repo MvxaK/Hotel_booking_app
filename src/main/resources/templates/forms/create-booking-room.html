@@ -4,9 +4,7 @@
     <meta charset="UTF-8">
     <title>Room Booking</title>
     <th:block layout:fragment="page-specific-head">
-        <link rel="stylesheet" href="/forms.css">
-        <meta name="_csrf" th:content="${_csrf.token}">
-        <meta name="_csrf_header" th:content="${_csrf.headerName}">
+        <link rel="stylesheet" href="/css/forms.css">
     </th:block>
 </head>
 <body layout:fragment="content">
@@ -83,9 +81,6 @@
             let selectedRoom = null;
             let selectedRoomType = null;
             let allRooms = [];
-
-            const token = document.querySelector('meta[name="_csrf"]').getAttribute('content');
-            const header = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
 
             const urlParams = new URLSearchParams(window.location.search);
             const preSelectedRoomId = urlParams.get('roomId');
@@ -203,7 +198,7 @@
                     statusBadge.className = room.available ? 'badge bg-success' : 'badge bg-danger';
 
                     roomDetails.style.display = 'block';
-                    submitBtn.disabled = !room.available;
+                    submitBtn.disabled = !room.available || !isAuthenticated();
                 } else {
                     roomDetails.style.display = 'none';
                     submitBtn.disabled = true;
@@ -259,6 +254,12 @@
             form.addEventListener("submit", async (e) => {
                 e.preventDefault();
 
+                if (!isAuthenticated()) {
+                    alert("Please log in to book a room!");
+                    window.location.href = '/login';
+                    return;
+                }
+
                 if (!selectedRoom) {
                     alert("Please select a room for booking!");
                     return;
@@ -277,7 +278,22 @@
                     return;
                 }
 
-                const days = Math.ceil((new Date(checkOut) - new Date(checkIn)) / (1000 * 3600 * 24));
+                const checkInDate = new Date(checkIn);
+                const checkOutDate = new Date(checkOut);
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+
+                if (checkInDate < today) {
+                    alert("Check-in date cannot be in the past!");
+                    return;
+                }
+
+                if (checkOutDate <= checkInDate) {
+                    alert("Check-out date must be after check-in date!");
+                    return;
+                }
+
+                const days = Math.ceil((checkOutDate - checkInDate) / (1000 * 3600 * 24));
                 const pricePerNight = selectedRoomType?.pricePerNight || 0;
                 const total = days * pricePerNight;
 
@@ -295,34 +311,61 @@
                 try {
                     const response = await fetch("/api/bookings/rooms", {
                         method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                            [header]: token
-                        },
+                        headers: getAuthHeaders(),
                         body: JSON.stringify(data)
                     });
 
                     if (response.ok) {
                         await response.json();
                         alert("Booking created successfully!");
+
                         form.reset();
                         totalPriceEl.textContent = "0 ₸";
                         selectedRoom = null;
                         selectedRoomType = null;
                         updateRoomDetails(null, null);
                         roomSelect.disabled = true;
+
+                        setTimeout(() => {
+                            window.location.href = '/profile';
+                        }, 1500);
+
+                    } else if (response.status === 401 || response.status === 403) {
+                        alert("Session expired. Please log in again.");
+                        logout();
                     } else {
                         const errorText = await response.text();
-                        alert("Server error: " + errorText);
+                        alert("Booking error: " + errorText);
                     }
                 } catch (err) {
-                    alert("Server connection error");
+                    console.error("Booking error:", err);
+                    alert("Server connection error. Please try again.");
                 } finally {
                     submitBtn.disabled = false;
                     submitBtn.textContent = "Book Now";
                 }
             });
 
+            function updateBookingUI() {
+                if (!isAuthenticated()) {
+                    submitBtn.disabled = true;
+                    submitBtn.textContent = "Please Log In to Book";
+                } else {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = "Book Now";
+                }
+            }
+
+            window.addEventListener('storage', function(e) {
+                if (e.key === 'token' || e.key === 'user') {
+                    updateBookingUI();
+                    if (selectedRoom) {
+                        updateRoomDetails(selectedRoom, selectedRoomType);
+                    }
+                }
+            });
+
+            updateBookingUI();
             loadHotels();
         });
     }

@@ -4,9 +4,7 @@
     <meta charset="UTF-8">
     <title>House Booking</title>
     <th:block layout:fragment="page-specific-head">
-        <link rel="stylesheet" href="/forms.css">
-        <meta name="_csrf" th:content="${_csrf.token}">
-        <meta name="_csrf_header" th:content="${_csrf.headerName}">
+        <link rel="stylesheet" href="/css/forms.css">
     </th:block>
 </head>
 <body layout:fragment="content">
@@ -14,6 +12,11 @@
 <div class="container mt-5">
     <div class="card shadow p-4 rounded">
         <h2 class="text-center mb-4 fw-bold text-dark">Book a House</h2>
+
+        <div id="authAlert" class="alert alert-warning d-none" role="alert">
+            <i class="bi bi-exclamation-triangle me-2"></i>
+            Please <a href="/login" class="alert-link">log in</a> to book a house.
+        </div>
 
         <form id="houseBookingForm">
             <div class="mb-3">
@@ -56,7 +59,7 @@
                 <span id="totalPrice" class="fw-bold text-success fs-5">0 ₸</span>
             </div>
 
-            <button type="submit" class="btn btn-warning w-100 fw-semibold">Book Now</button>
+            <button type="submit" class="btn btn-warning w-100 fw-semibold" id="bookButton">Book Now</button>
         </form>
     </div>
 </div>
@@ -69,10 +72,26 @@
             const houseSelect = document.getElementById("houseSelect");
             const houseDetails = document.getElementById("houseDetails");
             const totalPriceEl = document.getElementById("totalPrice");
+            const authAlert = document.getElementById("authAlert");
+            const bookButton = document.getElementById("bookButton");
+            const houseBookingForm = document.getElementById("houseBookingForm");
+
             let selectedHouse = null;
 
-            const token = document.querySelector('meta[name="_csrf"]').getAttribute('content');
-            const header = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+            function checkAuthAndUpdateUI() {
+                const authenticated = isAuthenticated();
+                if (!authenticated) {
+                    authAlert.classList.remove('d-none');
+                    bookButton.disabled = true;
+                    bookButton.textContent = 'Please Log In to Book';
+                } else {
+                    authAlert.classList.add('d-none');
+                    bookButton.disabled = false;
+                    bookButton.textContent = 'Book Now';
+                }
+                return authenticated;
+            }
+            checkAuthAndUpdateUI();
 
             const urlParams = new URLSearchParams(window.location.search);
             const preSelectedHouseId = urlParams.get('houseId');
@@ -159,8 +178,14 @@
             document.getElementById("checkInDate").min = today;
             document.getElementById("checkOutDate").min = today;
 
-            document.getElementById("houseBookingForm").addEventListener("submit", async (e) => {
+            houseBookingForm.addEventListener("submit", async (e) => {
                 e.preventDefault();
+
+                if (!checkAuthAndUpdateUI()) {
+                    alert("Please log in to book a house!");
+                    window.location.href = '/login';
+                    return;
+                }
 
                 if (!selectedHouse) {
                     alert("Please select a house for booking!");
@@ -175,7 +200,22 @@
                     return;
                 }
 
-                const days = Math.ceil((new Date(checkOut) - new Date(checkIn)) / (1000 * 3600 * 24));
+                const checkInDate = new Date(checkIn);
+                const checkOutDate = new Date(checkOut);
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+
+                if (checkInDate < today) {
+                    alert("Check-in date cannot be in the past!");
+                    return;
+                }
+
+                if (checkOutDate <= checkInDate) {
+                    alert("Check-out date must be after check-in date!");
+                    return;
+                }
+
+                const days = Math.ceil((checkOutDate - checkInDate) / (1000 * 3600 * 24));
                 const total = days * selectedHouse.pricePerNight;
 
                 const confirmBooking = confirm(
@@ -186,6 +226,9 @@
 
                 if (!confirmBooking) return;
 
+                bookButton.disabled = true;
+                bookButton.textContent = "Booking...";
+
                 const data = {
                     houseId: parseInt(houseSelect.value),
                     checkInDate: checkIn,
@@ -195,29 +238,43 @@
                 try {
                     const response = await fetch("/api/bookings/houses", {
                         method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                            [header]: token
-                        },
+                        headers: getAuthHeaders(),
                         body: JSON.stringify(data)
                     });
 
                     if (response.ok) {
                         const booking = await response.json();
                         alert("Booking created successfully!");
-                        e.target.reset();
+
+                        houseBookingForm.reset();
                         totalPriceEl.textContent = "0 ₸";
                         selectedHouse = null;
                         updateHouseDetails(null);
-                    } else if (response.status === 403) {
-                        alert("Error 403: Access denied or session expired");
+                        houseSelect.value = "";
+
+                        setTimeout(() => {
+                            window.location.href = '/profile';
+                        }, 1500);
+
+                    } else if (response.status === 401 || response.status === 403) {
+                        alert("Session expired. Please log in again.");
+                        logout();
                     } else {
                         const errorText = await response.text();
-                        alert("Server error: " + errorText);
+                        alert("Booking error: " + errorText);
                     }
                 } catch (err) {
                     console.error("Booking error:", err);
-                    alert("Server connection error");
+                    alert("Server connection error. Please try again.");
+                } finally {
+                    bookButton.disabled = false;
+                    bookButton.textContent = "Book Now";
+                }
+            });
+
+            window.addEventListener('storage', function(e) {
+                if (e.key === 'token' || e.key === 'user') {
+                    checkAuthAndUpdateUI();
                 }
             });
         });

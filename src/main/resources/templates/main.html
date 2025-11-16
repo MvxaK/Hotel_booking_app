@@ -3,11 +3,10 @@
       xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout}">
-
 <head>
     <th:block layout:fragment="page-specific-head">
         <title>StayFinder — Main</title>
-        <link rel="stylesheet" href="/styles.css">
+        <link rel="stylesheet" href="/css/styles.css">
     </th:block>
 </head>
 
@@ -90,7 +89,6 @@
     <div class="container">
         <h2 class="text-center fw-bold mb-5">Popular choices</h2>
         <div class="row g-4">
-
             <div class="col-md-4">
                 <div class="card border-0 shadow h-100">
                     <img src="https://picsum.photos/600/400?random=1" class="card-img-top" th:alt="${grandHotel.name}" alt="Фото отеля">
@@ -98,12 +96,11 @@
                         <h5 class="fw-semibold" th:text="${grandHotel.name}">Hotel</h5>
                         <p class="text-muted" th:text="${grandHotel.description}">Description</p>
                         <a th:href="@{'/hotels/' + ${grandHotel.id}}" class="btn btn-outline-warning btn-sm fw-semibold">
-                            Подробнее
+                            Details
                         </a>
                     </div>
                 </div>
             </div>
-
             <div class="col-md-4">
                 <div class="card border-0 shadow h-100">
                     <img src="https://picsum.photos/600/400?random=1" class="card-img-top" th:alt="${TwF.name}" alt="Фото отеля">
@@ -111,12 +108,11 @@
                         <h5 class="fw-semibold" th:text="${TwF.name}">Hotel</h5>
                         <p class="text-muted" th:text="${TwF.description}">Description</p>
                         <a th:href="@{'/hotels/' + ${TwF.id}}" class="btn btn-outline-warning btn-sm fw-semibold">
-                            Подробнее
+                            Details
                         </a>
                     </div>
                 </div>
             </div>
-
             <div class="col-md-4">
                 <div class="card border-0 shadow h-100">
                     <img src="https://picsum.photos/600/400?random=1" class="card-img-top" th:alt="${house.name}" alt="Фото дома">
@@ -129,7 +125,6 @@
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
 </section>

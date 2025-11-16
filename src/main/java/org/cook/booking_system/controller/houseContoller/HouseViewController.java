@@ -3,6 +3,7 @@ package org.cook.booking_system.controller.houseContoller;
 import lombok.RequiredArgsConstructor;
 import org.cook.booking_system.model.House;
 import org.cook.booking_system.service.implementation.HouseServiceImpl;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -32,12 +33,14 @@ public class HouseViewController {
         return "house/house-details";
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/new")
     public String showHouseCreateForm(){
 
         return "forms/create-house";
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/{id}/update")
     public String showHouseUpdateForm(@PathVariable Long id, Model model){
         House house = houseService.getHouseById(id);

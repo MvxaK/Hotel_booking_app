@@ -39,4 +39,5 @@ public class HotelEntity {
 
     @OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<HotelImageEntity> images;
+
 }

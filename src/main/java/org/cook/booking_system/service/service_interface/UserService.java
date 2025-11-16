@@ -9,9 +9,10 @@ import org.springframework.stereotype.Service;
 public interface UserService {
 
     User createUser(RegisterRequest registerRequest);
-    User getUserName(String username);
+    User getUserByUserName(String username);
     User getUserById(Long id);
     User updateUserInfo(Long id, User userToUpdate, String password);
     void updateUserPassword(Long id, String password, String newPassword);
     void deleteUser(Long id, String password);
+
 }

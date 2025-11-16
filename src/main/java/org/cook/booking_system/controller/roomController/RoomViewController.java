@@ -7,6 +7,7 @@ import org.cook.booking_system.model.RoomType;
 import org.cook.booking_system.service.implementation.HotelServiceImpl;
 import org.cook.booking_system.service.implementation.RoomServiceImpl;
 import org.cook.booking_system.service.implementation.RoomTypeServiceImpl;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -32,12 +33,14 @@ public class RoomViewController {
         return "room/room-details";
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/new")
     public String showCreateRoomForm(Model model){
 
         return "forms/create-room";
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/{id}/update")
     public String showUpdateForm(@PathVariable Long id, Model model) {
         Room room = roomService.getRoomById(id);

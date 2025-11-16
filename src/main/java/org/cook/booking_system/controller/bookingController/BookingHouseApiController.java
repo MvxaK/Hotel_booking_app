@@ -39,7 +39,7 @@ public class BookingHouseApiController {
     @PostMapping
     public ResponseEntity<BookingHouse> createBooking(@RequestBody BookingHouseRequest bookingRequest, Authentication authentication) {
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        User user = userService.getUserName(userDetails.getUsername());
+        User user = userService.getUserByUserName(userDetails.getUsername());
 
         BookingHouse booking = bookingHouseService.createBookingForUser(user.getId(), bookingRequest);
         URI location = URI.create("/api/bookings/houses/" + booking.getId());

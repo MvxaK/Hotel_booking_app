@@ -1,19 +1,22 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
 <head>
-  <meta charset="UTF-8">
-  <title>Add House</title>
-  <th:block layout:fragment="page-specific-head">
-    <link rel="stylesheet" href="/forms.css">
-    <meta name="_csrf" th:content="${_csrf.token}">
-    <meta name="_csrf_header" th:content="${_csrf.headerName}">
-  </th:block>
+    <meta charset="UTF-8">
+    <title>Add House</title>
+    <th:block layout:fragment="page-specific-head">
+        <link rel="stylesheet" href="/css/forms.css">
+    </th:block>
 </head>
 <body layout:fragment="content">
 
 <div class="container mt-5">
     <div class="card shadow p-4 rounded">
         <h2 class="text-center mb-4 fw-bold">Add House</h2>
+
+        <div id="adminAlert" class="alert alert-warning d-none" role="alert">
+            <i class="bi bi-shield-exclamation me-2"></i>
+            Administrator access required to add houses.
+        </div>
 
         <form id="houseForm">
             <div class="mb-3">
@@ -28,27 +31,27 @@
 
             <div class="mb-3">
                 <label class="form-label">Capacity</label>
-                <input type="number" class="form-control" id="capacity" required>
+                <input type="number" class="form-control" id="capacity" min="1" required>
             </div>
 
             <div class="mb-3">
                 <label class="form-label">Price per night</label>
-                <input type="number" step="0.01" class="form-control" id="pricePerNight" required>
+                <input type="number" step="0.01" class="form-control" id="pricePerNight" min="0" required>
             </div>
 
             <div class="mb-3">
                 <label class="form-label">Number of rooms</label>
-                <input type="number" class="form-control" id="roomsNumber" required>
+                <input type="number" class="form-control" id="roomsNumber" min="1" required>
             </div>
 
             <div class="mb-3">
                 <label class="form-label">Number of beds</label>
-                <input type="number" class="form-control" id="bedsCount" required>
+                <input type="number" class="form-control" id="bedsCount" min="1" required>
             </div>
 
             <div class="mb-3">
                 <label class="form-label">Parking slots</label>
-                <input type="number" class="form-control" id="parkingSlots" required>
+                <input type="number" class="form-control" id="parkingSlots" min="0" required>
             </div>
 
             <div class="mb-3">
@@ -64,50 +67,120 @@
                 </select>
             </div>
 
-          <button type="submit" class="btn btn-warning w-100 fw-semibold">Save</button>
+            <button type="submit" class="btn btn-warning w-100 fw-semibold" id="submitBtn">Save House</button>
         </form>
     </div>
 </div>
 
 <script>
-    document.getElementById('houseForm').addEventListener('submit', async function (e) {
-        e.preventDefault();
+    document.addEventListener('DOMContentLoaded', function() {
+        const houseForm = document.getElementById('houseForm');
+        const adminAlert = document.getElementById('adminAlert');
+        const submitBtn = document.getElementById('submitBtn');
 
-        const data = {
-            name: document.getElementById('name').value,
-            location: document.getElementById('location').value,
-            capacity: parseInt(document.getElementById('capacity').value),
-            pricePerNight: parseFloat(document.getElementById('pricePerNight').value),
-            roomsNumber: parseInt(document.getElementById('roomsNumber').value),
-            bedsCount: parseInt(document.getElementById('bedsCount').value),
-            parkingSlots: parseInt(document.getElementById('parkingSlots').value),
-            description: document.getElementById('description').value,
-            available: document.getElementById('available').value === 'true'
-        };
-
-        const token = document.querySelector('meta[name="_csrf"]').getAttribute('content');
-        const header = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
-
-        try {
-            const response = await fetch('/api/houses', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    [header]: token
-                },
-                body: JSON.stringify(data)
-            });
-            if (response.ok) {
-              alert('House successfully added!');
-              e.target.reset();
+        function updateUIForAdminAccess() {
+            const isAdmin = checkAdminAccess();
+            if (!isAdmin) {
+                adminAlert.classList.remove('d-none');
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Admin Access Required';
             } else {
-              const text = await response.text();
-              alert('Error: ' + text);
+                adminAlert.classList.add('d-none');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Save House';
             }
-        } catch (err) {
-            alert('Server connection error');
-            console.error(err);
+            return isAdmin;
         }
+
+        updateUIForAdminAccess();
+
+        houseForm.addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            if (!updateUIForAdminAccess()) {
+                alert('Administrator access is required to add houses.');
+                return;
+            }
+
+            const capacity = parseInt(document.getElementById('capacity').value);
+            const pricePerNight = parseFloat(document.getElementById('pricePerNight').value);
+            const roomsNumber = parseInt(document.getElementById('roomsNumber').value);
+            const bedsCount = parseInt(document.getElementById('bedsCount').value);
+            const parkingSlots = parseInt(document.getElementById('parkingSlots').value);
+
+            const data = {
+                name: document.getElementById('name').value.trim(),
+                location: document.getElementById('location').value.trim(),
+                capacity: capacity,
+                pricePerNight: pricePerNight,
+                roomsNumber: roomsNumber,
+                bedsCount: bedsCount,
+                parkingSlots: parkingSlots,
+                description: document.getElementById('description').value.trim(),
+                available: document.getElementById('available').value === 'true'
+            };
+
+            if (!data.name || !data.location) {
+                alert('Please fill in all required fields.');
+                return;
+            }
+
+            if (capacity < 1 || roomsNumber < 1 || bedsCount < 1 || parkingSlots < 0) {
+                alert('Please enter valid numbers (capacity, rooms, and beds must be at least 1).');
+                return;
+            }
+
+            if (pricePerNight < 0) {
+                alert('Price per night cannot be negative.');
+                return;
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Saving...';
+
+            try {
+                const response = await fetch('/api/houses', {
+                    method: 'POST',
+                    headers: getAuthHeaders(),
+                    body: JSON.stringify(data)
+                });
+
+                if (response.ok) {
+                    const savedHouse = await response.json();
+                    alert('House successfully added!');
+                    houseForm.reset();
+
+                    setTimeout(() => {
+                        window.location.href = '/houses';
+                    }, 1500);
+
+                } else if (response.status === 401 || response.status === 403) {
+                    alert('Access denied. Please log in as administrator.');
+                    logout();
+                } else {
+                    const errorText = await response.text();
+                    alert('Error: ' + (errorText || 'Failed to create house'));
+                }
+            } catch (err) {
+                console.error('Server connection error:', err);
+                alert('Error connecting to server. Please try again.');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Save House';
+            }
+        });
+
+        window.addEventListener('storage', function(e) {
+            if (e.key === 'jwtToken') {
+                updateUIForAdminAccess();
+            }
+        });
+
+        document.getElementById('capacity').min = 1;
+        document.getElementById('roomsNumber').min = 1;
+        document.getElementById('bedsCount').min = 1;
+        document.getElementById('parkingSlots').min = 0;
+        document.getElementById('pricePerNight').min = 0;
     });
 </script>
 </body>

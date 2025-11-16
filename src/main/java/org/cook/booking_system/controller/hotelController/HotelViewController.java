@@ -5,6 +5,7 @@ import org.cook.booking_system.model.Hotel;
 import org.cook.booking_system.model.Room;
 import org.cook.booking_system.model.RoomType;
 import org.cook.booking_system.service.implementation.HotelServiceImpl;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -46,12 +47,14 @@ public class HotelViewController {
         return "hotel/hotel-details";
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/new")
     public String showCreateHotelForm(){
 
         return "forms/create-hotel";
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/{id}/update")
     public String showUpdateHotelForm(@PathVariable Long id, Model model){
         Hotel hotel = hotelService.getHotelById(id);

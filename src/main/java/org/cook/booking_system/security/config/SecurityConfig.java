@@ -1,53 +1,46 @@
 package org.cook.booking_system.security.config;
 
-import org.cook.booking_system.security.user.CustomUserDetailsService;
+import lombok.RequiredArgsConstructor;
+import org.cook.booking_system.security.jwt.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
 
-    @Bean
-    public UserDetailsService userDetailsService(){
-        return new CustomUserDetailsService();
-    }
+    private final JwtAuthenticationFilter jwtAuthFilter;
+    private final AuthenticationProvider authenticationProvider;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        return http.authorizeHttpRequests(auth -> auth.requestMatchers("/register", "/login").permitAll()
-                        .anyRequest().authenticated())
-                .formLogin(form -> form
-                        .loginPage("/login")
-                        .defaultSuccessUrl("/", true)
-                        .permitAll())
-                .logout(logout -> logout
-                        .logoutSuccessUrl("/login?logout")
-                        .permitAll())
-                .build();
-    }
+        http.csrf(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/css/**", "/js/**", "/images/**", "/favicon.ico").permitAll()
+                        .requestMatchers("/", "/login", "/register").permitAll()
+                        .requestMatchers("/rooms", "/houses", "/hotels").permitAll()
+                        .requestMatchers("/hotels/**", "/rooms/**", "/houses/**").permitAll()
+                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/**").authenticated()
+                        .requestMatchers("/bookings/**").authenticated()
+                        .requestMatchers("/users/my-profile").permitAll()
+                        .requestMatchers("/hotels/new", "/houses/new", "/rooms/new", "/room-types/new").hasRole("ADMIN")
+                        .requestMatchers("/hotels/*/edit", "/rooms/*/edit", "/houses/*/edit", "/room-types/**").hasRole("ADMIN")
+                        .requestMatchers("/users/*").hasRole("ADMIN")
+                        .anyRequest().authenticated()
+                )
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authenticationProvider(authenticationProvider)
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
-    @Bean
-    public AuthenticationProvider authenticationProvider(){
-        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-        provider.setUserDetailsService(userDetailsService());
-        provider.setPasswordEncoder(passwordEncoder());
-        return provider;
+        return http.build();
     }
-
-    @Bean
-    public PasswordEncoder passwordEncoder(){
-        return new BCryptPasswordEncoder();
-    }
-
 }

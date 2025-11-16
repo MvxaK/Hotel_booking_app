@@ -5,13 +5,10 @@ import lombok.RequiredArgsConstructor;
 import org.cook.booking_system.entity.RoleEntity;
 import org.cook.booking_system.entity.UserEntity;
 import org.cook.booking_system.mapper.UserMapper;
-import org.cook.booking_system.mapper.booking.BookingRoomMapper;
 import org.cook.booking_system.model.Role;
 import org.cook.booking_system.model.User;
 import org.cook.booking_system.repository.RoleRepository;
 import org.cook.booking_system.repository.UserRepository;
-import org.cook.booking_system.repository.booking.BookingHouseRepository;
-import org.cook.booking_system.repository.booking.BookingRoomRepository;
 import org.cook.booking_system.security.auth.RegisterRequest;
 import org.cook.booking_system.service.service_interface.UserService;
 
@@ -54,7 +51,7 @@ public class UserServiceImpl implements UserService{
     }
 
     @Transactional(readOnly = true)
-    public User getUserName(String username){
+    public User getUserByUserName(String username){
         return userRepository.findByUserName(username)
                 .map(userMapper ::toModel)
                 .orElseThrow(() -> new EntityNotFoundException("User not found with username -> " + username));

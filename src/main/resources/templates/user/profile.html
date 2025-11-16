@@ -3,9 +3,7 @@
 <head>
     <title>User Profile</title>
     <th:block layout:fragment="page-specific-head">
-        <link rel="stylesheet" href="/hotel-details.css">
-        <meta name="_csrf" th:content="${_csrf.token}">
-        <meta name="_csrf_header" th:content="${_csrf.headerName}">
+        <link rel="stylesheet" href="/css/hotel-details.css">
     </th:block>
 </head>
 
@@ -206,11 +204,22 @@
         document.addEventListener('DOMContentLoaded', function() {
             console.log('DOM loaded - attaching event listeners');
 
-            // Кнопка обновления профиля
+            if (!isAuthenticated()) {
+                console.warn('User not authenticated, redirecting to login');
+                window.location.href = '/login';
+                return;
+            }
+
             const updateProfileBtn = document.getElementById('updateProfileBtn');
             if (updateProfileBtn) {
-                updateProfileBtn.addEventListener('click', function() {
+                updateProfileBtn.addEventListener('click', async function() {
                     console.log('Update Profile button clicked');
+
+                    if (!isAuthenticated()) {
+                        alert('Please log in to update your profile');
+                        window.location.href = '/login';
+                        return;
+                    }
 
                     const newUsername = document.getElementById('newUsername').value;
                     const newEmail = document.getElementById('newEmail').value;
@@ -221,47 +230,56 @@
                         return;
                     }
 
-                    const token = document.querySelector('meta[name="_csrf"]').getAttribute('content');
-                    const header = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
                     const userId = /*[[${user.id}]]*/ '1';
 
-                    fetch(`/api/users/${userId}/update-info?password=${encodeURIComponent(currentPassword)}`, {
-                        method: 'PUT',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            [header]: token
-                        },
-                        body: JSON.stringify({
-                            userName: newUsername,
-                            email: newEmail
-                        })
-                    })
-                        .then(response => {
-                            console.log('Response status:', response.status);
-                            if (response.ok) {
-                                alert('Profile updated successfully!');
-                                document.getElementById('profileCurrentPassword').value = '';
-                                location.reload();
-                            } else {
-                                return response.text().then(error => {
-                                    alert('Error: ' + error);
-                                });
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error:', error);
-                            alert('Server connection error');
+                    try {
+                        const response = await makeAuthenticatedRequest(`/api/users/${userId}/update-info?password=${encodeURIComponent(currentPassword)}`, {
+                            method: 'PUT',
+                            body: JSON.stringify({
+                                userName: newUsername,
+                                email: newEmail
+                            })
                         });
+
+                        console.log('Response status:', response.status);
+
+                        if (response.ok) {
+                            const data = await response.json();
+                            alert('Profile updated successfully!');
+                            document.getElementById('profileCurrentPassword').value = '';
+
+                            if (data.token) {
+                                setToken(data.token);
+                                const user = getUser();
+                                if (user) {
+                                    user.username = newUsername;
+                                    user.email = newEmail;
+                                    setUser(user);
+                                }
+                            }
+
+                            setTimeout(() => location.reload(), 1000);
+                        } else {
+                            const errorText = await response.text();
+                            throw new Error(errorText);
+                        }
+                    } catch (error) {
+                        console.error('Error:', error);
+                        alert('Error: ' + error.message);
+                    }
                 });
-            } else {
-                console.error('Update Profile button not found!');
             }
 
-            // Кнопка обновления пароля
             const updatePasswordBtn = document.getElementById('updatePasswordBtn');
             if (updatePasswordBtn) {
-                updatePasswordBtn.addEventListener('click', function() {
+                updatePasswordBtn.addEventListener('click', async function() {
                     console.log('Update Password button clicked');
+
+                    if (!isAuthenticated()) {
+                        alert('Please log in to update your profile');
+                        window.location.href = '/login';
+                        return;
+                    }
 
                     const newPassword = document.getElementById('newPassword').value;
                     const currentPassword = document.getElementById('passwordCurrentPassword').value;
@@ -271,35 +289,29 @@
                         return;
                     }
 
-                    const token = document.querySelector('meta[name="_csrf"]').getAttribute('content');
-                    const header = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
                     const userId = /*[[${user.id}]]*/ '1';
 
-                    fetch(`/api/users/${userId}/update-password?newPassword=${encodeURIComponent(newPassword)}&password=${encodeURIComponent(currentPassword)}`, {
-                        method: 'PATCH',
-                        headers: {
-                            [header]: token
-                        }
-                    })
-                        .then(response => {
-                            console.log('Password response status:', response.status);
-                            if (response.ok) {
-                                alert('Password updated successfully!');
-                                document.getElementById('newPassword').value = '';
-                                document.getElementById('passwordCurrentPassword').value = '';
-                            } else {
-                                return response.text().then(error => {
-                                    alert('Error: ' + error);
-                                });
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error:', error);
-                            alert('Server connection error');
+                    try {
+                        const response = await makeAuthenticatedRequest(`/api/users/${userId}/update-password?newPassword=${encodeURIComponent(newPassword)}&password=${encodeURIComponent(currentPassword)}`, {
+                            method: 'PATCH'
                         });
+
+                        console.log('Password response status:', response.status);
+
+                        if (response.ok) {
+                            const message = await response.text();
+                            alert('Password updated successfully!');
+                            document.getElementById('newPassword').value = '';
+                            document.getElementById('passwordCurrentPassword').value = '';
+                        } else {
+                            const errorText = await response.text();
+                            throw new Error(errorText);
+                        }
+                    } catch (error) {
+                        console.error('Error:', error);
+                        alert('Error: ' + error.message);
+                    }
                 });
-            } else {
-                console.error('Update Password button not found!');
             }
         });
     </script>
