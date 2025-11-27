@@ -1,37 +1,37 @@
-package org.cook.booking_system.controller.imagesController;
+package org.cook.booking_system.controller.imagesController.roomTypeImages;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.cook.booking_system.model.images.ImageRequest;
 import org.cook.booking_system.model.images.RoomTypeImage;
 import org.cook.booking_system.service.implementation.images.RoomTypeImageServiceImpl;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/room-types/{roomTypeId}/images")
 @RequiredArgsConstructor
-public class RoomTypeImageController {
+public class RoomTypeApiImageController {
 
     private final RoomTypeImageServiceImpl roomTypeImageService;
-
-    @PostMapping
-    public ResponseEntity<RoomTypeImage> addImage(@PathVariable Long roomTypeId, @RequestBody Map<String, String> request) {
-        String imageUrl = request.get("imageUrl");
-        if (imageUrl == null || imageUrl.isBlank()) {
-            return ResponseEntity.badRequest().build();
-        }
-
-        return ResponseEntity.ok(roomTypeImageService.addImage(roomTypeId, imageUrl));
-    }
 
     @GetMapping
     public ResponseEntity<List<RoomTypeImage>> getImages(@PathVariable Long roomTypeId) {
         return ResponseEntity.ok(roomTypeImageService.getImages(roomTypeId));
     }
 
+    @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<RoomTypeImage> addImage(@PathVariable Long roomTypeId, @RequestBody @Valid ImageRequest request) {
+
+        return ResponseEntity.ok(roomTypeImageService.addImage(roomTypeId, request.getImageUrl()));
+    }
+
     @DeleteMapping("/{imageId}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteImage(@PathVariable Long roomTypeId, @PathVariable Long imageId) {
         roomTypeImageService.deleteImage(imageId);
 

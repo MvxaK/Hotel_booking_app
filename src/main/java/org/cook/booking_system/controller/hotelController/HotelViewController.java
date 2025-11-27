@@ -47,15 +47,15 @@ public class HotelViewController {
         return "hotel/hotel-details";
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/new")
+    @PreAuthorize("hasRole('ADMIN')")
     public String showCreateHotelForm(){
 
         return "forms/create-hotel";
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/{id}/update")
+    @PreAuthorize("hasRole('ADMIN')")
     public String showUpdateHotelForm(@PathVariable Long id, Model model){
         Hotel hotel = hotelService.getHotelById(id);
         model.addAttribute("hotel", hotel);

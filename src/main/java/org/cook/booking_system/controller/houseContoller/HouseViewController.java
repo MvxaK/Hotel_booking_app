@@ -33,15 +33,15 @@ public class HouseViewController {
         return "house/house-details";
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/new")
+    @PreAuthorize("hasRole('ADMIN')")
     public String showHouseCreateForm(){
 
         return "forms/create-house";
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/{id}/update")
+    @PreAuthorize("hasRole('ADMIN')")
     public String showHouseUpdateForm(@PathVariable Long id, Model model){
         House house = houseService.getHouseById(id);
         model.addAttribute("house", house);

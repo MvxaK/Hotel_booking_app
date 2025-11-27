@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Add RoomType Image</title>
+    <th:block layout:fragment="page-specific-head">
+        <link rel="stylesheet" href="/css/forms.css">
+    </th:block>
+</head>
+<body layout:fragment="content" class="bg-gray-50" th:attr="data-roomType-id=${roomTypeId}">
+
+<div class="container mt-5">
+    <div class="card shadow-lg p-4 rounded-3">
+        <h2 class="text-center mb-4 fw-bold">Add Image to RoomType - <span th:text="${roomTypeName}"></span> with id - <span th:text="${roomTypeId}">[ID]</span></h2>
+
+        <div id="adminAlert" class="alert alert-warning d-none" role="alert">
+            <i class="bi bi-shield-exclamation me-2"></i>
+            Administrator access required to add images.
+        </div>
+
+        <form id="imageForm">
+            <div class="mb-3">
+                <label class="form-label">Image URL</label>
+                <input type="url" class="form-control" id="imageUrl" placeholder="e.g., https://example.com/hotel_pic.jpg" required>
+            </div>
+
+            <button type="submit" class="btn btn-warning w-100 fw-semibold" id="submitBtn">
+                <i class="bi bi-cloud-arrow-up-fill me-1"></i> Upload Image
+            </button>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const imageForm = document.getElementById('imageForm');
+        const adminAlert = document.getElementById('adminAlert');
+        const submitBtn = document.getElementById('submitBtn');
+
+        const roomTypeId = document.body.getAttribute('data-roomType-id');
+
+        if (!roomTypeId) {
+            adminAlert.textContent = "Error: RoomType ID is missing.";
+            adminAlert.classList.remove('d-none');
+            return;
+        }
+
+        function updateUIForAdminAccess() {
+            const isAdmin = checkAdminAccess();
+            if (!isAdmin) {
+                adminAlert.classList.remove('d-none');
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Admin Access Required';
+            } else {
+                adminAlert.classList.add('d-none');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Upload Image';
+            }
+            return isAdmin;
+        }
+
+        updateUIForAdminAccess();
+
+        imageForm.addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            if (!updateUIForAdminAccess()) {
+                alert('Administrator access is required to upload images.');
+                return;
+            }
+
+            const imageUrl = document.getElementById('imageUrl').value;
+
+            const data = {
+                imageUrl: imageUrl
+            };
+
+            if (!imageUrl.trim()) {
+                alert('Please enter a valid image URL.');
+                return;
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Uploading...';
+
+            const apiUrl = `/api/room-types/${roomTypeId}/images`;
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: getAuthHeaders({ 'Content-Type': 'application/json' }),
+                    body: JSON.stringify(data)
+                });
+
+                if (response.ok) {
+                    const savedImage = await response.json();
+                    alert('Image uploaded successfully! URL: ' + savedImage.url);
+                    imageForm.reset();
+
+
+                } else if (response.status === 401 || response.status === 403) {
+                    alert('Access denied. Please log in as administrator.');
+                    logout();
+                } else {
+                    const errorText = await response.text();
+                    alert('Error: ' + (errorText || 'Failed to upload image'));
+                }
+            } catch (err) {
+                alert('Error connecting to server. Please try again.');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Upload Image';
+            }
+        });
+
+
+        window.addEventListener('storage', function(e) {
+            if (e.key === 'jwtToken') {
+                updateUIForAdminAccess();
+            }
+        });
+
+    });
+</script>
+</body>
+</html>

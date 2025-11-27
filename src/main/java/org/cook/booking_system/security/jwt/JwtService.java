@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -40,10 +41,11 @@ public class JwtService {
     public String generateToken(UserDetails userDetails){
         Map<String, Object> extraClaims = new HashMap<>();
 
-        String roles = userDetails.getAuthorities().stream()
+        List<String> rolesList = userDetails.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.joining(","));
-        extraClaims.put("roles", roles);
+                .collect(Collectors.toList());
+
+        extraClaims.put("roles", rolesList);
 
         return generateToken(extraClaims, userDetails);
     }

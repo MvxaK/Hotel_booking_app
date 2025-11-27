@@ -27,6 +27,6 @@ public class BookingRoomController {
     @GetMapping("/new")
     public String showBookingHouseForm(){
 
-        return "forms/create-booking-room";
+        return "booking/create-booking-room";
     }
 }

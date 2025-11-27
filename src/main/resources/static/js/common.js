@@ -19,10 +19,18 @@ function setUser(user) {
     localStorage.setItem('user', JSON.stringify(user));
 }
 
-function logout() {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    window.location.href = '/login';
+async function logout() {
+    try {
+        await fetch('/api/auth/logout', {
+            method: 'POST',
+            credentials: 'include'
+        });
+    } catch (error) {
+        console.error('Logout error:', error);
+    }
+
+    localStorage.clear();
+    window.location.href = '/';
 }
 
 function getAuthHeaders() {
@@ -46,8 +54,10 @@ function checkAuth() {
         window.location.href = '/login';
         return false;
     }
+
     return true;
 }
+
 
 function checkAdminAccess() {
     if (!isAuthenticated()) {
@@ -64,44 +74,62 @@ function checkAdminAccess() {
         const payload = JSON.parse(atob(token.split('.')[1]));
         return payload.roles && payload.roles.includes('ROLE_ADMIN');
     } catch (err) {
-        console.error('Error decoding token:', err);
         return false;
     }
 }
 
 function updateNavigation() {
-    const authLinks = document.getElementById('auth-links');
-    if (authLinks) {
+    const rightSideLinks = document.getElementById('right-side-links');
+    let adminHtml = '';
+    let authHtml = '';
+
+    if (rightSideLinks) {
         if (isAuthenticated()) {
             const user = getUser();
             const userName = user ? user.username : 'User';
 
-            authLinks.innerHTML = `
-                <li class="nav-item">
-                    <a class="nav-link" href="/users/my-profile">
-                        <i class="bi bi-person-circle me-1"></i>${userName}
+            authHtml = `
+            <li class="nav-item">
+                <a class="nav-link" href="/users/my-profile">
+                    <i class="bi bi-person-circle me-1"></i>${userName}
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#" onclick="logout()">
+                    <i class="bi bi-box-arrow-right me-1"></i>Logout
+                </a>
+            </li>`;
+
+            if (checkAdminAccess()) {
+                adminHtml = `
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-gear me-1"></i> Admin
                     </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#" onclick="logout()">
-                        <i class="bi bi-box-arrow-right me-1"></i>Logout
-                    </a>
-                </li>
-            `;
+                    <ul class="dropdown-menu" aria-labelledby="adminDropdown">
+                        <li><a class="dropdown-item" href="/hotels/new">New Hotel</a></li>
+                        <li><a class="dropdown-item" href="/rooms/new">New Room</a></li>
+                        <li><a class="dropdown-item" href="/houses/new">New House</a></li>
+                    </ul>
+                </li>`;
+            }
+
         } else {
-            authLinks.innerHTML = `
-                <li class="nav-item">
-                    <a class="nav-link" href="/login">
-                        <i class="bi bi-box-arrow-in-right me-1"></i>Login
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/register">
-                        <i class="bi bi-person-plus me-1"></i>Register
-                    </a>
-                </li>
-            `;
+            authHtml = `
+            <li class="nav-item">
+                <a class="nav-link" href="/login">
+                    <i class="bi bi-box-arrow-in-right me-1"></i>Login
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/register">
+                    <i class="bi bi-person-plus me-1"></i>Register
+                </a>
+            </li>`;
+            adminHtml = '';
         }
+
+        rightSideLinks.innerHTML = adminHtml + authHtml;
     }
 }
 
@@ -111,6 +139,8 @@ async function makeAuthenticatedRequest(url, options = {}) {
         ...authHeaders,
         ...options.headers
     };
+
+    options.credentials = 'include';
 
     const response = await fetch(url, options);
 

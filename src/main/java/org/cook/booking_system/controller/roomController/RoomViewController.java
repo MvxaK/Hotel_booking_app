@@ -26,6 +26,7 @@ public class RoomViewController {
         Room room = roomService.getRoomById(id);
         Hotel hotel = hotelService.getHotelById(room.getHotelId());
         RoomType roomType = roomTypeService.getRoomTypeById(room.getRoomTypeId());
+
         model.addAttribute("room", room);
         model.addAttribute("hotel", hotel);
         model.addAttribute("roomType", roomType);
@@ -33,15 +34,15 @@ public class RoomViewController {
         return "room/room-details";
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/new")
+    @PreAuthorize("hasRole('ADMIN')")
     public String showCreateRoomForm(Model model){
 
         return "forms/create-room";
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/{id}/update")
+    @PreAuthorize("hasRole('ADMIN')")
     public String showUpdateForm(@PathVariable Long id, Model model) {
         Room room = roomService.getRoomById(id);
         Hotel hotel = hotelService.getHotelById(room.getHotelId());

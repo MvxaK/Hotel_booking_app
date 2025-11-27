@@ -6,7 +6,6 @@
         <link rel="stylesheet" href="/css/hotel-details.css">
     </th:block>
 </head>
-
 <body class="hotel-details-page">
 <main layout:fragment="content">
     <div class="container py-5">
@@ -24,21 +23,21 @@
                         <h3 class="fw-bold text-dark mb-4">Profile Information</h3>
                         <div class="mb-4">
                             <div class="d-flex justify-content-between align-items-center mb-3">
-                                <h5 class="fw-semibold text-dark mb-0" th:text="${user.userName}">Username</h5>
+                                <h5 class="fw-semibold text-dark mb-0" th:text="${user.userName}"></h5>
                                 <span class="badge bg-warning text-dark">Active</span>
                             </div>
                             <div class="user-details">
                                 <div class="mb-3">
                                     <strong class="text-dark d-block mb-1">Email:</strong>
-                                    <span class="text-muted" th:text="${user.email}">user@example.com</span>
+                                    <span class="text-muted" th:text="${user.email}"></span>
                                 </div>
                                 <div class="mb-3">
                                     <strong class="text-dark d-block mb-1">User ID:</strong>
-                                    <span class="text-muted" th:text="${user.id}">#12345</span>
+                                    <span class="text-muted" th:text="${user.id}"></span>
                                 </div>
                                 <div class="mb-3">
                                     <strong class="text-dark d-block mb-1">Role:</strong>
-                                    <span class="text-muted" th:each="role : ${user.roles}" th:text="${role}">ROLE_USER</span>
+                                    <span class="text-muted" th:each="role : ${user.roles}" th:text="${role} "></span>
                                 </div>
                             </div>
                         </div>
@@ -63,7 +62,7 @@
             </div>
 
             <div class="col-lg-8">
-                <div class="card border-0 shadow-sm mb-4">
+                <div class="card border-0 shadow-sm mb-4" th:data-user-id="${user.id}">
                     <div class="card-body">
                         <h4 class="fw-bold text-dark mb-3">Account Management</h4>
 
@@ -83,8 +82,8 @@
                                     <input type="password" class="form-control" id="profileCurrentPassword" placeholder="Current password" required>
                                 </div>
                                 <div class="col-12">
-                                    <button type="button" class="btn btn-outline-warning" id="updateProfileBtn">
-                                        Update Profile
+                                    <button type="button" class="btn btn-outline-warning" id="updateProfileBtn"
+                                            th:data-user-id="${user.id}"> Update Profile
                                     </button>
                                 </div>
                             </form>
@@ -102,8 +101,8 @@
                                     <input type="password" class="form-control" id="passwordCurrentPassword" placeholder="Current password" required>
                                 </div>
                                 <div class="col-12">
-                                    <button type="button" class="btn btn-outline-warning" id="updatePasswordBtn">
-                                        Change Password
+                                    <button type="button" class="btn btn-outline-warning" id="updatePasswordBtn"
+                                            th:data-user-id="${user.id}"> Change Password
                                     </button>
                                 </div>
                             </form>
@@ -202,10 +201,8 @@
 <th:block layout:fragment="page-specific-scripts-bottom">
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('DOM loaded - attaching event listeners');
 
             if (!isAuthenticated()) {
-                console.warn('User not authenticated, redirecting to login');
                 window.location.href = '/login';
                 return;
             }
@@ -213,7 +210,6 @@
             const updateProfileBtn = document.getElementById('updateProfileBtn');
             if (updateProfileBtn) {
                 updateProfileBtn.addEventListener('click', async function() {
-                    console.log('Update Profile button clicked');
 
                     if (!isAuthenticated()) {
                         alert('Please log in to update your profile');
@@ -230,7 +226,12 @@
                         return;
                     }
 
-                    const userId = /*[[${user.id}]]*/ '1';
+                    const userId = this.getAttribute('data-user-id');
+
+                    if (!userId) {
+                        alert('Error: Could not retrieve user ID');
+                        return;
+                    }
 
                     try {
                         const response = await makeAuthenticatedRequest(`/api/users/${userId}/update-info?password=${encodeURIComponent(currentPassword)}`, {
@@ -240,8 +241,6 @@
                                 email: newEmail
                             })
                         });
-
-                        console.log('Response status:', response.status);
 
                         if (response.ok) {
                             const data = await response.json();
@@ -264,7 +263,6 @@
                             throw new Error(errorText);
                         }
                     } catch (error) {
-                        console.error('Error:', error);
                         alert('Error: ' + error.message);
                     }
                 });
@@ -273,7 +271,6 @@
             const updatePasswordBtn = document.getElementById('updatePasswordBtn');
             if (updatePasswordBtn) {
                 updatePasswordBtn.addEventListener('click', async function() {
-                    console.log('Update Password button clicked');
 
                     if (!isAuthenticated()) {
                         alert('Please log in to update your profile');
@@ -289,14 +286,18 @@
                         return;
                     }
 
-                    const userId = /*[[${user.id}]]*/ '1';
+                    const userId = this.getAttribute('data-user-id');
+
+                    if (!userId) {
+                        alert('Error: Could not retrieve user ID');
+                        return;
+                    }
 
                     try {
                         const response = await makeAuthenticatedRequest(`/api/users/${userId}/update-password?newPassword=${encodeURIComponent(newPassword)}&password=${encodeURIComponent(currentPassword)}`, {
                             method: 'PATCH'
                         });
 
-                        console.log('Password response status:', response.status);
 
                         if (response.ok) {
                             const message = await response.text();
@@ -308,7 +309,6 @@
                             throw new Error(errorText);
                         }
                     } catch (error) {
-                        console.error('Error:', error);
                         alert('Error: ' + error.message);
                     }
                 });

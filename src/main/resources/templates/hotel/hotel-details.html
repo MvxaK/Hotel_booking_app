@@ -23,7 +23,12 @@
                 <h1 class="fw-bold text-dark mb-3" th:text="${hotel.name}">Hotel Name</h1>
                 <p class="text-muted mb-0" th:text="${hotel.address}">Hotel Address</p>
             </div>
-            <div class="ms-3">
+            <div class="ms-3 d-flex gap-2" id="admin-actions">
+                <a th:href="@{'/hotels/' + ${hotel.id} + '/images/new'}"
+                   class="btn btn-outline-info">
+                    <i class="bi bi-image-fill me-2"></i>Add Images
+                </a>
+
                 <a th:href="@{'/hotels/' + ${hotel.id} + '/update'}"
                    class="btn btn-outline-warning">
                     <i class="bi bi-pencil-square me-2"></i>Edit Hotel
@@ -34,25 +39,23 @@
         <div class="mb-5">
             <div class="row g-3">
                 <div class="col-12 col-lg-8">
-                    <img th:if="${hotel.imagesUrl != null and !hotel.imagesUrl.isEmpty()}"
-                         th:src="@{${hotel.imagesUrl[0]}}"
+                    <img id="main-hotel-image"
+                         th:src="${hotel.imagesUrl != null and !hotel.imagesUrl.isEmpty() ? hotel.imagesUrl[0] : 'https://picsum.photos/600/400?random=1'}"
                          alt="Hotel main image"
                          class="img-fluid rounded shadow w-100"
                          style="height: 400px; object-fit: cover;">
-                    <img th:unless="${hotel.imagesUrl != null and !hotel.imagesUrl.isEmpty()}"
-                         src="https://picsum.photos/600/400?random=1"
-                         alt="No image available"
-                         class="img-fluid rounded shadow w-100"
-                         style="height: 400px; object-fit: cover;">
                 </div>
+
                 <div class="col-12 col-lg-4">
                     <div class="row g-2">
                         <div th:each="imgUrl, iter : ${hotel.imagesUrl}"
-                             th:if="${iter.index > 0 and iter.index < 5}"
+                             th:if="${iter.index < 6}"
                              class="col-6 col-sm-4 col-lg-6">
-                            <img th:src="@{${imgUrl}}"
+                            <img th:src="${imgUrl}"
+                                 th:attr="data-src=${imgUrl}, data-index=${iter.index}"
                                  alt="Hotel image"
                                  class="img-fluid rounded shadow-sm w-100 gallery-thumb"
+                                 th:classappend="${iter.index == 0 ? 'active-thumb' : ''}"
                                  style="height:120px; object-fit:cover;">
                         </div>
                     </div>
@@ -129,5 +132,33 @@
         </section>
     </div>
 </main>
+
+<th:block layout:fragment="page-specific-scripts-bottom">
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const mainImage = document.getElementById('main-hotel-image');
+            const thumbnailImages = document.querySelectorAll('.gallery-thumb');
+
+            if (mainImage && thumbnailImages.length > 0) {
+
+                function handleThumbnailClick(event) {
+                    const clickedThumbnail = event.target;
+                    const newImageUrl = clickedThumbnail.getAttribute('data-src');
+
+                    if (newImageUrl) {
+                        mainImage.src = newImageUrl;
+                        thumbnailImages.forEach(thumb => thumb.classList.remove('active-thumb'));
+                        clickedThumbnail.classList.add('active-thumb');
+                    }
+                }
+
+                thumbnailImages.forEach(thumbnail => {
+                    thumbnail.style.cursor = 'pointer';
+                    thumbnail.addEventListener('click', handleThumbnailClick);
+                });
+            }
+        });
+    </script>
+</th:block>
 </body>
 </html>

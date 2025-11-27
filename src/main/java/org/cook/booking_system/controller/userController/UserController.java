@@ -2,9 +2,7 @@ package org.cook.booking_system.controller.userController;
 
 import lombok.RequiredArgsConstructor;
 import org.cook.booking_system.model.User;
-import org.cook.booking_system.model.booking.BookingHouse;
 import org.cook.booking_system.model.booking.BookingHouseDetails;
-import org.cook.booking_system.model.booking.BookingRoom;
 import org.cook.booking_system.model.booking.BookingRoomDetails;
 import org.cook.booking_system.service.implementation.UserServiceImpl;
 import org.cook.booking_system.service.implementation.booking.BookingHouseServiceImpl;

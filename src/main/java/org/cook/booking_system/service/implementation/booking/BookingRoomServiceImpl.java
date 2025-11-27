@@ -101,9 +101,9 @@ public class BookingRoomServiceImpl implements BookingRoomService{
         bookingRoomRepository.save(booking);
     }
 
-    private boolean isAvailable(Long houseId, LocalDate checkInDate, LocalDate checkOutDate){
+    private boolean isAvailable(Long roomId, LocalDate checkInDate, LocalDate checkOutDate){
         boolean available = true;
-        List<BookingRoomEntity> bookingEntityList = bookingRoomRepository.findByRoomIdAndStatus(houseId, Status.RESERVED);
+        List<BookingRoomEntity> bookingEntityList = bookingRoomRepository.findByRoomIdAndStatus(roomId, Status.RESERVED);
         for (BookingRoomEntity booking : bookingEntityList) {
             LocalDate existingStart = booking.getCheckInDate();
             LocalDate existingEnd = booking.getCheckOutDate();

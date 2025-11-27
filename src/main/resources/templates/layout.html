@@ -13,7 +13,7 @@
     </th:block>
 </head>
 
-<body class="text-gray-800">
+<body class="text-gray-800 d-flex flex-column min-vh-100">
 
 <nav class="navbar navbar-expand-lg navbar-dark">
     <div class="container-fluid">
@@ -39,14 +39,15 @@
                     <a class="nav-link" href="/#contact">Contact us</a>
                 </li>
             </ul>
-            <ul class="navbar-nav ms-auto mb-2 mb-lg-0" id="auth-links">
+            <ul class="navbar-nav ms-auto mb-2 mb-lg-0 d-flex align-items-center" id="right-side-links">
 
             </ul>
         </div>
     </div>
 </nav>
 
-<main layout:fragment="content">
+<main layout:fragment="content" class="flex-grow-1 flex-shrink-0">
+
 </main>
 
 <footer class="footer-custom pt-5 pb-3 mt-5">
@@ -83,6 +84,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <th:block layout:fragment="page-specific-scripts-bottom">
+
 </th:block>
 </body>
 </html>

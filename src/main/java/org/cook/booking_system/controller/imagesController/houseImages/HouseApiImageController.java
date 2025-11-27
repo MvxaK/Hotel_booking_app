@@ -1,9 +1,12 @@
-package org.cook.booking_system.controller.imagesController;
+package org.cook.booking_system.controller.imagesController.houseImages;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.cook.booking_system.model.images.HouseImage;
+import org.cook.booking_system.model.images.ImageRequest;
 import org.cook.booking_system.service.implementation.images.HouseImageServiceImpl;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -11,21 +14,24 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/houses/{houseId}/images")
 @RequiredArgsConstructor
-public class HouseImageController {
+public class HouseApiImageController {
 
     private final HouseImageServiceImpl houseImageService;
-
-    @PostMapping
-    public ResponseEntity<HouseImage> addImage(@PathVariable Long houseId, @RequestParam String imageUrl) {
-        return ResponseEntity.ok(houseImageService.addImage(houseId, imageUrl));
-    }
 
     @GetMapping
     public ResponseEntity<List<HouseImage>> getImages(@PathVariable Long houseId) {
         return ResponseEntity.ok(houseImageService.getImages(houseId));
     }
 
+    @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<HouseImage> addImage(@PathVariable Long houseId, @RequestBody @Valid ImageRequest request) {
+
+        return ResponseEntity.ok(houseImageService.addImage(houseId, request.getImageUrl()));
+    }
+
     @DeleteMapping("/{imageId}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteImage(@PathVariable Long houseId, @PathVariable Long imageId) {
         houseImageService.deleteImage(imageId);
 

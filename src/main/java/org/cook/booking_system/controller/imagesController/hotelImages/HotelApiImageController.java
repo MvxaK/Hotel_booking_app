@@ -1,37 +1,37 @@
-package org.cook.booking_system.controller.imagesController;
+package org.cook.booking_system.controller.imagesController.hotelImages;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.cook.booking_system.model.images.HotelImage;
+import org.cook.booking_system.model.images.ImageRequest;
 import org.cook.booking_system.service.implementation.images.HotelImageServiceImpl;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/hotels/{hotelId}/images")
 @RequiredArgsConstructor
-public class HotelImageController {
+public class HotelApiImageController {
 
     private final HotelImageServiceImpl hotelImageService;
 
     @GetMapping
-    public ResponseEntity<List<HotelImage>> getHotelImages(@PathVariable Long hotelId) {
+    public ResponseEntity<List<HotelImage>> getImages(@PathVariable Long hotelId) {
         return ResponseEntity.ok(hotelImageService.getImagesByHotelId(hotelId));
     }
 
     @PostMapping
-    public ResponseEntity<HotelImage> addImage(@PathVariable Long hotelId, @RequestBody Map<String, String> request) {
-        String imageUrl = request.get("imageUrl");
-        if (imageUrl == null || imageUrl.isBlank()) {
-            return ResponseEntity.badRequest().build();
-        }
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<HotelImage> addImage(@PathVariable Long hotelId, @RequestBody @Valid ImageRequest request) {
 
-        return ResponseEntity.ok(hotelImageService.addImageToHotel(hotelId, imageUrl));
+        return ResponseEntity.ok(hotelImageService.addImageToHotel(hotelId, request.getImageUrl()));
     }
 
     @DeleteMapping("/{imageId}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteImage(@PathVariable Long hotelId, @PathVariable Long imageId) {
         hotelImageService.deleteImage(imageId);
 
