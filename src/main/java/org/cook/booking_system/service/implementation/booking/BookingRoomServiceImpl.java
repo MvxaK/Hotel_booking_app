@@ -48,7 +48,7 @@ public class BookingRoomServiceImpl implements BookingRoomService{
         RoomTypeEntity roomTypeEntity = roomTypeRepository.findById(roomEntity.getRoomType().getId())
                 .orElseThrow(() -> new EntityNotFoundException("Room type not found with id -> " + roomEntity.getRoomType().getId()));
 
-        if (!isAvailable(roomTypeEntity.getId(), bookingRequest.getCheckInDate(), bookingRequest.getCheckOutDate())) {
+        if (!isAvailable(roomEntity.getId(), bookingRequest.getCheckInDate(), bookingRequest.getCheckOutDate())) {
             throw new IllegalArgumentException("Room type not available for these dates.");
         }
 

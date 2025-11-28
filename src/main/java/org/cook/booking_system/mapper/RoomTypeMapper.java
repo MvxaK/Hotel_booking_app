@@ -1,17 +1,16 @@
 package org.cook.booking_system.mapper;
 
 import org.cook.booking_system.entity.RoomTypeEntity;
-import org.cook.booking_system.entity.images.RoomTypeImageEntity;
+import org.cook.booking_system.mapper.images.RoomTypeImageMapper;
 import org.cook.booking_system.model.RoomType;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-import java.util.List;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = {RoomTypeImageMapper.class})
 public interface RoomTypeMapper {
 
-    @Mapping(target = "imagesUrl", expression = "java(mapImages(entity.getImages()))")
+    @Mapping(target = "images", source = "entity.images")
     @Mapping(target = "hotelId", expression = "java(EntityIdUtils.extractId(entity.getHotel()))")
     @Mapping(target = "roomIds", expression = "java(EntityIdUtils.extractIds(entity.getRooms()))")
     RoomType toModel(RoomTypeEntity entity);
@@ -21,12 +20,4 @@ public interface RoomTypeMapper {
     @Mapping(target = "rooms", ignore = true)
     RoomTypeEntity toEntity(RoomType model);
 
-    default List<String> mapImages(List<RoomTypeImageEntity> images) {
-        if (images == null)
-            return List.of();
-
-        return images.stream()
-                .map(RoomTypeImageEntity::getUrl)
-                .toList();
-    }
 }

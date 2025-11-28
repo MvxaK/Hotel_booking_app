@@ -7,6 +7,7 @@ import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface HotelImageMapper {
+
     @Mapping(target = "hotelId", source = "hotel.id")
     HotelImage toModel(HotelImageEntity hotelImageEntity);
 

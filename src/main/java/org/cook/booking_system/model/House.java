@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Null;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.cook.booking_system.model.images.HouseImage;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -33,6 +34,7 @@ public class House{
     private int parkingSlots;
     @NotNull
     private String description;
-    private List<String> imagesUrl;
+
+    private List<HouseImage> images;
 
 }

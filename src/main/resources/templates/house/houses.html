@@ -17,25 +17,21 @@
         <div class="row g-4">
             <div th:each="house : ${houses}" class="col-12 col-sm-6 col-lg-4">
                 <div class="card border-0 shadow h-100 hotel-room-card">
-                    <img th:if="${house.imagesUrl != null and !house.imagesUrl.isEmpty()}"
-                         th:src="@{${house.imagesUrl[0]}}"
-                         class="card-img-top"
-                         alt="House image"
+                    <img th:if="${house.images != null and !house.images.isEmpty()}"
+                         th:src="${house.images.get(0).url}"
+                         class="card-img-top" alt="House image"
                          style="height: 220px; object-fit: cover;">
-                    <img th:unless="${house.imagesUrl != null and !house.imagesUrl.isEmpty()}"
+
+                    <img th:unless="${house.images != null and !house.images.isEmpty()}"
                          src="https://picsum.photos/600/400?random=1"
-                         class="card-img-top"
-                         alt="No house image available"
+                         class="card-img-top" alt="No house image available"
                          style="height: 220px; object-fit: cover;">
 
                     <div class="card-body d-flex flex-column">
                         <div class="flex-grow-1">
                             <h5 class="fw-semibold text-dark" th:text="${house.name}">Modern Villa</h5>
-
                             <p class="text-muted small mb-2" th:text="${house.location}">Mountain View Area</p>
-
-                            <p class="text-muted small mb-3" th:text="${#strings.abbreviate(house.description, 100)}">eautiful house</p>
-
+                            <p class="text-muted small mb-3" th:text="${#strings.abbreviate(house.description, 100)}">Beautiful house</p>
                             <p class="fw-bold text-warning fs-5 mb-2" th:text="'₸' + ${house.pricePerNight} + '/night'">₸15000/night</p>
 
                             <div class="house-features">

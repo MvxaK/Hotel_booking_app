@@ -7,9 +7,11 @@ import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface HouseImageMapper {
+
     @Mapping(target = "houseId", source = "house.id")
     HouseImage toModel(HouseImageEntity houseImageEntity);
 
     @Mapping(target = "house", ignore = true)
     HouseImageEntity toEntity(HouseImage houseImage);
+
 }

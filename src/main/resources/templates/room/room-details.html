@@ -24,14 +24,13 @@
                 <h1 class="fw-bold text-dark mb-2" th:text="'Room ' + ${room.roomNumber}">Room 101</h1>
                 <p class="text-muted mb-0" th:text="${hotel.name} + ' • ' + ${hotel.address}">Hotel Name • Hotel Address</p>
             </div>
+
             <div class="ms-3 d-flex gap-2" id="admin-actions">
-                <a th:if="${roomType != null}" th:href="@{'/room-types/' + ${roomType.id} + '/images/new'}"
-                   class="btn btn-outline-info">
+                <a th:if="${roomType != null}" th:href="@{'/room-types/' + ${roomType.id} + '/images/new'}" class="btn btn-outline-info">
                     <i class="bi bi-image-fill me-2"></i>Add Type Images
                 </a>
 
-                <a th:href="@{'/rooms/' + ${room.id} + '/update'}"
-                   class="btn btn-outline-warning">
+                <a th:href="@{'/rooms/' + ${room.id} + '/update'}" class="btn btn-outline-warning">
                     <i class="bi bi-pencil-square me-2"></i>Edit Room
                 </a>
             </div>
@@ -40,22 +39,25 @@
         <div class="mb-5">
             <div class="row g-3">
                 <div class="col-12 col-lg-8">
-                    <img id="main-room-image"
-                         th:src="${roomType != null and roomType.imagesUrl != null and !roomType.imagesUrl.isEmpty() ? roomType.imagesUrl[0] : 'https://picsum.photos/800/600?random=2'}"
-                         alt="Room main image"
-                         class="img-fluid rounded shadow w-100"
-                         style="height: 400px; object-fit: cover;">
+                    <img id="main-room-image" th:src="${roomType != null and roomType.images != null and !roomType.images.isEmpty() ? roomType.images.get(0).url : 'https://picsum.photos/800/600?random=2'}"
+                         alt="Room main image" class="img-fluid rounded shadow w-100" style="height: 400px; object-fit: cover;">
                 </div>
+
                 <div class="col-12 col-lg-4">
                     <div class="row g-2">
-                        <div th:each="imgUrl, iter : ${roomType.imagesUrl}"
-                             th:if="${iter.index < 6}"
-                             class="col-6 col-sm-4 col-lg-6">
-                            <img th:src="${imgUrl}" th:attr="data-src=${imgUrl}, data-index=${iter.index}"
-                                 alt="Room image"
-                                 class="img-fluid rounded shadow-sm w-100 gallery-thumb"
-                                 th:classappend="${iter.index == 0 ? 'active-thumb' : ''}"
+                        <div th:each="image, iterator : ${roomType.images}" th:if="${iterator.index < 6}" class="col-6 col-sm-4 col-lg-6 position-relative thumbnail-wrapper">
+
+                            <img th:src="${image.url}" th:attr="data-src=${image.url}, data-index=${iterator.index}"
+                                 alt="Room image" class="img-fluid rounded shadow-sm w-100 gallery-thumb"
+                                 th:classappend="${iterator.index == 0 ? 'active-thumb' : ''}"
                                  style="height:120px; object-fit:cover;">
+
+                            <button class="delete-image-btn position-absolute top-0 end-0 btn p-0 border-0"
+                                    style="opacity: 0; transition: opacity 0.2s ease;"
+                                    th:data-hotel-id="${roomType.id}" th:data-image-id="${image.id}"
+                                    th:title="'Delete Image ID: ' + ${image.id}">
+                                <i class="bi bi-trash-fill text-danger fs-5"></i>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -138,8 +140,24 @@
         document.addEventListener('DOMContentLoaded', function() {
             const mainImage = document.getElementById('main-room-image');
             const thumbnailImages = document.querySelectorAll('.gallery-thumb');
-
             const adminActionsContainer = document.getElementById('admin-actions');
+            const deleteButtons = document.querySelectorAll('.delete-image-btn');
+
+            function updateUIForAdminAccess() {
+                const isAdmin = typeof checkAdminAccess === 'function' && checkAdminAccess();
+
+                if (adminActionsContainer) {
+                    adminActionsContainer.style.display = isAdmin ? 'flex' : 'none';
+                }
+
+                deleteButtons.forEach(btn => {
+                    if (isAdmin) {
+                        btn.style.display = 'block';
+                    } else {
+                        btn.style.display = 'none';
+                    }
+                });
+            }
 
             if (mainImage && thumbnailImages.length > 0) {
                 function handleThumbnailClick(event) {
@@ -159,12 +177,41 @@
                 });
             }
 
-            function updateUIForAdminAccess() {
-                const isAdmin = typeof checkAdminAccess === 'function' && checkAdminAccess();
-                if (adminActionsContainer) {
-                    adminActionsContainer.style.display = isAdmin ? 'flex' : 'none';
-                }
-            }
+            deleteButtons.forEach(button => {
+                button.addEventListener('click', async function (e) {
+                    e.stopPropagation();
+
+                    const roomTypeId = this.getAttribute('data-room-type-id');
+                    const imageId = this.getAttribute('data-image-id');
+
+                    if (!confirm(`Are you sure you want to delete image ID: ${imageId} for Room Type ${roomTypeId}?`)) {
+                        return;
+                    }
+
+                    const deleteUrl = `/api/room-types/${roomTypeId}/images/${imageId}`;
+
+                    try {
+                        const response = await makeAuthenticatedRequest(deleteUrl, {
+                            method: 'DELETE',
+                            headers: getAuthHeaders()
+                        });
+
+                        if (response.status === 204 || response.ok) {
+                            alert('Image deleted successfully!');
+                            window.location.reload();
+                        } else if (response.status === 403) {
+                            alert('Access denied. Only an administrator can delete images.');
+                        } else {
+                            const errorText = await response.text();
+                            alert('Failed to delete image: ' + (errorText || 'Unknown error'));
+                        }
+
+                    } catch (err) {
+                        console.error('Connection error:', err);
+                        alert('Server connection error. Failed to delete image.');
+                    }
+                });
+            });
 
             updateUIForAdminAccess();
 

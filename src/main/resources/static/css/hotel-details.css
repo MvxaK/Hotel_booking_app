@@ -25,6 +25,24 @@
     opacity: 1;
 }
 
+.thumbnail-wrapper {
+    position: relative;
+    overflow: hidden;
+}
+
+.delete-image-btn {
+    z-index: 10;
+    cursor: pointer;
+    background: transparent !important;
+    line-height: 1;
+    padding: 2px;
+    margin: 5px;
+}
+
+.thumbnail-wrapper:hover .delete-image-btn {
+    opacity: 1 !important;
+}
+
 .hotel-description {
     border-left: 3px solid #ffc107;
     padding-left: 1rem;
