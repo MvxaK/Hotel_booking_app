@@ -7,6 +7,7 @@
     </th:block>
 </head>
 <body class="hotel-details-page">
+
 <main layout:fragment="content">
     <div class="container py-5">
         <nav aria-label="breadcrumb" class="mb-4">
@@ -70,10 +71,6 @@
                             <h5 class="fw-semibold text-warning mb-3">Update Profile Information</h5>
                             <form id="updateProfileForm" class="row g-3">
                                 <div class="col-md-6">
-                                    <label for="newUsername" class="form-label">Username</label>
-                                    <input type="text" class="form-control" id="newUsername" th:value="${user.userName}" placeholder="New username" required>
-                                </div>
-                                <div class="col-md-6">
                                     <label for="newEmail" class="form-label">Email</label>
                                     <input type="email" class="form-control" id="newEmail" th:value="${user.email}" placeholder="New email address" required>
                                 </div>
@@ -93,12 +90,12 @@
                             <h5 class="fw-semibold text-warning mb-3">Change Password</h5>
                             <form id="updatePasswordForm" class="row g-3">
                                 <div class="col-md-6">
-                                    <label for="newPassword" class="form-label">New Password</label>
-                                    <input type="password" class="form-control" id="newPassword" placeholder="New password" required>
-                                </div>
-                                <div class="col-md-6">
                                     <label for="passwordCurrentPassword" class="form-label">Current Password</label>
                                     <input type="password" class="form-control" id="passwordCurrentPassword" placeholder="Current password" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="newPassword" class="form-label">New Password</label>
+                                    <input type="password" class="form-control" id="newPassword" placeholder="New password" required>
                                 </div>
                                 <div class="col-12">
                                     <button type="button" class="btn btn-outline-warning" id="updatePasswordBtn"
@@ -139,9 +136,9 @@
                                         <td th:text="${#temporals.format(booking.checkOutDate, 'dd/MM/yyyy')}"></td>
                                         <td th:text="${booking.totalPrice} + ' ₸'"></td>
                                         <td>
-                                            <span th:if="${booking.status == 'RESERVED'}" class="badge bg-success" th:text="${booking.status}">RESERVED</span>
-                                            <span th:if="${booking.status == 'CANCELLED'}" class="badge bg-danger" th:text="${booking.status}">CANCELLED</span>
-                                            <span th:if="${booking.status == 'COMPLETED'}" class="badge bg-secondary" th:text="${booking.status}">COMPLETED</span>
+                                            <span th:if="${booking.status.name() == 'RESERVED'}" class="badge bg-success" th:text="${booking.status}">RESERVED</span>
+                                            <span th:if="${booking.status.name() == 'CANCELLED'}" class="badge bg-danger" th:text="${booking.status}">CANCELLED</span>
+                                            <span th:if="${booking.status.name() == 'COMPLETED'}" class="badge bg-secondary" th:text="${booking.status}">COMPLETED</span>
                                         </td>
                                     </tr>
                                     </tbody>
@@ -179,9 +176,9 @@
                                         <td th:text="${#temporals.format(booking.checkOutDate, 'dd/MM/yyyy')}">15/12/2024</td>
                                         <td th:text="${booking.totalPrice} + ' ₸'">75000 ₸</td>
                                         <td>
-                                            <span th:if="${booking.status == 'RESERVED'}" class="badge bg-success" th:text="${booking.status}">RESERVED</span>
-                                            <span th:if="${booking.status == 'CANCELLED'}" class="badge bg-danger" th:text="${booking.status}">CANCELLED</span>
-                                            <span th:if="${booking.status == 'COMPLETED'}" class="badge bg-secondary" th:text="${booking.status}">COMPLETED</span>
+                                            <span th:if="${booking.status.name() == 'RESERVED'}" class="badge bg-success" th:text="${booking.status}">RESERVED</span>
+                                            <span th:if="${booking.status.name() == 'CANCELLED'}" class="badge bg-danger" th:text="${booking.status}">CANCELLED</span>
+                                            <span th:if="${booking.status.name() == 'COMPLETED'}" class="badge bg-secondary" th:text="${booking.status}">COMPLETED</span>
                                         </td>
                                     </tr>
                                     </tbody>
@@ -200,10 +197,10 @@
 
 <th:block layout:fragment="page-specific-scripts-bottom">
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', async () => {
 
             if (!isAuthenticated()) {
-                window.location.href = '/login';
+                logout('Missing User ID or Token.');
                 return;
             }
 
@@ -217,11 +214,10 @@
                         return;
                     }
 
-                    const newUsername = document.getElementById('newUsername').value;
                     const newEmail = document.getElementById('newEmail').value;
                     const currentPassword = document.getElementById('profileCurrentPassword').value;
 
-                    if (!newUsername || !newEmail || !currentPassword) {
+                    if (!newEmail || !currentPassword) {
                         alert('Please fill all fields');
                         return;
                     }
@@ -237,7 +233,6 @@
                         const response = await makeAuthenticatedRequest(`/api/users/${userId}/update-info?password=${encodeURIComponent(currentPassword)}`, {
                             method: 'PUT',
                             body: JSON.stringify({
-                                userName: newUsername,
                                 email: newEmail
                             })
                         });
@@ -251,7 +246,6 @@
                                 setToken(data.token);
                                 const user = getUser();
                                 if (user) {
-                                    user.username = newUsername;
                                     user.email = newEmail;
                                     setUser(user);
                                 }
@@ -304,7 +298,10 @@
                             alert('Password updated successfully!');
                             document.getElementById('newPassword').value = '';
                             document.getElementById('passwordCurrentPassword').value = '';
-                        } else {
+                        }else if (response.status === 401 || response.status === 403) {
+                            alert("Session expired. Please log in again.");
+                            logout();
+                        }else {
                             const errorText = await response.text();
                             throw new Error(errorText);
                         }

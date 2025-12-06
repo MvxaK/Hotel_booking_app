@@ -66,309 +66,311 @@
     </div>
 </div>
 
-<script>
-    if (!window.roomBookingScriptInitialized) {
-        window.roomBookingScriptInitialized = true;
+<th:block layout:fragment="page-specific-scripts-bottom">
+    <script>
+        if (!window.roomBookingScriptInitialized) {
+            window.roomBookingScriptInitialized = true;
 
-        document.addEventListener("DOMContentLoaded", async () => {
-            const hotelSelect = document.getElementById("hotelSelect");
-            const roomSelect = document.getElementById("roomSelect");
-            const roomDetails = document.getElementById("roomDetails");
-            const totalPriceEl = document.getElementById("totalPrice");
-            const form = document.getElementById("roomBookingForm");
-            const submitBtn = document.getElementById("submitBtn");
+            document.addEventListener("DOMContentLoaded", async () => {
+                const hotelSelect = document.getElementById("hotelSelect");
+                const roomSelect = document.getElementById("roomSelect");
+                const roomDetails = document.getElementById("roomDetails");
+                const totalPriceEl = document.getElementById("totalPrice");
+                const form = document.getElementById("roomBookingForm");
+                const submitBtn = document.getElementById("submitBtn");
 
-            let selectedRoom = null;
-            let selectedRoomType = null;
-            let allRooms = [];
+                let selectedRoom = null;
+                let selectedRoomType = null;
+                let allRooms = [];
 
-            const urlParams = new URLSearchParams(window.location.search);
-            const preSelectedRoomId = urlParams.get('roomId');
+                const urlParams = new URLSearchParams(window.location.search);
+                const preSelectedRoomId = urlParams.get('roomId');
 
-            async function loadHotels() {
-                try {
-                    const response = await fetch("/api/hotels");
-                    if (response.ok) {
-                        const hotels = await response.json();
-                        hotelSelect.innerHTML = '<option value="">Select a hotel</option>';
-                        hotels.forEach(hotel => {
-                            const opt = document.createElement("option");
-                            opt.value = hotel.id;
-                            opt.textContent = `${hotel.name} — ${hotel.address}`;
-                            hotelSelect.appendChild(opt);
-                        });
+                async function loadHotels() {
+                    try {
+                        const response = await fetch("/api/hotels");
+                        if (response.ok) {
+                            const hotels = await response.json();
+                            hotelSelect.innerHTML = '<option value="">Select a hotel</option>';
+                            hotels.forEach(hotel => {
+                                const opt = document.createElement("option");
+                                opt.value = hotel.id;
+                                opt.textContent = `${hotel.name} — ${hotel.address}`;
+                                hotelSelect.appendChild(opt);
+                            });
 
-                        if (preSelectedRoomId) {
-                            findAndSelectRoom(preSelectedRoomId);
+                            if (preSelectedRoomId) {
+                                findAndSelectRoom(preSelectedRoomId);
+                            }
                         }
+                    } catch (err) {
+                        hotelSelect.innerHTML = '<option>Server error</option>';
                     }
-                } catch (err) {
-                    hotelSelect.innerHTML = '<option>Server error</option>';
                 }
-            }
 
-            async function findAndSelectRoom(roomId) {
-                try {
-                    const roomResponse = await fetch(`/api/rooms/${roomId}`);
-                    if (roomResponse.ok) {
-                        const room = await roomResponse.json();
+                async function findAndSelectRoom(roomId) {
+                    try {
+                        const roomResponse = await fetch(`/api/rooms/${roomId}`);
+                        if (roomResponse.ok) {
+                            const room = await roomResponse.json();
 
-                        const hotelResponse = await fetch(`/api/hotels/${room.hotelId}`);
-                        if (hotelResponse.ok) {
-                            const hotel = await hotelResponse.json();
-                            hotelSelect.value = hotel.id;
+                            const hotelResponse = await fetch(`/api/hotels/${room.hotelId}`);
+                            if (hotelResponse.ok) {
+                                const hotel = await hotelResponse.json();
+                                hotelSelect.value = hotel.id;
 
-                            await loadRoomsForHotel(hotel.id, roomId);
+                                await loadRoomsForHotel(hotel.id, roomId);
+                            }
                         }
+                    } catch (err) {
+                        console.error("Error finding room:", err);
                     }
-                } catch (err) {
-                    console.error("Error finding room:", err);
                 }
-            }
 
-            async function loadRoomsForHotel(hotelId, preSelectedRoomId = null) {
-                try {
-                    const response = await fetch(`/api/hotels/${hotelId}/rooms`);
-                    if (response.ok) {
-                        const rooms = await response.json();
-                        allRooms = rooms;
+                async function loadRoomsForHotel(hotelId, preSelectedRoomId = null) {
+                    try {
+                        const response = await fetch(`/api/hotels/${hotelId}/rooms`);
+                        if (response.ok) {
+                            const rooms = await response.json();
+                            allRooms = rooms;
 
-                        roomSelect.disabled = false;
-                        roomSelect.innerHTML = '<option value="">Select a room</option>';
+                            roomSelect.disabled = false;
+                            roomSelect.innerHTML = '<option value="">Select a room</option>';
 
-                        rooms.forEach(room => {
-                            const opt = document.createElement("option");
-                            opt.value = room.id;
-                            opt.textContent = `Room ${room.roomNumber}`;
-                            opt.disabled = !room.available;
+                            rooms.forEach(room => {
+                                const opt = document.createElement("option");
+                                opt.value = room.id;
+                                opt.textContent = `Room ${room.roomNumber}`;
+                                opt.disabled = !room.available;
 
-                            if (preSelectedRoomId && room.id == preSelectedRoomId) {
-                                opt.selected = true;
-                                setTimeout(() => loadRoomDetails(room.id), 100);
+                                if (preSelectedRoomId && room.id == preSelectedRoomId) {
+                                    opt.selected = true;
+                                    setTimeout(() => loadRoomDetails(room.id), 100);
+                                }
+
+                                roomSelect.appendChild(opt);
+                            });
+                        }
+                    } catch (err) {
+                        roomSelect.innerHTML = '<option>Server error</option>';
+                    }
+                }
+
+                async function loadRoomType(roomTypeId) {
+                    try {
+                        const response = await fetch(`/api/room-types/${roomTypeId}`);
+                        if (response.ok) return await response.json();
+                    } catch (err) {
+                        return null;
+                    }
+                }
+
+                async function loadRoomDetails(roomId) {
+                    try {
+                        const roomResponse = await fetch(`/api/rooms/${roomId}`);
+                        if (roomResponse.ok) {
+                            selectedRoom = await roomResponse.json();
+
+                            if (selectedRoom.roomTypeId) {
+                                selectedRoomType = await loadRoomType(selectedRoom.roomTypeId);
+                            } else {
+                                selectedRoomType = null;
                             }
 
-                            roomSelect.appendChild(opt);
-                        });
-                    }
-                } catch (err) {
-                    roomSelect.innerHTML = '<option>Server error</option>';
-                }
-            }
-
-            async function loadRoomType(roomTypeId) {
-                try {
-                    const response = await fetch(`/api/room-types/${roomTypeId}`);
-                    if (response.ok) return await response.json();
-                } catch (err) {
-                    return null;
-                }
-            }
-
-            async function loadRoomDetails(roomId) {
-                try {
-                    const roomResponse = await fetch(`/api/rooms/${roomId}`);
-                    if (roomResponse.ok) {
-                        selectedRoom = await roomResponse.json();
-
-                        if (selectedRoom.roomTypeId) {
-                            selectedRoomType = await loadRoomType(selectedRoom.roomTypeId);
-                        } else {
-                            selectedRoomType = null;
+                            updateRoomDetails(selectedRoom, selectedRoomType);
+                            calculateTotal();
                         }
-
-                        updateRoomDetails(selectedRoom, selectedRoomType);
-                        calculateTotal();
+                    } catch (err) {
+                        console.error("Error loading room details:", err);
                     }
-                } catch (err) {
-                    console.error("Error loading room details:", err);
-                }
-            }
-
-            function updateRoomDetails(room, roomType) {
-                if (room && roomType) {
-                    document.getElementById("roomNumber").textContent = room.roomNumber;
-                    document.getElementById("roomType").textContent = roomType.name;
-                    document.getElementById("roomCapacity").textContent = roomType.capacity;
-                    document.getElementById("roomBeds").textContent = roomType.bedsCount;
-                    document.getElementById("roomPrice").textContent = roomType.pricePerNight + ' ₸';
-                    document.getElementById("roomDescription").textContent = roomType.description || 'No description available';
-
-                    const statusBadge = document.getElementById("roomStatus");
-                    statusBadge.textContent = room.available ? 'Available' : 'Occupied';
-                    statusBadge.className = room.available ? 'badge bg-success' : 'badge bg-danger';
-
-                    roomDetails.style.display = 'block';
-                    submitBtn.disabled = !room.available || !isAuthenticated();
-                } else {
-                    roomDetails.style.display = 'none';
-                    submitBtn.disabled = true;
-                }
-            }
-
-            function calculateTotal() {
-                const checkIn = new Date(document.getElementById("checkInDate").value);
-                const checkOut = new Date(document.getElementById("checkOutDate").value);
-
-                if (selectedRoom && selectedRoomType && checkOut > checkIn) {
-                    const days = Math.ceil((checkOut - checkIn) / (1000 * 3600 * 24));
-                    const total = days * selectedRoomType.pricePerNight;
-                    totalPriceEl.textContent = `${total.toFixed(2)} ₸`;
-                } else {
-                    totalPriceEl.textContent = "0 ₸";
-                }
-            }
-
-            hotelSelect.addEventListener("change", async () => {
-                const hotelId = hotelSelect.value;
-                if (!hotelId) {
-                    roomSelect.disabled = true;
-                    roomSelect.innerHTML = '<option value="">First select a hotel</option>';
-                    selectedRoom = null;
-                    selectedRoomType = null;
-                    updateRoomDetails(null, null);
-                    return;
                 }
 
-                await loadRoomsForHotel(hotelId);
-            });
+                function updateRoomDetails(room, roomType) {
+                    if (room && roomType) {
+                        document.getElementById("roomNumber").textContent = room.roomNumber;
+                        document.getElementById("roomType").textContent = roomType.name;
+                        document.getElementById("roomCapacity").textContent = roomType.capacity;
+                        document.getElementById("roomBeds").textContent = roomType.bedsCount;
+                        document.getElementById("roomPrice").textContent = roomType.pricePerNight + ' ₸';
+                        document.getElementById("roomDescription").textContent = roomType.description || 'No description available';
 
-            roomSelect.addEventListener("change", async () => {
-                const roomId = roomSelect.value;
-                if (!roomId) {
-                    selectedRoom = null;
-                    selectedRoomType = null;
-                    updateRoomDetails(null, null);
-                    return;
+                        const statusBadge = document.getElementById("roomStatus");
+                        statusBadge.textContent = room.available ? 'Available' : 'Occupied';
+                        statusBadge.className = room.available ? 'badge bg-success' : 'badge bg-danger';
+
+                        roomDetails.style.display = 'block';
+                        submitBtn.disabled = !room.available || !isAuthenticated();
+                    } else {
+                        roomDetails.style.display = 'none';
+                        submitBtn.disabled = true;
+                    }
                 }
 
-                await loadRoomDetails(roomId);
-            });
+                function calculateTotal() {
+                    const checkIn = new Date(document.getElementById("checkInDate").value);
+                    const checkOut = new Date(document.getElementById("checkOutDate").value);
 
-            document.getElementById("checkInDate").addEventListener("change", calculateTotal);
-            document.getElementById("checkOutDate").addEventListener("change", calculateTotal);
-
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById("checkInDate").min = today;
-            document.getElementById("checkOutDate").min = today;
-
-            form.addEventListener("submit", async (e) => {
-                e.preventDefault();
-
-                if (!isAuthenticated()) {
-                    alert("Please log in to book a room!");
-                    window.location.href = '/login';
-                    return;
-                }
-
-                if (!selectedRoom) {
-                    alert("Please select a room for booking!");
-                    return;
-                }
-
-                if (!selectedRoom.available) {
-                    alert("This room is not available for booking!");
-                    return;
-                }
-
-                const checkIn = document.getElementById("checkInDate").value;
-                const checkOut = document.getElementById("checkOutDate").value;
-
-                if (!checkIn || !checkOut) {
-                    alert("Please select both check-in and check-out dates!");
-                    return;
-                }
-
-                const checkInDate = new Date(checkIn);
-                const checkOutDate = new Date(checkOut);
-                const today = new Date();
-                today.setHours(0, 0, 0, 0);
-
-                if (checkInDate < today) {
-                    alert("Check-in date cannot be in the past!");
-                    return;
-                }
-
-                if (checkOutDate <= checkInDate) {
-                    alert("Check-out date must be after check-in date!");
-                    return;
-                }
-
-                const days = Math.ceil((checkOutDate - checkInDate) / (1000 * 3600 * 24));
-                const pricePerNight = selectedRoomType?.pricePerNight || 0;
-                const total = days * pricePerNight;
-
-                if (!confirm(`Confirm Booking:\nRoom: ${selectedRoom.roomNumber}\nType: ${selectedRoomType?.name || 'Unknown'}\nCheck-in: ${checkIn}\nCheck-out: ${checkOut}\nDuration: ${days} days\nTotal: ${total.toFixed(2)} ₸`)) return;
-
-                submitBtn.disabled = true;
-                submitBtn.textContent = "Booking...";
-
-                const data = {
-                    roomId: parseInt(roomSelect.value),
-                    checkInDate: checkIn,
-                    checkOutDate: checkOut
-                };
-
-                try {
-                    const response = await fetch("/api/bookings/rooms", {
-                        method: "POST",
-                        headers: getAuthHeaders(),
-                        body: JSON.stringify(data)
-                    });
-
-                    if (response.ok) {
-                        await response.json();
-                        alert("Booking created successfully!");
-
-                        form.reset();
+                    if (selectedRoom && selectedRoomType && checkOut > checkIn) {
+                        const days = Math.ceil((checkOut - checkIn) / (1000 * 3600 * 24));
+                        const total = days * selectedRoomType.pricePerNight;
+                        totalPriceEl.textContent = `${total.toFixed(2)} ₸`;
+                    } else {
                         totalPriceEl.textContent = "0 ₸";
+                    }
+                }
+
+                hotelSelect.addEventListener("change", async () => {
+                    const hotelId = hotelSelect.value;
+                    if (!hotelId) {
+                        roomSelect.disabled = true;
+                        roomSelect.innerHTML = '<option value="">First select a hotel</option>';
                         selectedRoom = null;
                         selectedRoomType = null;
                         updateRoomDetails(null, null);
-                        roomSelect.disabled = true;
-
-                        setTimeout(() => {
-                            window.location.href = '/users/my-profile';
-                        }, 1500);
-
-                    } else if (response.status === 401 || response.status === 403) {
-                        alert("Session expired. Please log in again.");
-                        logout();
-                    } else {
-                        const errorText = await response.text();
-                        alert("Booking error: " + errorText);
+                        return;
                     }
-                } catch (err) {
-                    console.error("Booking error:", err);
-                    alert("Server connection error. Please try again.");
-                } finally {
-                    submitBtn.disabled = false;
-                    submitBtn.textContent = "Book Now";
-                }
-            });
 
-            function updateBookingUI() {
-                if (!isAuthenticated()) {
+                    await loadRoomsForHotel(hotelId);
+                });
+
+                roomSelect.addEventListener("change", async () => {
+                    const roomId = roomSelect.value;
+                    if (!roomId) {
+                        selectedRoom = null;
+                        selectedRoomType = null;
+                        updateRoomDetails(null, null);
+                        return;
+                    }
+
+                    await loadRoomDetails(roomId);
+                });
+
+                document.getElementById("checkInDate").addEventListener("change", calculateTotal);
+                document.getElementById("checkOutDate").addEventListener("change", calculateTotal);
+
+                const today = new Date().toISOString().split('T')[0];
+                document.getElementById("checkInDate").min = today;
+                document.getElementById("checkOutDate").min = today;
+
+                form.addEventListener("submit", async (e) => {
+                    e.preventDefault();
+
+                    if (!isAuthenticated()) {
+                        alert("Please log in to book a room!");
+                        window.location.href = '/login';
+                        return;
+                    }
+
+                    if (!selectedRoom) {
+                        alert("Please select a room for booking!");
+                        return;
+                    }
+
+                    if (!selectedRoom.available) {
+                        alert("This room is not available for booking!");
+                        return;
+                    }
+
+                    const checkIn = document.getElementById("checkInDate").value;
+                    const checkOut = document.getElementById("checkOutDate").value;
+
+                    if (!checkIn || !checkOut) {
+                        alert("Please select both check-in and check-out dates!");
+                        return;
+                    }
+
+                    const checkInDate = new Date(checkIn);
+                    const checkOutDate = new Date(checkOut);
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+
+                    if (checkInDate < today) {
+                        alert("Check-in date cannot be in the past!");
+                        return;
+                    }
+
+                    if (checkOutDate <= checkInDate) {
+                        alert("Check-out date must be after check-in date!");
+                        return;
+                    }
+
+                    const days = Math.ceil((checkOutDate - checkInDate) / (1000 * 3600 * 24));
+                    const pricePerNight = selectedRoomType?.pricePerNight || 0;
+                    const total = days * pricePerNight;
+
+                    if (!confirm(`Confirm Booking:\nRoom: ${selectedRoom.roomNumber}\nType: ${selectedRoomType?.name || 'Unknown'}\nCheck-in: ${checkIn}\nCheck-out: ${checkOut}\nDuration: ${days} days\nTotal: ${total.toFixed(2)} ₸`)) return;
+
                     submitBtn.disabled = true;
-                    submitBtn.textContent = "Please Log In to Book";
-                } else {
-                    submitBtn.disabled = false;
-                    submitBtn.textContent = "Book Now";
-                }
-            }
+                    submitBtn.textContent = "Booking...";
 
-            window.addEventListener('storage', function(e) {
-                if (e.key === 'token' || e.key === 'user') {
-                    updateBookingUI();
-                    if (selectedRoom) {
-                        updateRoomDetails(selectedRoom, selectedRoomType);
+                    const data = {
+                        roomId: parseInt(roomSelect.value),
+                        checkInDate: checkIn,
+                        checkOutDate: checkOut
+                    };
+
+                    try {
+                        const response = await fetch("/api/bookings/rooms", {
+                            method: "POST",
+                            headers: getAuthHeaders(),
+                            body: JSON.stringify(data)
+                        });
+
+                        if (response.ok) {
+                            await response.json();
+                            alert("Booking created successfully!");
+
+                            form.reset();
+                            totalPriceEl.textContent = "0 ₸";
+                            selectedRoom = null;
+                            selectedRoomType = null;
+                            updateRoomDetails(null, null);
+                            roomSelect.disabled = true;
+
+                            setTimeout(() => {
+                                window.location.href = '/users/my-profile';
+                            }, 1500);
+
+                        } else if (response.status === 401 || response.status === 403) {
+                            alert("Session expired. Please log in again.");
+                            logout();
+                        } else {
+                            const errorText = await response.text();
+                            alert("Booking error: " + errorText);
+                        }
+                    } catch (err) {
+                        console.error("Booking error:", err);
+                        alert("Server connection error. Please try again.");
+                    } finally {
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = "Book Now";
+                    }
+                });
+
+                function updateBookingUI() {
+                    if (!isAuthenticated()) {
+                        submitBtn.disabled = true;
+                        submitBtn.textContent = "Please Log In to Book";
+                    } else {
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = "Book Now";
                     }
                 }
-            });
 
-            updateBookingUI();
-            loadHotels();
-        });
-    }
-</script>
+                window.addEventListener('storage', function(e) {
+                    if (e.key === 'token' || e.key === 'user') {
+                        updateBookingUI();
+                        if (selectedRoom) {
+                            updateRoomDetails(selectedRoom, selectedRoomType);
+                        }
+                    }
+                });
+
+                updateBookingUI();
+                loadHotels();
+            });
+        }
+    </script>
+</th:block>
 </body>
 </html>

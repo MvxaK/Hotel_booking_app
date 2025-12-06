@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="'Update ' + ${roomType.name}"></title>
+    <th:block layout:fragment="page-specific-head">
+        <link rel="stylesheet" href="/css/forms.css">
+    </th:block>
+</head>
+<body layout:fragment="content">
+
+<div class="container mt-5">
+    <div class="card shadow p-4 rounded">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="fw-bold mb-0">Update Room Type: <span th:text="${roomType.name}"></span></h2>
+            <a th:href="@{'/rooms/' + ${roomId}}" class="btn btn-outline-secondary"> ← Back to Room</a>
+        </div>
+
+        <div id="adminAlert" class="alert alert-warning d-none" role="alert">
+            <i class="bi bi-shield-exclamation me-2"></i>
+            Administrator access required to update room types.
+        </div>
+
+        <form id="roomTypeForm">
+            <input type="hidden" id="roomTypeId" th:value="${roomType.id}">
+            <input type="hidden" id="hotelId" th:value="${roomType.hotelId}">
+            <input type="hidden" id="roomId" th:value="${roomId}">
+
+            <div class="mb-3">
+                <label class="form-label">Hotel</label>
+                <input type="text" class="form-control" th:value="${hotel.name + ' - ' + hotel.address}" disabled>
+            </div>
+
+            <div class="mb-3">
+                <label for="roomTypeName" class="form-label">Type Name</label>
+                <input type="text" class="form-control" id="roomTypeName" th:value="${roomType.name}" required>
+            </div>
+
+            <div class="row g-3">
+                <div class="col-md-6 mb-3">
+                    <label for="capacity" class="form-label">Capacity (Guests)</label>
+                    <input type="number" class="form-control" id="capacity" min="1" th:value="${roomType.capacity}" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="bedsCount" class="form-label">Beds Count</label>
+                    <input type="number" class="form-control" id="bedsCount" min="1" th:value="${roomType.bedsCount}" required>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="pricePerNight" class="form-label">Price per Night (₸)</label>
+                <input type="number" class="form-control" id="pricePerNight" min="0.01" step="any" th:value="${roomType.pricePerNight}" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="description" class="form-label">Description</label>
+                <textarea class="form-control" id="description" rows="3" required th:text="${roomType.description}"></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-warning w-100 fw-semibold" id="submitBtn">Update Room Type</button>
+        </form>
+    </div>
+</div>
+
+<th:block layout:fragment="page-specific-scripts-bottom">
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const roomTypeForm = document.getElementById('roomTypeForm');
+            const adminAlert = document.getElementById('adminAlert');
+            const submitBtn = document.getElementById('submitBtn');
+
+            function updateUIForAdminAccess() {
+                const isAdmin = typeof checkAdminAccess === 'function' && checkAdminAccess();
+                if (!isAdmin) {
+                    adminAlert.classList.remove('d-none');
+                    submitBtn.disabled = true;
+                    submitBtn.textContent = 'Admin Access Required';
+                } else {
+                    adminAlert.classList.add('d-none');
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Update Room Type';
+                }
+                return isAdmin;
+            }
+
+            updateUIForAdminAccess();
+
+            const originalData = {
+                name: "[[${roomType.name}]]",
+                capacity: parseInt("[[${roomType.capacity}]]"),
+                bedsCount: parseInt("[[${roomType.bedsCount}]]"),
+                pricePerNight: parseFloat("[[${roomType.pricePerNight}]]"),
+                description: "[[${roomType.description}]]",
+            };
+
+            roomTypeForm.addEventListener('submit', async function (e) {
+                e.preventDefault();
+
+                if (!updateUIForAdminAccess()) {
+                    alert('Administrator access is required.');
+                    return;
+                }
+
+                const roomTypeId = document.getElementById('roomTypeId').value;
+                const hotelId = document.getElementById('hotelId').value;
+                const roomId = document.getElementById('roomId').value
+
+                const name = document.getElementById('roomTypeName').value.trim();
+                const capacity = parseInt(document.getElementById('capacity').value);
+                const bedsCount = parseInt(document.getElementById('bedsCount').value);
+                const pricePerNight = parseFloat(document.getElementById('pricePerNight').value);
+                const description = document.getElementById('description').value.trim();
+
+                if (!roomTypeId || !hotelId || !name || isNaN(capacity) || isNaN(bedsCount) || isNaN(pricePerNight) || !description || capacity < 1 || bedsCount < 1 || pricePerNight <= 0) {
+                    alert('Please fill all fields correctly.');
+                    return;
+                }
+
+                const data = {
+                    name: name,
+                    capacity: capacity,
+                    description: description,
+                    pricePerNight: pricePerNight,
+                    bedsCount: bedsCount,
+                    hotelId: parseInt(hotelId),
+                };
+
+                let hasChanges = false;
+                if (data.name !== originalData.name) hasChanges = true;
+                if (data.capacity !== originalData.capacity) hasChanges = true;
+                if (data.bedsCount !== originalData.bedsCount) hasChanges = true;
+                if (Math.abs(data.pricePerNight - originalData.pricePerNight) > 0.001) hasChanges = true;
+                if (data.description !== originalData.description) hasChanges = true;
+
+                if (!hasChanges) {
+                    alert('No changes detected.');
+                    return;
+                }
+
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Updating...';
+
+                try {
+                    const requestFunction = typeof makeAuthenticatedRequest === 'function' ? makeAuthenticatedRequest : fetch;
+
+                    const response = await requestFunction(`/api/room-types/${roomTypeId}`, {
+                        method: 'PUT',
+                        headers: getAuthHeaders(),
+                        body: JSON.stringify(data)
+                    });
+
+                    if (response.ok) {
+                        alert('Room Type successfully updated!');
+
+                        setTimeout(() => {
+                            window.location.href = '/rooms/' + roomId;
+                        }, 1500);
+
+                    } else if (response.status === 401 || response.status === 403) {
+                        alert('Access denied. Please log in as administrator.');
+                        if (typeof logout === 'function')
+                            logout();
+                    } else {
+                        const errorText = await response.text();
+                        alert('Error: ' + (errorText || 'Failed to update room type'));
+                    }
+                } catch (err) {
+                    console.error('Server connection error:', err);
+                    alert('Error connecting to server. Please try again.');
+                } finally {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Update Room Type';
+                }
+            });
+
+            window.addEventListener('storage', function(e) {
+                if (e.key === 'token') {
+                    updateUIForAdminAccess();
+                }
+            });
+        });
+    </script>
+</th:block>
+</body>
+</html>

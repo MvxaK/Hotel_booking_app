@@ -12,7 +12,7 @@ public interface RoomTypeService {
     List<RoomType> getAllRoomTypes();
     RoomType getRoomTypeById(Long id);
     List<Room> getRoomsByRoomTypeId(Long id);
-    RoomType create(RoomType roomType);
-    RoomType update(Long id, RoomType updated);
-    void delete(Long id);
+    RoomType createRoomType(RoomType roomType);
+    RoomType updateRoomType(Long id, RoomType updated);
+    void deleteRoomType(Long id);
 }

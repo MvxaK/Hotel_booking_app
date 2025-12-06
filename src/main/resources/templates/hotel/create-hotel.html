@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Hotel</title>
+    <th:block layout:fragment="page-specific-head">
+        <link rel="stylesheet" href="/css/forms.css">
+    </th:block>
+</head>
+<body layout:fragment="content" class="bg-gray-50">
+
+<div class="container mt-5">
+    <div class="card shadow-lg p-4 rounded-3">
+        <h2 class="text-center mb-4 fw-bold">Add Hotel</h2>
+
+        <div id="adminAlert" class="alert alert-warning d-none" role="alert">
+            <i class="bi bi-shield-exclamation me-2"></i>
+            Administrator access required to add hotels.
+        </div>
+
+        <form id="hotelForm">
+            <div class="mb-3">
+                <label class="form-label">Hotel Name</label>
+                <input type="text" class="form-control" id="name" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Address</label>
+                <input type="text" class="form-control" id="address" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Description</label>
+                <textarea class="form-control" id="description" rows="3" placeholder="Enter hotel description..."></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-warning w-100 fw-semibold" id="submitBtn">Save Hotel</button>
+        </form>
+    </div>
+</div>
+
+<th:block layout:fragment="page-specific-scripts-bottom">
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const hotelForm = document.getElementById('hotelForm');
+            const adminAlert = document.getElementById('adminAlert');
+            const submitBtn = document.getElementById('submitBtn');
+
+            function updateUIForAdminAccess() {
+                const isAdmin = checkAdminAccess();
+                if (!isAdmin) {
+                    adminAlert.classList.remove('d-none');
+                    submitBtn.disabled = true;
+                    submitBtn.textContent = 'Admin Access Required';
+                } else {
+                    adminAlert.classList.add('d-none');
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Save Hotel';
+                }
+                return isAdmin;
+            }
+
+            updateUIForAdminAccess();
+
+            hotelForm.addEventListener('submit', async function (e) {
+                e.preventDefault();
+
+                if (!updateUIForAdminAccess()) {
+                    alert('Administrator access is required to add hotels.');
+                    return;
+                }
+
+                const data = {
+                    name: document.getElementById('name').value,
+                    address: document.getElementById('address').value,
+                    description: document.getElementById('description').value
+                };
+
+                if (!data.name.trim() || !data.address.trim()) {
+                    alert('Please fill in all required fields.');
+                    return;
+                }
+
+                const submitBtn = document.getElementById('submitBtn');
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Saving...';
+
+                try {
+                    const response = await fetch('/api/hotels', {
+                        method: 'POST',
+                        headers: getAuthHeaders(),
+                        body: JSON.stringify(data)
+                    });
+
+                    if (response.ok) {
+                        const savedHotel = await response.json();
+                        alert('Hotel created successfully!');
+                        hotelForm.reset();
+
+                        setTimeout(() => {
+                            window.location.href = '/hotels';
+                        }, 1500);
+
+                    } else if (response.status === 401 || response.status === 403) {
+                        alert('Access denied. Please log in as administrator.');
+                        logout();
+                    } else {
+                        const errorText = await response.text();
+                        alert('Error: ' + (errorText || 'Failed to create hotel'));
+                    }
+                } catch (err) {
+                    console.error('Server connection error:', err);
+                    alert('Error connecting to server. Please try again.');
+                } finally {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Save Hotel';
+                }
+            });
+
+            window.addEventListener('storage', function(e) {
+                if (e.key === 'jwtToken') {
+                    updateUIForAdminAccess();
+                }
+            });
+
+        });
+    </script>
+</th:block>
+</body>
+</html>

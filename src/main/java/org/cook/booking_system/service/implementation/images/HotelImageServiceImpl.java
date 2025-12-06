@@ -16,6 +16,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class HotelImageServiceImpl implements HotelImageService {
+
     private final HotelImageRepository hotelImageRepository;
     private final HotelRepository hotelRepository;
     private final HotelImageMapper hotelImageMapper;

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet author="CrystaliK" id="create-booking-house-table">
+        <createTable tableName="booking_house">
+            <column name="check_in_date" type="date">
+                <constraints nullable="false"/>
+            </column>
+            <column name="check_out_date" type="date">
+                <constraints nullable="false"/>
+            </column>
+            <column name="total_price" type="numeric(38, 2)"/>
+            <column name="house_id" type="BIGINT"/>
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="booking_house_pkey"/>
+            </column>
+            <column name="user_id" type="BIGINT"/>
+            <column name="status" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet author="CrystaliK" id="create-booking-room-table">
+        <createTable tableName="booking_room">
+            <column name="check_in_date" type="date">
+                <constraints nullable="false"/>
+            </column>
+            <column name="check_out_date" type="date">
+                <constraints nullable="false"/>
+            </column>
+            <column name="total_price" type="numeric(38, 2)"/>
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="booking_room_pkey"/>
+            </column>
+            <column name="room_id" type="BIGINT"/>
+            <column name="user_id" type="BIGINT"/>
+            <column name="status" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet author="CrystaliK" id="fk-booking-room-to-rooms">
+        <addForeignKeyConstraint baseColumnNames="room_id" baseTableName="booking_room" constraintName="fk_booking_room_rooms" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="rooms" validate="true"/>
+    </changeSet>
+
+    <changeSet author="CrystaliK" id="fk-booking-house-to-houses">
+        <addForeignKeyConstraint baseColumnNames="house_id" baseTableName="booking_house" constraintName="fk_booking_house_houses" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="houses" validate="true"/>
+    </changeSet>
+
+    <changeSet author="CrystaliK" id="fk-booking-room-to-users">
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="booking_room" constraintName="fk_booking_room_users" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="users" validate="true"/>
+    </changeSet>
+
+    <changeSet author="CrystaliK" id="fk-booking-house-to-users">
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="booking_house" constraintName="fk_booking_house_users" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="users" validate="true"/>
+    </changeSet>
+
+</databaseChangeLog>

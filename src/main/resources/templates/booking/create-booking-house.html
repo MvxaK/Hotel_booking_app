@@ -64,222 +64,223 @@
     </div>
 </div>
 
-<script>
-    if (!window.bookingScriptInitialized) {
-        window.bookingScriptInitialized = true;
+<th:block layout:fragment="page-specific-scripts-bottom">
+    <script>
+        if (!window.bookingScriptInitialized) {
+            window.bookingScriptInitialized = true;
 
-        document.addEventListener("DOMContentLoaded", async () => {
-            const houseSelect = document.getElementById("houseSelect");
-            const houseDetails = document.getElementById("houseDetails");
-            const totalPriceEl = document.getElementById("totalPrice");
-            const authAlert = document.getElementById("authAlert");
-            const bookButton = document.getElementById("bookButton");
-            const houseBookingForm = document.getElementById("houseBookingForm");
+            document.addEventListener("DOMContentLoaded", async () => {
+                const houseSelect = document.getElementById("houseSelect");
+                const houseDetails = document.getElementById("houseDetails");
+                const totalPriceEl = document.getElementById("totalPrice");
+                const authAlert = document.getElementById("authAlert");
+                const bookButton = document.getElementById("bookButton");
+                const houseBookingForm = document.getElementById("houseBookingForm");
 
-            let selectedHouse = null;
+                let selectedHouse = null;
 
-            function checkAuthAndUpdateUI() {
-                const authenticated = isAuthenticated();
-                if (!authenticated) {
-                    authAlert.classList.remove('d-none');
-                    bookButton.disabled = true;
-                    bookButton.textContent = 'Please Log In to Book';
-                } else {
-                    authAlert.classList.add('d-none');
-                    bookButton.disabled = false;
-                    bookButton.textContent = 'Book Now';
+                function checkAuthAndUpdateUI() {
+                    const authenticated = isAuthenticated();
+                    if (!authenticated) {
+                        authAlert.classList.remove('d-none');
+                        bookButton.disabled = true;
+                        bookButton.textContent = 'Please Log In to Book';
+                    } else {
+                        authAlert.classList.add('d-none');
+                        bookButton.disabled = false;
+                        bookButton.textContent = 'Book Now';
+                    }
+                    return authenticated;
                 }
-                return authenticated;
-            }
-            checkAuthAndUpdateUI();
+                checkAuthAndUpdateUI();
 
-            const urlParams = new URLSearchParams(window.location.search);
-            const preSelectedHouseId = urlParams.get('houseId');
+                const urlParams = new URLSearchParams(window.location.search);
+                const preSelectedHouseId = urlParams.get('houseId');
 
-            try {
-                const response = await fetch("/api/houses");
-                if (response.ok) {
-                    const houses = await response.json();
-                    houseSelect.innerHTML = '<option value="">Select a house</option>';
-                    houses.forEach(house => {
-                        const opt = document.createElement("option");
-                        opt.value = house.id;
-                        opt.textContent = `${house.name} — ${house.location} (${house.pricePerNight} ₸/night)`;
-
-                        if (preSelectedHouseId && house.id == preSelectedHouseId) {
-                            opt.selected = true;
-                            setTimeout(() => loadHouseDetails(house.id), 100);
-                        }
-
-                        houseSelect.appendChild(opt);
-                    });
-                } else {
-                    houseSelect.innerHTML = '<option>Error loading houses</option>';
-                }
-            } catch (err) {
-                console.error("Error loading houses:", err);
-                houseSelect.innerHTML = '<option>Server error</option>';
-            }
-
-            function updateHouseDetails(house) {
-                if (house) {
-                    document.getElementById("houseLocation").textContent = house.location;
-                    document.getElementById("houseCapacity").textContent = house.capacity;
-                    document.getElementById("houseRooms").textContent = house.roomsNumber;
-                    document.getElementById("houseBeds").textContent = house.bedsCount;
-                    document.getElementById("houseParking").textContent = house.parkingSlots;
-                    document.getElementById("housePrice").textContent = house.pricePerNight + ' ₸';
-                    document.getElementById("houseDescription").textContent = house.description || 'No description available';
-                    houseDetails.style.display = 'block';
-                } else {
-                    houseDetails.style.display = 'none';
-                }
-            }
-
-            async function loadHouseDetails(houseId) {
                 try {
-                    const resp = await fetch(`/api/houses/${houseId}`);
-                    if (resp.ok) {
-                        selectedHouse = await resp.json();
-                        updateHouseDetails(selectedHouse);
-                        calculateTotal();
+                    const response = await fetch("/api/houses");
+                    if (response.ok) {
+                        const houses = await response.json();
+                        houseSelect.innerHTML = '<option value="">Select a house</option>';
+                        houses.forEach(house => {
+                            const opt = document.createElement("option");
+                            opt.value = house.id;
+                            opt.textContent = `${house.name} — ${house.location} (${house.pricePerNight} ₸/night)`;
+
+                            if (preSelectedHouseId && house.id == preSelectedHouseId) {
+                                opt.selected = true;
+                                setTimeout(() => loadHouseDetails(house.id), 100);
+                            }
+
+                            houseSelect.appendChild(opt);
+                        });
+                    } else {
+                        houseSelect.innerHTML = '<option>Error loading houses</option>';
                     }
                 } catch (err) {
-                    console.error("Error loading house details:", err);
-                }
-            }
-
-            function calculateTotal() {
-                const checkIn = new Date(document.getElementById("checkInDate").value);
-                const checkOut = new Date(document.getElementById("checkOutDate").value);
-                if (selectedHouse && checkOut > checkIn) {
-                    const days = Math.ceil((checkOut - checkIn) / (1000 * 3600 * 24));
-                    const total = days * selectedHouse.pricePerNight;
-                    totalPriceEl.textContent = `${total.toFixed(2)} ₸`;
-                } else {
-                    totalPriceEl.textContent = "0 ₸";
-                }
-            }
-
-            houseSelect.addEventListener("change", async () => {
-                const id = houseSelect.value;
-                if (!id) {
-                    selectedHouse = null;
-                    updateHouseDetails(null);
-                    return;
-                }
-                await loadHouseDetails(id);
-            });
-
-            document.getElementById("checkInDate").addEventListener("change", calculateTotal);
-            document.getElementById("checkOutDate").addEventListener("change", calculateTotal);
-
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById("checkInDate").min = today;
-            document.getElementById("checkOutDate").min = today;
-
-            houseBookingForm.addEventListener("submit", async (e) => {
-                e.preventDefault();
-
-                if (!checkAuthAndUpdateUI()) {
-                    alert("Please log in to book a house!");
-                    window.location.href = '/login';
-                    return;
+                    console.error("Error loading houses:", err);
+                    houseSelect.innerHTML = '<option>Server error</option>';
                 }
 
-                if (!selectedHouse) {
-                    alert("Please select a house for booking!");
-                    return;
+                function updateHouseDetails(house) {
+                    if (house) {
+                        document.getElementById("houseLocation").textContent = house.location;
+                        document.getElementById("houseCapacity").textContent = house.capacity;
+                        document.getElementById("houseRooms").textContent = house.roomsNumber;
+                        document.getElementById("houseBeds").textContent = house.bedsCount;
+                        document.getElementById("houseParking").textContent = house.parkingSlots;
+                        document.getElementById("housePrice").textContent = house.pricePerNight + ' ₸';
+                        document.getElementById("houseDescription").textContent = house.description || 'No description available';
+                        houseDetails.style.display = 'block';
+                    } else {
+                        houseDetails.style.display = 'none';
+                    }
                 }
 
-                const checkIn = document.getElementById("checkInDate").value;
-                const checkOut = document.getElementById("checkOutDate").value;
-
-                if (!checkIn || !checkOut) {
-                    alert("Please select both check-in and check-out dates!");
-                    return;
+                async function loadHouseDetails(houseId) {
+                    try {
+                        const resp = await fetch(`/api/houses/${houseId}`);
+                        if (resp.ok) {
+                            selectedHouse = await resp.json();
+                            updateHouseDetails(selectedHouse);
+                            calculateTotal();
+                        }
+                    } catch (err) {
+                        console.error("Error loading house details:", err);
+                    }
                 }
 
-                const checkInDate = new Date(checkIn);
-                const checkOutDate = new Date(checkOut);
-                const today = new Date();
-                today.setHours(0, 0, 0, 0);
-
-                if (checkInDate < today) {
-                    alert("Check-in date cannot be in the past!");
-                    return;
-                }
-
-                if (checkOutDate <= checkInDate) {
-                    alert("Check-out date must be after check-in date!");
-                    return;
-                }
-
-                const days = Math.ceil((checkOutDate - checkInDate) / (1000 * 3600 * 24));
-                const total = days * selectedHouse.pricePerNight;
-
-                const confirmBooking = confirm(
-                    `Confirm Booking:\nHouse: ${selectedHouse.name}\n` +
-                    `Check-in: ${checkIn}\nCheck-out: ${checkOut}\n` +
-                    `Duration: ${days} days\nTotal: ${total.toFixed(2)} ₸`
-                );
-
-                if (!confirmBooking) return;
-
-                bookButton.disabled = true;
-                bookButton.textContent = "Booking...";
-
-                const data = {
-                    houseId: parseInt(houseSelect.value),
-                    checkInDate: checkIn,
-                    checkOutDate: checkOut
-                };
-
-                try {
-                    const response = await fetch("/api/bookings/houses", {
-                        method: "POST",
-                        headers: getAuthHeaders(),
-                        body: JSON.stringify(data)
-                    });
-
-                    if (response.ok) {
-                        const booking = await response.json();
-                        alert("Booking created successfully!");
-
-                        houseBookingForm.reset();
+                function calculateTotal() {
+                    const checkIn = new Date(document.getElementById("checkInDate").value);
+                    const checkOut = new Date(document.getElementById("checkOutDate").value);
+                    if (selectedHouse && checkOut > checkIn) {
+                        const days = Math.ceil((checkOut - checkIn) / (1000 * 3600 * 24));
+                        const total = days * selectedHouse.pricePerNight;
+                        totalPriceEl.textContent = `${total.toFixed(2)} ₸`;
+                    } else {
                         totalPriceEl.textContent = "0 ₸";
+                    }
+                }
+
+                houseSelect.addEventListener("change", async () => {
+                    const id = houseSelect.value;
+                    if (!id) {
                         selectedHouse = null;
                         updateHouseDetails(null);
-                        houseSelect.value = "";
-
-                        setTimeout(() => {
-                            window.location.href = '/users/my-profile';
-                        }, 1500);
-
-                    } else if (response.status === 401 || response.status === 403) {
-                        alert("Session expired. Please log in again.");
-                        logout();
-                    } else {
-                        const errorText = await response.text();
-                        alert("Booking error: " + errorText);
+                        return;
                     }
-                } catch (err) {
-                    console.error("Booking error:", err);
-                    alert("Server connection error. Please try again.");
-                } finally {
-                    bookButton.disabled = false;
-                    bookButton.textContent = "Book Now";
-                }
-            });
+                    await loadHouseDetails(id);
+                });
 
-            window.addEventListener('storage', function(e) {
-                if (e.key === 'token' || e.key === 'user') {
-                    checkAuthAndUpdateUI();
-                }
-            });
-        });
-    }
-</script>
+                document.getElementById("checkInDate").addEventListener("change", calculateTotal);
+                document.getElementById("checkOutDate").addEventListener("change", calculateTotal);
 
+                const today = new Date().toISOString().split('T')[0];
+                document.getElementById("checkInDate").min = today;
+                document.getElementById("checkOutDate").min = today;
+
+                houseBookingForm.addEventListener("submit", async (e) => {
+                    e.preventDefault();
+
+                    if (!checkAuthAndUpdateUI()) {
+                        alert("Please log in to book a house!");
+                        window.location.href = '/login';
+                        return;
+                    }
+
+                    if (!selectedHouse) {
+                        alert("Please select a house for booking!");
+                        return;
+                    }
+
+                    const checkIn = document.getElementById("checkInDate").value;
+                    const checkOut = document.getElementById("checkOutDate").value;
+
+                    if (!checkIn || !checkOut) {
+                        alert("Please select both check-in and check-out dates!");
+                        return;
+                    }
+
+                    const checkInDate = new Date(checkIn);
+                    const checkOutDate = new Date(checkOut);
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+
+                    if (checkInDate < today) {
+                        alert("Check-in date cannot be in the past!");
+                        return;
+                    }
+
+                    if (checkOutDate <= checkInDate) {
+                        alert("Check-out date must be after check-in date!");
+                        return;
+                    }
+
+                    const days = Math.ceil((checkOutDate - checkInDate) / (1000 * 3600 * 24));
+                    const total = days * selectedHouse.pricePerNight;
+
+                    const confirmBooking = confirm(
+                        `Confirm Booking:\nHouse: ${selectedHouse.name}\n` +
+                        `Check-in: ${checkIn}\nCheck-out: ${checkOut}\n` +
+                        `Duration: ${days} days\nTotal: ${total.toFixed(2)} ₸`
+                    );
+
+                    if (!confirmBooking) return;
+
+                    bookButton.disabled = true;
+                    bookButton.textContent = "Booking...";
+
+                    const data = {
+                        houseId: parseInt(houseSelect.value),
+                        checkInDate: checkIn,
+                        checkOutDate: checkOut
+                    };
+
+                    try {
+                        const response = await fetch("/api/bookings/houses", {
+                            method: "POST",
+                            headers: getAuthHeaders(),
+                            body: JSON.stringify(data)
+                        });
+
+                        if (response.ok) {
+                            const booking = await response.json();
+                            alert("Booking created successfully!");
+
+                            houseBookingForm.reset();
+                            totalPriceEl.textContent = "0 ₸";
+                            selectedHouse = null;
+                            updateHouseDetails(null);
+                            houseSelect.value = "";
+
+                            setTimeout(() => {
+                                window.location.href = '/users/my-profile';
+                            }, 1500);
+
+                        } else if (response.status === 401 || response.status === 403) {
+                            alert("Session expired. Please log in again.");
+                            logout();
+                        } else {
+                            const errorText = await response.text();
+                            alert("Booking error: " + errorText);
+                        }
+                    } catch (err) {
+                        console.error("Booking error:", err);
+                        alert("Server connection error. Please try again.");
+                    } finally {
+                        bookButton.disabled = false;
+                        bookButton.textContent = "Book Now";
+                    }
+                });
+
+                window.addEventListener('storage', function(e) {
+                    if (e.key === 'token' || e.key === 'user') {
+                        checkAuthAndUpdateUI();
+                    }
+                });
+            });
+        }
+    </script>
+</th:block>
 </body>
 </html>

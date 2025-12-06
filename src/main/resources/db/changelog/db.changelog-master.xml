@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <include file="changes/30-11-2025-14-44-00-create-all-accommodation-booking-tables-and-constraints.xml" relativeToChangelogFile="true"/>
+    <include file="changes/30-11-2025-14-39-00-create-all-users-roles-tables-and-constraints.xml" relativeToChangelogFile="true" />
+    <include file="changes/30-11-2025-14-50-00-create-all-booking-tables-and-contsraints.xml" relativeToChangelogFile="true" />
+    <include file="changes/30-11-2025-14-28-00-create-all-images-tables-and-constraints.xml" relativeToChangelogFile="true" />
+
+    <include file="data/30-11-2025-15-39-00-initial-accommodation-data.xml" relativeToChangelogFile="true" />
+    <include file="data/30-11-2025-15-13-00-initial-user-roles-data.xml" relativeToChangelogFile="true" />
+    <include file="data/30-11-2025-15-14-00-initial-booking-data.xml" relativeToChangelogFile="true" />
+    <include file="data/30-11-2025-15-19-00-initial-images-data.xml" relativeToChangelogFile="true" />
+
+</databaseChangeLog>

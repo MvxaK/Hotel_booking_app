@@ -9,6 +9,7 @@
 </head>
 
 <body class="hotel-details-page">
+
 <main layout:fragment="content">
     <div class="container py-5">
 
@@ -55,7 +56,7 @@
 
                             <button class="delete-image-btn position-absolute top-0 end-0 btn p-0 border-0"
                                     style="opacity: 0; transition: opacity 0.2s ease;"
-                                    th:data-hotel-id="${house.id}" th:data-image-id="${image.id}"
+                                    th:data-house-id="${house.id}" th:data-image-id="${image.id}"
                                     th:title="'Delete Image ID: ' + ${image.id}">
                                 <i class="bi bi-trash-fill text-danger fs-5"></i>
                             </button>

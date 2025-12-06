@@ -17,6 +17,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class HouseImageServiceImpl implements HouseImageService{
+
     private final HouseImageRepository houseImageRepository;
     private final HouseRepository houseRepository;
     private final HouseImageMapper houseImageMapper;

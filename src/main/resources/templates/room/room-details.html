@@ -30,6 +30,10 @@
                     <i class="bi bi-image-fill me-2"></i>Add Type Images
                 </a>
 
+                <a th:if="${roomType != null}" th:href="@{'/room-types/' + ${roomType.id} + '/update' + '?roomId=' + ${room.id}}" class="btn btn-outline-primary">
+                    <i class="bi bi-card-heading me-2"></i>Edit Room Type
+                </a>
+
                 <a th:href="@{'/rooms/' + ${room.id} + '/update'}" class="btn btn-outline-warning">
                     <i class="bi bi-pencil-square me-2"></i>Edit Room
                 </a>
@@ -54,7 +58,7 @@
 
                             <button class="delete-image-btn position-absolute top-0 end-0 btn p-0 border-0"
                                     style="opacity: 0; transition: opacity 0.2s ease;"
-                                    th:data-hotel-id="${roomType.id}" th:data-image-id="${image.id}"
+                                    th:data-room-type-id="${roomType.id}" th:data-image-id="${image.id}"
                                     th:title="'Delete Image ID: ' + ${image.id}">
                                 <i class="bi bi-trash-fill text-danger fs-5"></i>
                             </button>

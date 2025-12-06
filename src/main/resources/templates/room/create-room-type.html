@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Room Type</title>
+    <th:block layout:fragment="page-specific-head">
+        <link rel="stylesheet" href="/css/forms.css">
+    </th:block>
+</head>
+<body layout:fragment="content">
+
+<div class="container mt-5">
+    <div class="card shadow p-4 rounded">
+        <h2 class="text-center mb-4 fw-bold">Add New Room Type</h2>
+
+        <div id="adminAlert" class="alert alert-warning d-none" role="alert">
+            <i class="bi bi-shield-exclamation me-2"></i>
+            Administrator access required to add room types.
+        </div>
+
+        <form id="roomTypeForm">
+            <div class="mb-3">
+                <label for="hotelId" class="form-label">Select Hotel</label>
+                <select id="hotelId" class="form-select" required>
+                    <option value="">Select...</option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label for="roomTypeName" class="form-label">Type Name</label>
+                <input type="text" class="form-control" id="roomTypeName" placeholder="e.g., Deluxe Double, Standard Single" required>
+            </div>
+
+            <div class="row g-3">
+                <div class="col-md-6 mb-3">
+                    <label for="capacity" class="form-label">Capacity (Guests)</label>
+                    <input type="number" class="form-control" id="capacity" min="1" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="bedsCount" class="form-label">Beds Count</label>
+                    <input type="number" class="form-control" id="bedsCount" min="1" required>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="pricePerNight" class="form-label">Price per Night (₸)</label>
+                <input type="number" class="form-control" id="pricePerNight" min="0.01" step="any" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="description" class="form-label">Description</label>
+                <textarea class="form-control" id="description" rows="3" placeholder="Brief description of the room type amenities..." required></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-warning w-100 fw-semibold" id="submitBtn">Save Room Type</button>
+        </form>
+    </div>
+</div>
+
+<th:block layout:fragment="page-specific-scripts-bottom">
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const roomTypeForm = document.getElementById('roomTypeForm');
+            const adminAlert = document.getElementById('adminAlert');
+            const submitBtn = document.getElementById('submitBtn');
+
+            function updateUIForAdminAccess() {
+                const isAdmin = typeof checkAdminAccess === 'function' && checkAdminAccess();
+                if (!isAdmin) {
+                    adminAlert.classList.remove('d-none');
+                    submitBtn.disabled = true;
+                    submitBtn.textContent = 'Admin Access Required';
+                } else {
+                    adminAlert.classList.add('d-none');
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Save Room Type';
+                }
+                return isAdmin;
+            }
+
+            updateUIForAdminAccess();
+            loadHotels();
+
+            roomTypeForm.addEventListener('submit', async function (e) {
+                e.preventDefault();
+
+                if (!updateUIForAdminAccess()) {
+                    alert('Administrator access is required.');
+                    return;
+                }
+
+                const hotelId = parseInt(document.getElementById('hotelId').value);
+                const name = document.getElementById('roomTypeName').value.trim();
+                const capacity = parseInt(document.getElementById('capacity').value);
+                const bedsCount = parseInt(document.getElementById('bedsCount').value);
+
+                const pricePerNight = parseFloat(document.getElementById('pricePerNight').value);
+                const description = document.getElementById('description').value.trim();
+
+                if (!hotelId || !name || !capacity || !bedsCount || !pricePerNight || !description) {
+                    alert('Please fill all required fields.');
+                    return;
+                }
+
+                const data = {
+                    name: name,
+                    capacity: capacity,
+                    description: description,
+                    pricePerNight: pricePerNight,
+                    bedsCount: bedsCount,
+                    hotelId: hotelId,
+                };
+
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Saving...';
+
+                try {
+                    const requestFunction = typeof makeAuthenticatedRequest === 'function' ? makeAuthenticatedRequest : fetch;
+
+                    const response = await requestFunction('/api/room-types', {
+                        method: 'POST',
+                        headers: getAuthHeaders(),
+                        body: JSON.stringify(data)
+                    });
+
+                    if (response.ok) {
+                        alert('Room Type successfully added!');
+                        roomTypeForm.reset();
+
+                        setTimeout(() => {
+                            window.location.href = `/hotels/${hotelId}`;
+                        }, 1500);
+
+                    } else if (response.status === 401 || response.status === 403) {
+                        alert('Access denied. Please log in as administrator.');
+
+                        if (typeof logout === 'function')
+                            logout();
+                    } else {
+                        const errorText = await response.text();
+                        alert('Error: ' + (errorText || 'Failed to create room type'));
+                    }
+                } catch (err) {
+                  console.error('Server connection error:', err);
+                  alert('Error connecting to server. Please try again.');
+                } finally {
+                  submitBtn.disabled = false;
+                  submitBtn.textContent = 'Save Room Type';
+                }
+            });
+
+            async function loadHotels() {
+                try {
+                    const response = await fetch('/api/hotels');
+                    if (response.ok) {
+                        const hotels = await response.json();
+                        const select = document.getElementById('hotelId');
+                        select.innerHTML = '<option value="">Select...</option>';
+                        hotels.forEach(hotel => {
+                            const opt = document.createElement('option');
+                            opt.value = hotel.id;
+                            opt.textContent = `${hotel.name} — ${hotel.address}`;
+                            select.appendChild(opt);
+                        });
+                    } else {
+                        console.error('Failed to load hotels:', response.statusText);
+                    }
+                } catch (err) {
+                    console.error('Error loading hotels:', err);
+                }
+            }
+
+            window.addEventListener('storage', function(e) {
+                if (e.key === 'token') {
+                    updateUIForAdminAccess();
+                }
+            });
+        });
+    </script>
+</th:block>
+</body>
+</html>

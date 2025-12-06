@@ -39,9 +39,9 @@ public class RoomTypeEntity {
     @JoinColumn(name = "hotel_id", referencedColumnName = "id")
     private HotelEntity hotel;
 
-    @OneToMany(mappedBy = "roomType", cascade = CascadeType.ALL,orphanRemoval = true)
+    @OneToMany(mappedBy = "roomType", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<RoomEntity> rooms;
 
-    @OneToMany(mappedBy = "roomType", cascade = CascadeType.ALL,orphanRemoval = true)
+    @OneToMany(mappedBy = "roomType", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<RoomTypeImageEntity> images;
 }

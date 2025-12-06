@@ -35,7 +35,6 @@ public class BookingRoomServiceImpl implements BookingRoomService{
     private final UserRepository userRepository;
     private final RoomTypeRepository roomTypeRepository;
     private final RoomRepository roomRepository;
-    private final Logger logger = LoggerFactory.getLogger(BookingRoomServiceImpl.class);
 
     @Transactional
     public BookingRoom createBookingForUser(Long userId, BookingRoomRequest bookingRequest) {
@@ -66,7 +65,6 @@ public class BookingRoomServiceImpl implements BookingRoomService{
         userEntity.getRoomBookings().add(bookingEntity);
         bookingEntity.setUser(userEntity);
 
-        logger.info("Room booking created for user {}", userId);
         return bookingRoomMapper.toModel(bookingRoomRepository.save(bookingEntity));
     }
 

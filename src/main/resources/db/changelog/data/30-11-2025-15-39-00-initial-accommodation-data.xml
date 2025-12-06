@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet author="CrystaliK" id="insert-houses">
+        <insert tableName="houses">
+            <column name="beds_count" valueNumeric="2"/>
+            <column name="capacity" valueNumeric="6"/>
+            <column name="is_available" valueBoolean="true"/>
+            <column name="parking_slots" valueNumeric="2"/>
+            <column name="price_per_night" valueNumeric="40000.00"/>
+            <column name="rooms_number" valueNumeric="3"/>
+            <column name="description" value="A cozy house located in the heart of the city, perfect for families or groups of friends. It features 3 rooms, including two rooms with double beds and one flexible living space suitable for additional sleeping arrangements. Guests can easily reach cafes, shops, and cultural attractions on foot, and the metro and bus stops are just a short walk away. The house provides a fully equipped kitchen, high-speed Wi-Fi, and a small courtyard, making it a comfortable and convenient urban retreat."/>
+            <column name="house_name" value="City Center House"/>
+            <column name="location" value="St. Somewhere 11"/>
+        </insert>
+        <insert tableName="houses">
+            <column name="beds_count" valueNumeric="4"/>
+            <column name="capacity" valueNumeric="8"/>
+            <column name="is_available" valueBoolean="true"/>
+            <column name="parking_slots" valueNumeric="2"/>
+            <column name="price_per_night" valueNumeric="80000.00"/>
+            <column name="rooms_number" valueNumeric="4"/>
+            <column name="description" value="Peaceful and spacious, this countryside home offers the perfect escape from the city noise. The property includes 4 rooms: two rooms with double beds and one room with two single beds, designed for maximum comfort and flexibility. Guests can enjoy a private swimming pool and sauna, along with a large garden for outdoor dining and relaxation. Although surrounded by nature, the house has easy access to a local bus route connecting to nearby towns. Ideal for families, gatherings, and quiet weekends in the fresh air."/>
+            <column name="house_name" value="Countryside House"/>
+            <column name="location" value="St. Somewhere 43"/>
+        </insert>
+        <insert tableName="houses">
+            <column name="beds_count" valueNumeric="10"/>
+            <column name="capacity" valueNumeric="10"/>
+            <column name="is_available" valueBoolean="true"/>
+            <column name="parking_slots" valueNumeric="3"/>
+            <column name="price_per_night" valueNumeric="120000.00"/>
+            <column name="rooms_number" valueNumeric="6"/>
+            <column name="description" value="Nestled at the foot of the mountains, this charming cottage is perfect for large groups seeking peace and scenic beauty. The cottage features 6 rooms: three rooms with double beds and two rooms with two single beds. Guests can relax in the outdoor swimming pool and traditional sauna, or enjoy hiking trails that begin right outside the door. A bus line runs nearby, offering convenient transport to local markets and town centers. This cottage blends comfort, mountain atmosphere, and incredible views."/>
+            <column name="house_name" value="Mountain Foot Cottage"/>
+            <column name="location" value="St. Somewhere 99"/>
+        </insert>
+        <insert tableName="houses">
+            <column name="beds_count" valueNumeric="3"/>
+            <column name="capacity" valueNumeric="6"/>
+            <column name="is_available" valueBoolean="true"/>
+            <column name="parking_slots" valueNumeric="1"/>
+            <column name="price_per_night" valueNumeric="100000.00"/>
+            <column name="rooms_number" valueNumeric="3"/>
+            <column name="description" value="A picturesque cabin surrounded by alpine nature, offering breathtaking views of multiple mountain peaks. It includes 3 rooms, each furnished with a two-person bed, making it perfect for small groups or families. A clear mountain stream flows nearby, creating a peaceful and refreshing environment. The cabin features a fireplace, a terrace overlooking the mountains, and direct access to hiking paths. Ideal for travelers who love quiet mornings, fresh air, and nature right at their doorstep."/>
+            <column name="house_name" value="High Mountain Cabin"/>
+            <column name="location" value="Somewhere 31"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="CrystaliK" id="insert-hotels">
+        <insert tableName="hotels">
+            <column name="description" value="The cozy hotel, located in the heart of the city, offers modern rooms with beautiful views and all the necessary amenities for a comfortable stay. Each day begins with a delicious breakfast made with fresh local ingredients. Free Wi-Fi, parking and a 24-hour front desk are provided for guests' convenience. The hotel is ideal for both business trips and family vacations."/>
+            <column name="address" value="St. Somewhere 555"/>
+            <column name="hotel_name" value="Grand Royale"/>
+        </insert>
+        <insert tableName="hotels">
+            <column name="description" value="A cozy hotel with a friendly atmosphere, where not only guests are welcome, but also their pets. Affectionate cats and friendly dogs live in the common rooms, creating a homely and warm mood. The rooms are equipped with everything necessary for a comfortable stay for both people and animals. It offers free Wi-Fi, delicious breakfasts and a 24-hour front desk. This is an ideal place for those who appreciate comfort, care and love for animals."/>
+            <column name="address" value="St. Floppa 67"/>
+            <column name="hotel_name" value="Together with friends"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="CrystaliK" id="insert-room-type">
+        <insert tableName="room_type">
+            <column name="beds_count" valueNumeric="1"/>
+            <column name="capacity" valueNumeric="2"/>
+            <column name="price_per_night" valueNumeric="60000.00"/>
+            <column name="hotel_id" valueNumeric="1"/>
+            <column name="description" value="A warm and inviting room perfect for couples or solo travelers who enjoy extra space. Featuring a comfortable double bed, soft lighting, and a calm atmosphere, it’s designed for rest and relaxation. Guests can enjoy free Wi-Fi, a cozy seating area, and the company of friendly hotel cats lounging nearby in the common area."/>
+            <column name="name" value="Standard Double Room (One Double Bed)"/>
+        </insert>
+        <insert tableName="room_type">
+            <column name="beds_count" valueNumeric="2"/>
+            <column name="capacity" valueNumeric="2"/>
+            <column name="price_per_night" valueNumeric="60000.00"/>
+            <column name="hotel_id" valueNumeric="1"/>
+            <column name="description" value="Bright and functional, this twin room is ideal for friends or colleagues traveling together. It offers two comfortable single beds, a modern bathroom, and all essential amenities for a pleasant stay. The peaceful décor and pet-friendly environment make it easy to unwind after a long day of exploring."/>
+            <column name="name" value="Standard Twin Room (Two Single Beds)"/>
+        </insert>
+        <insert tableName="room_type">
+            <column name="beds_count" valueNumeric="1"/>
+            <column name="capacity" valueNumeric="2"/>
+            <column name="price_per_night" valueNumeric="80000.00"/>
+            <column name="hotel_id" valueNumeric="1"/>
+            <column name="description" value="Spacious and elegantly designed, this deluxe room is perfect for guests seeking extra comfort. It features a large double bed, stylish furnishings, and a private balcony with a relaxing view. Start your morning with a fresh cup of coffee while watching our friendly dogs play in the courtyard."/>
+            <column name="name" value="Deluxe Double Room (One Double Bed)"/>
+        </insert>
+        <insert tableName="room_type">
+            <column name="beds_count" valueNumeric="2"/>
+            <column name="capacity" valueNumeric="2"/>
+            <column name="price_per_night" valueNumeric="80000.00"/>
+            <column name="hotel_id" valueNumeric="1"/>
+            <column name="description" value="Combining modern comfort with a cozy touch, this deluxe twin room offers two soft single beds, a comfortable lounge area, and tasteful décor. Guests can enjoy premium amenities, a serene atmosphere, and the warm company of our resident pets in the shared spaces."/>
+            <column name="name" value="Deluxe Twin Room (Two Single Beds)"/>
+        </insert>
+        <insert tableName="room_type">
+            <column name="beds_count" valueNumeric="3"/>
+            <column name="capacity" valueNumeric="4"/>
+            <column name="price_per_night" valueNumeric="100000.00"/>
+            <column name="hotel_id" valueNumeric="1"/>
+            <column name="description" value="Ideal for families or small groups, this two-room suite combines comfort and privacy. One room features a cozy double bed, while the other offers two single beds — perfect for friends or children. The suite includes a spacious living area, a kitchenette, and a balcony overlooking the garden. Guests can relax together or enjoy quiet moments while friendly hotel pets roam nearby, adding warmth and charm to the stay."/>
+            <column name="name" value="Company Suite (One Double Bed + Two Single Beds"/>
+        </insert>
+        <insert tableName="room_type">
+            <column name="beds_count" valueNumeric="4"/>
+            <column name="capacity" valueNumeric="4"/>
+            <column name="price_per_night" valueNumeric="100000.00"/>
+            <column name="hotel_id" valueNumeric="1"/>
+            <column name="description" value="Designed for groups of friends or colleagues, this spacious suite provides two separate rooms, each with two comfortable single beds. The modern interior, natural light, and pet-friendly atmosphere create a welcoming and home-like setting. Guests can unwind in the shared lounge or meet the hotel’s playful cats and dogs in the common areas — the perfect mix of comfort, connection, and coziness."/>
+            <column name="name" value="Company Suite (Two Rooms with Two Single Beds Each)"/>
+        </insert>
+        <insert tableName="room_type">
+            <column name="beds_count" valueNumeric="1"/>
+            <column name="capacity" valueNumeric="2"/>
+            <column name="price_per_night" valueNumeric="70000.00"/>
+            <column name="hotel_id" valueNumeric="2"/>
+            <column name="description" value="A cozy and stylish room designed for couples or solo travelers seeking a calm retreat. Soft colors, warm lighting, and natural décor create a relaxing atmosphere. Guests will find a comfortable double bed, modern amenities, and a small pet bed prepared for their furry companion. Perfect for unwinding after a day of exploring — or cuddling up with your pet by your side."/>
+            <column name="name" value="Standard Double Room (One Double Bed)"/>
+        </insert>
+        <insert tableName="room_type">
+            <column name="beds_count" valueNumeric="2"/>
+            <column name="capacity" valueNumeric="2"/>
+            <column name="price_per_night" valueNumeric="70000.00"/>
+            <column name="hotel_id" valueNumeric="2"/>
+            <column name="description" value="Bright and welcoming, this twin room is ideal for friends or colleagues traveling together. It features two comfortable single beds, a work desk, and large windows with natural light. The interior combines simplicity with warmth, and every guest — including four-legged ones — will feel at home. A soft pet bed and basic care items are provided for your animal friend."/>
+            <column name="name" value="Standard Twin Room (Two Single Beds)"/>
+        </insert>
+        <insert tableName="room_type">
+            <column name="beds_count" valueNumeric="1"/>
+            <column name="capacity" valueNumeric="2"/>
+            <column name="price_per_night" valueNumeric="90000.00"/>
+            <column name="hotel_id" valueNumeric="2"/>
+            <column name="description" value="Spacious and elegant, this deluxe room offers refined comfort with a touch of charm. A large double bed, premium linens, and tasteful décor create a luxurious atmosphere. Guests can enjoy a private balcony or garden view, complimentary coffee, and a larger pet bed for their companion. The room also includes pet care essentials such as bowls, wipes, and a cozy blanket."/>
+            <column name="name" value="Deluxe Double Room (One Double Bed)"/>
+        </insert>
+        <insert tableName="room_type">
+            <column name="beds_count" valueNumeric="2"/>
+            <column name="capacity" valueNumeric="2"/>
+            <column name="price_per_night" valueNumeric="90000.00"/>
+            <column name="hotel_id" valueNumeric="2"/>
+            <column name="description" value="Perfect for guests who value both space and style, this deluxe twin room offers two plush single beds, modern furnishings, and elegant soft tones. Whether traveling with friends or family, you’ll find everything needed for a relaxing stay — including a large pet bed and premium amenities for your furry guest. The gentle scent of natural wood and warm lighting make it a true home away from home."/>
+            <column name="name" value="Deluxe Twin Room (Two Single Beds)"/>
+        </insert>
+        <insert tableName="room_type">
+            <column name="beds_count" valueNumeric="3"/>
+            <column name="capacity" valueNumeric="4"/>
+            <column name="price_per_night" valueNumeric="120000.00"/>
+            <column name="hotel_id" valueNumeric="2"/>
+            <column name="description" value="A charming two-room suite ideal for families or small groups. One bedroom features a comfortable double bed, while the second offers two cozy single beds — perfect for friends or kids. The suite includes a spacious lounge, a kitchenette, and a balcony where pets can safely relax. Both rooms come equipped with deluxe-size pet beds and care items, ensuring every member of the family — human or animal — enjoys a pleasant stay."/>
+            <column name="name" value="Company Suite (One Double Bed + Two Single Beds)"/>
+        </insert>
+        <insert tableName="room_type">
+            <column name="beds_count" valueNumeric="4"/>
+            <column name="capacity" valueNumeric="4"/>
+            <column name="price_per_night" valueNumeric="120000.00"/>
+            <column name="hotel_id" valueNumeric="2"/>
+            <column name="description" value="Designed for groups of friends or colleagues, this spacious suite combines modern comfort with a warm, pet-friendly touch. Each room includes two soft single beds, a seating area, and access to a shared living space. Guests will find large deluxe pet beds, feeding bowls, and treats to welcome their animal companions. It’s the perfect space for those who want to share joyful moments — together with their pets."/>
+            <column name="name" value="Company Suite (Two Rooms with Two Single Beds Each)"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="CrystaliK" id="insert-room">
+        <insert tableName="rooms">
+            <column name="is_available" valueBoolean="true"/>
+            <column name="hotel_id" valueNumeric="2"/>
+            <column name="room_type_id" valueNumeric="7"/>
+            <column name="room_number" value="A101"/>
+        </insert>
+        <insert tableName="rooms">
+            <column name="is_available" valueBoolean="true"/>
+            <column name="hotel_id" valueNumeric="2"/>
+            <column name="room_type_id" valueNumeric="8"/>
+            <column name="room_number" value="A102"/>
+        </insert>
+        <insert tableName="rooms">
+            <column name="is_available" valueBoolean="true"/>
+            <column name="hotel_id" valueNumeric="2"/>
+            <column name="room_type_id" valueNumeric="9"/>
+            <column name="room_number" value="A103"/>
+        </insert>
+        <insert tableName="rooms">
+            <column name="is_available" valueBoolean="true"/>
+            <column name="hotel_id" valueNumeric="2"/>
+            <column name="room_type_id" valueNumeric="10"/>
+            <column name="room_number" value="A104"/>
+        </insert>
+        <insert tableName="rooms">
+            <column name="is_available" valueBoolean="true"/>
+            <column name="hotel_id" valueNumeric="2"/>
+            <column name="room_type_id" valueNumeric="11"/>
+            <column name="room_number" value="A105"/>
+        </insert>
+        <insert tableName="rooms">
+            <column name="is_available" valueBoolean="true"/>
+            <column name="hotel_id" valueNumeric="2"/>
+            <column name="room_type_id" valueNumeric="12"/>
+            <column name="room_number" value="A106"/>
+        </insert>
+        <insert tableName="rooms">
+            <column name="is_available" valueBoolean="true"/>
+            <column name="hotel_id" valueNumeric="1"/>
+            <column name="room_type_id" valueNumeric="1"/>
+            <column name="room_number" value="A101"/>
+        </insert>
+    </changeSet>
+
+</databaseChangeLog>

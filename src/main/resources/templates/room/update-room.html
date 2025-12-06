@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Update Room</title>
+    <th:block layout:fragment="page-specific-head">
+        <link rel="stylesheet" href="/css/forms.css">
+    </th:block>
+</head>
+<body layout:fragment="content">
+
+<div class="container mt-5">
+    <div class="card shadow p-4 rounded">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="fw-bold mb-0">Update Room</h2>
+            <a th:href="@{'/rooms/' + ${room.id}}" class="btn btn-outline-secondary"> ← Back to room</a>
+        </div>
+
+        <div id="adminAlert" class="alert alert-warning d-none" role="alert">
+            <i class="bi bi-shield-exclamation me-2"></i>
+            Administrator access required to update rooms.
+        </div>
+
+        <form id="roomForm">
+            <input type="hidden" id="roomId" th:value="${room.id}">
+
+            <div class="mb-3">
+                <label class="form-label">Room number</label>
+                <input type="text" class="form-control" id="roomNumber" th:value="${room.roomNumber}" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Hotel</label>
+                <input type="text" class="form-control" th:value="${hotel.name + ' - ' + hotel.address}" disabled>
+                <input type="hidden" id="hotelId" th:value="${hotel.id}">
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Room type</label>
+                <select class="form-select" id="roomType" required>
+                    <option value="">Select room type...</option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Available</label>
+                <select class="form-select" id="available">
+                    <option value="true" th:selected="${room.available}">Yes</option>
+                    <option value="false" th:selected="${!room.available}">No</option>
+                </select>
+            </div>
+
+            <div class="d-grid gap-2">
+                <button type="submit" class="btn btn-warning fw-semibold" id="submitBtn">Update Room</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<th:block layout:fragment="page-specific-scripts-bottom">
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const roomForm = document.getElementById('roomForm');
+            const adminAlert = document.getElementById('adminAlert');
+            const submitBtn = document.getElementById('submitBtn');
+
+            function updateUIForAdminAccess() {
+                const isAdmin = checkAdminAccess();
+                if (!isAdmin) {
+                    adminAlert.classList.remove('d-none');
+                    submitBtn.disabled = true;
+                    submitBtn.textContent = 'Admin Access Required';
+                } else {
+                    adminAlert.classList.add('d-none');
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Update Room';
+                }
+                return isAdmin;
+            }
+
+            updateUIForAdminAccess();
+
+            const hotelId = document.getElementById('hotelId').value;
+            const currentRoomTypeId = '[[${room.roomTypeId}]]' === '' ? null : parseInt('[[${room.roomTypeId}]]');
+
+            if (hotelId) {
+                loadRoomTypes(hotelId, currentRoomTypeId);
+            }
+
+            roomForm.addEventListener('submit', async function (e) {
+                e.preventDefault();
+
+                if (!updateUIForAdminAccess()) {
+                    alert('Administrator access is required to update rooms.');
+                    return;
+                }
+
+                const roomId = document.getElementById('roomId').value;
+                const roomNumber = document.getElementById('roomNumber').value.trim();
+                const roomTypeId = document.getElementById('roomType').value;
+
+                if (!roomNumber) {
+                    alert('Please enter room number.');
+                    return;
+                }
+
+                if (!roomTypeId) {
+                    alert('Please select a room type.');
+                    return;
+                }
+
+                const data = {
+                    roomNumber: roomNumber,
+                    roomTypeId: parseInt(roomTypeId),
+                    available: document.getElementById('available').value === 'true',
+                    hotelId: parseInt(document.getElementById('hotelId').value)
+                };
+
+                const originalData = {
+                    roomNumber: /*[[${room.roomNumber}]]*/ '',
+                    roomTypeId: /*[[${room.roomTypeId}]]*/ null,
+                    available: /*[[${room.available}]]*/ true
+                };
+
+                let hasChanges = false;
+                for (const key in data) {
+                    if (key === 'roomTypeId') {
+                        if (parseInt(data[key]) !== parseInt(originalData[key])) {
+                            hasChanges = true;
+                            break;
+                        }
+                    } else if (data[key] !== originalData[key]) {
+                        hasChanges = true;
+                        break;
+                    }
+                }
+
+                if (!hasChanges) {
+                    alert('No changes detected.');
+                    return;
+                }
+
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Updating...';
+
+                try {
+                    const response = await fetch(`/api/rooms/${roomId}`, {
+                        method: 'PUT',
+                        headers: getAuthHeaders(),
+                        body: JSON.stringify(data)
+                    });
+
+                    if (response.ok) {
+                        const updatedRoom = await response.json();
+                        alert('Room updated successfully!');
+
+                        setTimeout(() => {
+                            window.location.href = `/rooms/${roomId}`;
+                        }, 1000);
+
+                    } else if (response.status === 401 || response.status === 403) {
+                        alert('Access denied. Please log in as administrator.');
+                        logout();
+                    } else if (response.status === 404) {
+                        alert('Room not found. It may have been deleted.');
+                        window.location.href = '/hotels/' + hotelId;
+                    } else {
+                        const errorText = await response.text();
+                        alert('Error: ' + (errorText || 'Failed to update room'));
+                    }
+                } catch (err) {
+                    console.error('Server connection error:', err);
+                    alert('Error connecting to server. Please try again.');
+                } finally {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Update Room';
+                }
+            });
+
+            window.addEventListener('storage', function(e) {
+                if (e.key === 'token' || e.key === 'user') {
+                    updateUIForAdminAccess();
+                }
+            });
+
+            let formChanged = false;
+            const formInputs = roomForm.querySelectorAll('input, textarea, select');
+
+            formInputs.forEach(input => {
+                input.addEventListener('input', function() {
+                    formChanged = true;
+                });
+            });
+
+            roomForm.addEventListener('submit', function() {
+                formChanged = false;
+            });
+
+            window.addEventListener('beforeunload', function(e) {
+                if (formChanged) {
+                    e.preventDefault();
+                    e.returnValue = 'You have unsaved changes. Are you sure you want to leave?';
+                }
+            });
+        });
+
+        async function loadRoomTypes(hotelId, currentRoomTypeId) {
+            try {
+                const response = await fetch(`/api/hotels/${hotelId}/room-types`);
+                if (response.ok) {
+                    const roomTypes = await response.json();
+                    const roomTypeSelect = document.getElementById('roomType');
+
+                    roomTypeSelect.innerHTML = '<option value="">Select room type...</option>';
+                    roomTypes.forEach(roomType => {
+                        const opt = document.createElement('option');
+                        opt.value = roomType.id;
+                        opt.textContent = formatRoomType(roomType);
+
+                        if (parseInt(roomType.id) === parseInt(currentRoomTypeId)) {
+                            opt.selected = true;
+                        }
+                        roomTypeSelect.appendChild(opt);
+                    });
+                } else {
+                    document.getElementById('roomType').innerHTML = '<option value="">No room types available</option>';
+                }
+            } catch (err) {
+                console.error('Error loading room types:', err);
+                document.getElementById('roomType').innerHTML = '<option value="">Error loading room types</option>';
+            }
+        }
+
+        function formatRoomType(roomType) {
+            if (!roomType)
+                return 'Unknown Type';
+
+            let formattedName = roomType.name || 'Unnamed';
+
+            const capacity = roomType.capacity ? ` (${roomType.capacity} pers.)` : '';
+            const price = roomType.pricePerNight ? ` - ${roomType.pricePerNight} ₸` : '';
+
+            return `${formattedName}${capacity}${price}`;
+        }
+    </script>
+</th:block>
+</body>
+</html>

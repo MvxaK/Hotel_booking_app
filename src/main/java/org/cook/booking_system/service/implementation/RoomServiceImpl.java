@@ -24,7 +24,6 @@ public class RoomServiceImpl implements RoomService{
     private final HotelRepository hotelRepository;
     private final RoomMapper roomMapper;
     private final EntityLinker entityLinker;
-    private final Logger logger = LoggerFactory.getLogger(RoomServiceImpl.class);
 
     @Transactional
     public Room createRoomForHotel(Long hotelId, Room room) {
@@ -38,7 +37,6 @@ public class RoomServiceImpl implements RoomService{
         hotelEntity.getRooms().add(roomEntity);
 
         RoomEntity saved = roomRepository.save(roomEntity);
-        logger.info("Room with id -> {} is created", saved.getId());
         return roomMapper.toModel(saved);
     }
 
@@ -67,7 +65,6 @@ public class RoomServiceImpl implements RoomService{
         entityLinker.linkRoom(roomEntity, roomToUpdate.getHotelId(), roomToUpdate.getRoomTypeId());
 
         RoomEntity saved = roomRepository.save(roomEntity);
-        logger.info("Room with id -> {} is updated", id);
         return roomMapper.toModel(saved);
     }
 
@@ -77,7 +74,6 @@ public class RoomServiceImpl implements RoomService{
             throw new EntityNotFoundException("Room not found with id -> " + id);
         }
 
-        logger.info("Room with id -> {} is deleted", id);
         roomRepository.deleteById(id);
     }
 }

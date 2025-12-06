@@ -28,7 +28,6 @@ public class UserServiceImpl implements UserService{
     private final RoleRepository roleRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
-    private final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 
 
     @Transactional
@@ -46,7 +45,6 @@ public class UserServiceImpl implements UserService{
         RoleEntity userRole = roleRepository.findByRole(Role.ROLE_USER);
         userEntity.setRoles(Set.of(userRole));
 
-        logger.info("User with id = {} is created ", userEntity.getId());
         return userMapper.toModel(userRepository.save(userEntity));
     }
 
@@ -81,10 +79,8 @@ public class UserServiceImpl implements UserService{
             throw new IllegalArgumentException("This username already exists");
         }
 
-        userEntity.setUserName(userToUpdate.getUserName());
         userEntity.setEmail(userToUpdate.getEmail());
 
-        logger.info("User with id = {} is updated", id);
         return userMapper.toModel(userRepository.save(userEntity));
     }
 
@@ -97,7 +93,6 @@ public class UserServiceImpl implements UserService{
             throw new IllegalArgumentException("Invalid password");
         }
 
-        logger.info("User with id = {} updated password", id);
         userEntity.setPassword(passwordEncoder.encode(newPassword));
     }
 
@@ -111,7 +106,6 @@ public class UserServiceImpl implements UserService{
             throw new IllegalArgumentException("Invalid password");
         }
 
-        logger.info("User with id = {} is deleted", id);
         userRepository.deleteById(id);
     }
 

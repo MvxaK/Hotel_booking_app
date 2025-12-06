@@ -25,7 +25,4 @@ public class RoleEntity {
     @Column(name = "role")
     private Role role;
 
-//    @ManyToMany(mappedBy = "roles", fetch = FetchType.LAZY)
-//    @JsonIgnore
-//    private Set<UserEntity> users = new HashSet<>();
 }

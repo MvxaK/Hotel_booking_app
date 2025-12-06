@@ -19,6 +19,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Set;
@@ -33,6 +34,7 @@ public class AuthServiceImpl implements AuthService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
+    @Transactional
     public AuthResponse login(LoginRequest loginRequest) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword())
@@ -52,7 +54,7 @@ public class AuthServiceImpl implements AuthService {
         return new AuthResponse(jwt, "Bearer", userDetails.getUsername(), userEntity.getEmail(), userEntity.getId(), rolesList);
     }
 
-
+    @Transactional
     public AuthResponse register(RegisterRequest registerRequest) {
         if(userRepository.findByUserName(registerRequest.getUsername()).isPresent()){
             throw new IllegalArgumentException("Username already exists");

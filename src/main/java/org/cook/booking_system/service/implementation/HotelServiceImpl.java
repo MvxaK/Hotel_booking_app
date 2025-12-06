@@ -28,7 +28,6 @@ public class HotelServiceImpl implements HotelService{
     private final RoomMapper roomMapper;
     private final RoomTypeMapper roomTypeMapper;
     private final EntityLinker entityLinker;
-    private final Logger logger = LoggerFactory.getLogger(HotelServiceImpl.class);
 
     @Transactional
     public Hotel createHotel(Hotel hotel) {
@@ -37,7 +36,6 @@ public class HotelServiceImpl implements HotelService{
         entityLinker.linkHotel(hotelEntity, hotel.getRoomIds(), hotel.getRoomTypeIds());
 
         HotelEntity saved = hotelRepository.save(hotelEntity);
-        logger.info("Hotel with id = {} is created", saved.getId());
         return hotelMapper.toModel(saved);
     }
 
@@ -87,7 +85,6 @@ public class HotelServiceImpl implements HotelService{
         entityLinker.linkHotel(hotelEntity, hotelToUpdate.getRoomIds(), hotelToUpdate.getRoomTypeIds());
 
         HotelEntity saved = hotelRepository.save(hotelEntity);
-        logger.info("Hotel with id = {} is updated", id);
         return hotelMapper.toModel(saved);
     }
 
@@ -97,7 +94,6 @@ public class HotelServiceImpl implements HotelService{
             throw new EntityNotFoundException("Hotel not found with id -> " + id);
         }
 
-        logger.info("Hotel with id = {} is deleted", id);
         hotelRepository.deleteById(id);
     }
 }

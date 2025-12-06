@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet author="CrystaliK" id="create-house-images-table">
+        <createTable tableName="house_images">
+            <column name="house_id" type="BIGINT"/>
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="house_images_pkey"/>
+            </column>
+            <column name="image_url" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet author="CrystaliK" id="create-hotel-images-table">
+        <createTable tableName="hotel_images">
+            <column name="hotel_id" type="BIGINT"/>
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="hotel_images_pkey"/>
+            </column>
+            <column name="image_url" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet author="CrystaliK" id="create-room-type-images-table">
+        <createTable tableName="room_type_images">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="room_type_images_pkey"/>
+            </column>
+            <column name="room_type_id" type="BIGINT"/>
+            <column name="image_url" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet author="CrystaliK" id="fk-house-images-to-houses">
+        <addForeignKeyConstraint baseColumnNames="house_id" baseTableName="house_images" constraintName="fk_house_images_houses" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="houses" validate="true"/>
+    </changeSet>
+
+    <changeSet author="CrystaliK" id="fk-room-type-images-to-room-type">
+        <addForeignKeyConstraint baseColumnNames="room_type_id" baseTableName="room_type_images" constraintName="fk_room_type_images_room_type" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="room_type" validate="true"/>
+    </changeSet>
+
+    <changeSet author="CrystaliK" id="fk-hotel-images-to-hotels">
+        <addForeignKeyConstraint baseColumnNames="hotel_id" baseTableName="hotel_images" constraintName="fk_hotel_images_hotels" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="hotels" validate="true"/>
+    </changeSet>
+
+</databaseChangeLog>

@@ -20,14 +20,12 @@ public class HouseServiceImpl implements HouseService{
 
     private final HouseRepository houseRepository;
     private final HouseMapper houseMapper;
-    private final Logger logger = LoggerFactory.getLogger(HouseServiceImpl.class);
 
     @Transactional
     public House createHouse(House house){
         HouseEntity houseEntity = houseMapper.toEntity(house);
         HouseEntity saved = houseRepository.save(houseEntity);
 
-        logger.info("The house with id-> {} is created", house.getId());
         return houseMapper.toModel(saved);
     }
 
@@ -60,7 +58,6 @@ public class HouseServiceImpl implements HouseService{
         houseEntity.setParkingSlots(houseToUpdate.getParkingSlots());
         houseEntity.setDescription(houseToUpdate.getDescription());
 
-        logger.info("The house with id-> {} is updated", id);
         return houseMapper.toModel(houseRepository.save(houseEntity));
     }
 
@@ -69,7 +66,6 @@ public class HouseServiceImpl implements HouseService{
         if (!houseRepository.existsById(id)){
             throw new EntityNotFoundException("House not found with id -> " + id);
         }
-        logger.info("House with id -> {} is deleted", id);
         houseRepository.deleteById(id);
     }
 }

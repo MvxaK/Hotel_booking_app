@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet author="CrystaliK" id="insert-hotel-images">
+        <insert tableName="hotel_images">
+            <column name="hotel_id" valueNumeric="1"/>
+            <column name="image_url" value="https://www.areal-hotel.ru/upload/iblock/81c/blk8isf99pgdm72eyl0gavbql0p0mbdg.jpg"/>
+        </insert>
+        <insert tableName="hotel_images">
+            <column name="hotel_id" valueNumeric="1"/>
+            <column name="image_url" value="https://www.areal-hotel.ru/upload/uf/9c6/ned0oe093wmz2lwvlzasvrtjoa3q216j.jpg"/>
+        </insert>
+        <insert tableName="hotel_images">
+            <column name="hotel_id" valueNumeric="1"/>
+            <column name="image_url" value="https://www.areal-hotel.ru/upload/uf/59f/tp1h2uic8maef11vco90ieorwi7i2xov.jpg"/>
+        </insert>
+        <insert tableName="hotel_images">
+            <column name="hotel_id" valueNumeric="1"/>
+            <column name="image_url" value="https://www.lintastour.ru/sites/default/files/public/styles/product_first/public/upload/products/3_111.jpg.webp?itok=kthNCXki"/>
+        </insert>
+        <insert tableName="hotel_images">
+            <column name="hotel_id" valueNumeric="1"/>
+            <column name="image_url" value="https://irecommend.ru/sites/default/files/imagecache/copyright1/user-images/819972/ilYhAaqFGAEDkH28PuapEQ.jpg"/>
+        </insert>
+        <insert tableName="hotel_images">
+            <column name="hotel_id" valueNumeric="1"/>
+            <column name="image_url" value="https://www.areal-hotel.ru/upload/iblock/066/nk7qhmhwa7nx1h941zkpiucrjuvceb52.jpg"/>
+        </insert>
+        <insert tableName="hotel_images">
+            <column name="hotel_id" valueNumeric="2"/>
+            <column name="image_url" value="https://www.ihgplc.com/~/media/Images/I/Ihg-Plc/images/news/2021/2021_july-8_pets-and-points/ihg-pet-rate-ltf-3840x2160.jpg"/>
+        </insert>
+        <insert tableName="hotel_images">
+            <column name="hotel_id" valueNumeric="2"/>
+            <column name="image_url" value="https://image-tc.galaxy.tf/wijpeg-de8xez745bf8lbsm90i2gr9as/empire-hotel-lobby-aerial-view.jpg?width=1200"/>
+        </insert>
+        <insert tableName="hotel_images">
+            <column name="hotel_id" valueNumeric="2"/>
+            <column name="image_url" value="https://image-tc.galaxy.tf/wijpeg-c2ssmwhkuwzpnw8ha5n091jzk/empire-hotel-nyc-lincoln-views.jpg?width=1200"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="CrystaliK" id="insert-house-images">
+        <insert tableName="house_images">
+            <column name="house_id" valueNumeric="3"/>
+            <column name="image_url" value="https://cdn.houseplansservices.com/product/66fh84v21vfafavo1id8pj283v/w560x373.jpg?v=11"/>
+        </insert>
+        <insert tableName="house_images">
+            <column name="house_id" valueNumeric="3"/>
+            <column name="image_url" value="https://www.truoba.com/wp-content/uploads/2023/04/2-25-1200x800.jpeg"/>
+        </insert>
+        <insert tableName="house_images">
+            <column name="house_id" valueNumeric="4"/>
+            <column name="image_url" value="https://zookcabins.b-cdn.net/wp-content/uploads/Choose-Your-Cabin-Style/The-Mountain-Home-Collection/Glacier/classic-log-cabin-glacier-log-cabin-for-sale-with-dormers-and-porch-1920x1280.jpg.webp"/>
+        </insert>
+        <insert tableName="house_images">
+            <column name="house_id" valueNumeric="4"/>
+            <column name="image_url" value="https://zookcabins.b-cdn.net/wp-content/uploads/Choose-Your-Cabin-Style/The-Mountain-Home-Collection/Glacier/Gallery/2-Story-Prefab-Log-Cabin-Homes-500x333.jpg.webp"/>
+        </insert>
+        <insert tableName="house_images">
+            <column name="house_id" valueNumeric="4"/>
+            <column name="image_url" value="https://zookcabins.b-cdn.net/wp-content/uploads/Choose-Your-Cabin-Style/The-Mountain-Home-Collection/Glacier/Gallery/Glacier-Prefab-Log-Cabin-Homes.jpg"/>
+        </insert>
+        <insert tableName="house_images">
+            <column name="house_id" valueNumeric="4"/>
+            <column name="image_url" value="https://zookcabins.b-cdn.net/wp-content/uploads/Choose-Your-Cabin-Style/The-Mountain-Home-Collection/Glacier/Gallery/Glacier-Prefab-Cabin-Homes.jpg"/>
+        </insert>
+        <insert tableName="house_images">
+            <column name="house_id" valueNumeric="1"/>
+            <column name="image_url" value="https://moscowestates.com/wp-content/uploads/2023/11/1-1170x785.jpeg"/>
+        </insert>
+        <insert tableName="house_images">
+            <column name="house_id" valueNumeric="1"/>
+            <column name="image_url" value="https://moscowestates.com/wp-content/uploads/2023/11/2-1170x785.jpeg"/>
+        </insert>
+        <insert tableName="house_images">
+            <column name="house_id" valueNumeric="1"/>
+            <column name="image_url" value="https://moscowestates.com/wp-content/uploads/2023/11/7-1170x785.jpeg"/>
+        </insert>
+        <insert tableName="house_images">
+            <column name="house_id" valueNumeric="1"/>
+            <column name="image_url" value="https://moscowestates.com/wp-content/uploads/2023/11/13-1170x785.jpeg"/>
+        </insert>
+        <insert tableName="house_images">
+            <column name="house_id" valueNumeric="1"/>
+            <column name="image_url" value="https://moscowestates.com/wp-content/uploads/2023/11/20-1170x785.jpeg"/>
+        </insert>
+        <insert tableName="house_images">
+            <column name="house_id" valueNumeric="2"/>
+            <column name="image_url" value="https://cdn.mos.cms.futurecdn.net/F6rNaAqyZwerCscJCufPNU.jpg.webp"/>
+        </insert>
+        <insert tableName="house_images">
+            <column name="house_id" valueNumeric="2"/>
+            <column name="image_url" value="https://cdn.mos.cms.futurecdn.net/i8i5ZKnoiyAAcLw3Fe2jfn-768-80.jpg.webp"/>
+        </insert>
+        <insert tableName="house_images">
+            <column name="house_id" valueNumeric="2"/>
+            <column name="image_url" value="https://cdn.mos.cms.futurecdn.net/ghV25zSJ2rydTZZnviMarn-768-80.jpg.webp"/>
+        </insert>
+        <insert tableName="house_images">
+            <column name="house_id" valueNumeric="2"/>
+            <column name="image_url" value="https://cdn.mos.cms.futurecdn.net/MUvbNwJHwr28ZNeRfJAahY-768-80.jpg.webp"/>
+        </insert>
+        <insert tableName="house_images">
+            <column name="house_id" valueNumeric="2"/>
+            <column name="image_url" value="https://cdn.mos.cms.futurecdn.net/TZrZqnY9E2RmVW6k4fQGLP-768-80.jpg.webp"/>
+        </insert>
+    </changeSet>
+
+
+    <changeSet author="CrystaliK" id="insert-room-type-images">
+        <insert tableName="room_type_images">
+            <column name="room_type_id" valueNumeric="7"/>
+            <column name="image_url" value="https://image-tc.galaxy.tf/wijpeg-apkbo7ujbam2lquw0t9rhpyum/empire-hotel-junior-suite-king-bed_wide.jpg?crop=0%2C104%2C2000%2C1125&amp;width=1140"/>
+        </insert>
+        <insert tableName="room_type_images">
+            <column name="room_type_id" valueNumeric="7"/>
+            <column name="image_url" value="https://image-tc.galaxy.tf/wijpeg-1xzsagqjth4025yjrioxxr0b7/empire-hotel-nyc-junior-suite-king-bed-01-high-res-2020_wide.jpg?crop=0%2C94%2C1800%2C1013&amp;width=1140"/>
+        </insert>
+        <insert tableName="room_type_images">
+            <column name="room_type_id" valueNumeric="7"/>
+            <column name="image_url" value="https://image-tc.galaxy.tf/wijpeg-en13bxrjmhnvjbb8xp7ujyb/empire-hotel-nyc-junior-suite-king-bed-03-high-res-2020_wide.jpg?crop=0%2C94%2C1800%2C1013&amp;width=1140"/>
+        </insert>
+        <insert tableName="room_type_images">
+            <column name="room_type_id" valueNumeric="8"/>
+            <column name="image_url" value="https://image-tc.galaxy.tf/wijpeg-bgfflwcyx3iyoh6mpo2eoo2an/empire-hotel-nyc-junior-suite-two-double-beds-01-high-res-2020_wide.jpg?crop=0%2C94%2C1800%2C1013&amp;width=1140"/>
+        </insert>
+        <insert tableName="room_type_images">
+            <column name="room_type_id" valueNumeric="8"/>
+            <column name="image_url" value="https://image-tc.galaxy.tf/wijpeg-52adyz7zp3cjupliscrbmazy7/empire-hotel-nyc-junior-suite-two-double-beds-02-high-res-2020_wide.jpg?crop=0%2C94%2C1800%2C1013&amp;width=1140"/>
+        </insert>
+        <insert tableName="room_type_images">
+            <column name="room_type_id" valueNumeric="8"/>
+            <column name="image_url" value="https://image-tc.galaxy.tf/wijpeg-2ebzrhzvcq1srbuqvozs8xkid/junior-suite-living-area-at-empire-hotel_wide.jpg?crop=0%2C104%2C2000%2C1125&amp;width=1140"/>
+        </insert>
+        <insert tableName="room_type_images">
+            <column name="room_type_id" valueNumeric="9"/>
+            <column name="image_url" value="https://image-tc.galaxy.tf/wijpeg-rdil90w5nns3hb2kaoc7nwzt/empire-hotel-nyc-deluxe-king-room_wide.jpg?crop=0%2C73%2C1400%2C788&amp;width=1140"/>
+        </insert>
+        <insert tableName="room_type_images">
+            <column name="room_type_id" valueNumeric="9"/>
+            <column name="image_url" value="https://image-tc.galaxy.tf/wijpeg-c0h189x16fuyulut78bbog9qs/deluxe-king-room-at-the-empire-hotel_wide.jpg?crop=0%2C94%2C1800%2C1013&amp;width=1140"/>
+        </insert>
+        <insert tableName="room_type_images">
+            <column name="room_type_id" valueNumeric="10"/>
+            <column name="image_url" value="https://image-tc.galaxy.tf/wijpeg-clozx94odvn436foy8vjci4wz/empire-hotel-nyc-superior-room-two-double-beds-01-high-res-2020_wide.jpg?crop=0%2C94%2C1800%2C1013&amp;width=1140"/>
+        </insert>
+        <insert tableName="room_type_images">
+            <column name="room_type_id" valueNumeric="10"/>
+            <column name="image_url" value="https://image-tc.galaxy.tf/wijpeg-cz287s1oix92aihy26d0aalsc/empire-hotel-nyc-superior-room-two-double-beds-02-high-res-2020_wide.jpg?crop=0%2C94%2C1800%2C1013&amp;width=1140"/>
+        </insert>
+        <insert tableName="room_type_images">
+            <column name="room_type_id" valueNumeric="11"/>
+            <column name="image_url" value="https://image-tc.galaxy.tf/wijpeg-dojxbz2x85lvn0dfoymz5gjgg/empire-hotel-nyc-superior-room-two-queen-beds-02-high-res-2020_wide.jpg?crop=0%2C94%2C1800%2C1013&amp;width=1140"/>
+        </insert>
+        <insert tableName="room_type_images">
+            <column name="room_type_id" valueNumeric="11"/>
+            <column name="image_url" value="https://image-tc.galaxy.tf/wijpeg-7y2i3b79jqka5cdw0qinwgx5u/empire-hotel-nyc-superior-room-two-queen-beds-01-high-res-2020_wide.jpg?crop=0%2C94%2C1800%2C1013&amp;width=1140"/>
+        </insert>
+        <insert tableName="room_type_images">
+            <column name="room_type_id" valueNumeric="12"/>
+            <column name="image_url" value="https://image-tc.galaxy.tf/wijpeg-aiz7v2h8ihiw5f9n2kat5lcpx/empire-hotel-nyc-deluxe-room-two-double-beds_wide.jpg?crop=0%2C73%2C1400%2C788&amp;width=1140"/>
+        </insert>
+        <insert tableName="room_type_images">
+            <column name="room_type_id" valueNumeric="12"/>
+            <column name="image_url" value="https://image-tc.galaxy.tf/wijpeg-7y2i3b79jqka5cdw0qinwgx5u/empire-hotel-nyc-superior-room-two-queen-beds-01-high-res-2020_wide.jpg?crop=0%2C94%2C1800%2C1013&amp;width=1140"/>
+        </insert>
+        <insert tableName="room_type_images">
+            <column name="room_type_id" valueNumeric="12"/>
+            <column name="image_url" value="https://image-tc.galaxy.tf/wijpeg-1g53mvgcyzk1l8vp3riu6rwib/empire-hotel-nyc-deluxe-room-two-double-beds-living_wide.jpg?crop=0%2C94%2C1800%2C1013&amp;width=1140"/>
+        </insert>
+        <insert tableName="room_type_images">
+            <column name="room_type_id" valueNumeric="1"/>
+            <column name="image_url" value="https://dq5r178u4t83b.cloudfront.net/wp-content/uploads/sites/125/2020/06/15175706/SO19451.jpg"/>
+        </insert>
+    </changeSet>
+
+</databaseChangeLog>

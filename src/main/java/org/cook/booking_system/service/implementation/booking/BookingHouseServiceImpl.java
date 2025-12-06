@@ -32,7 +32,6 @@ public class BookingHouseServiceImpl implements BookingHouseService{
     private final BookingHouseMapper bookingHouseMapper;
     private final UserRepository userRepository;
     private final HouseRepository houseRepository;
-    private final Logger logger = LoggerFactory.getLogger(BookingHouseServiceImpl.class);
 
     @Transactional
     public BookingHouse createBookingForUser(Long userId, BookingHouseRequest bookingRequest) {
@@ -56,7 +55,6 @@ public class BookingHouseServiceImpl implements BookingHouseService{
         userEntity.getHouseBookings().add(bookingEntity);
         bookingEntity.setUser(userEntity);
 
-        logger.info("House booking created for user {}", userId);
         return bookingHouseMapper.toModel(bookingHouseRepository.save(bookingEntity));
     }
 

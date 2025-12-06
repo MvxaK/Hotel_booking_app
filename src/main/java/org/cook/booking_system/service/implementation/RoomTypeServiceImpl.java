@@ -18,6 +18,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class RoomTypeServiceImpl implements RoomTypeService {
+
     private final RoomTypeRepository roomTypeRepository;
     private final RoomTypeMapper roomTypeMapper;
     private final RoomMapper roomMapper;
@@ -48,7 +49,7 @@ public class RoomTypeServiceImpl implements RoomTypeService {
     }
 
     @Transactional
-    public RoomType create(RoomType roomType) {
+    public RoomType createRoomType(RoomType roomType) {
         RoomTypeEntity entity = roomTypeMapper.toEntity(roomType);
 
         entityLinker.linkRoomType(entity, roomType.getHotelId(), roomType.getRoomIds());
@@ -58,7 +59,7 @@ public class RoomTypeServiceImpl implements RoomTypeService {
     }
 
     @Transactional
-    public RoomType update(Long id, RoomType updated) {
+    public RoomType updateRoomType(Long id, RoomType updated) {
         RoomTypeEntity entity = roomTypeRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("RoomType not found with id -> " + id));
 
@@ -75,7 +76,7 @@ public class RoomTypeServiceImpl implements RoomTypeService {
     }
 
     @Transactional
-    public void delete(Long id) {
+    public void deleteRoomType(Long id) {
         if (!roomTypeRepository.existsById(id)) {
             throw new EntityNotFoundException("RoomType not found -> " + id);
         }

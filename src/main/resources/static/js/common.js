@@ -107,9 +107,10 @@ function updateNavigation() {
                         <i class="bi bi-gear me-1"></i> Admin
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="adminDropdown">
+                        <li><a class="dropdown-item" href="/houses/new">New House</a></li>
                         <li><a class="dropdown-item" href="/hotels/new">New Hotel</a></li>
                         <li><a class="dropdown-item" href="/rooms/new">New Room</a></li>
-                        <li><a class="dropdown-item" href="/houses/new">New House</a></li>
+                        <li><a class="dropdown-item" href="/room-types/new">New Room Type</a></li>
                     </ul>
                 </li>`;
             }
