@@ -1,12 +1,13 @@
 package org.cook.booking_system.controller.viewController;
 
 import lombok.RequiredArgsConstructor;
+import org.cook.booking_system.model.Role;
 import org.cook.booking_system.model.User;
 import org.cook.booking_system.model.booking.BookingHouseDetails;
 import org.cook.booking_system.model.booking.BookingRoomDetails;
-import org.cook.booking_system.service.implementation.UserServiceImpl;
 import org.cook.booking_system.service.implementation.booking.BookingHouseServiceImpl;
 import org.cook.booking_system.service.implementation.booking.BookingRoomServiceImpl;
+import org.cook.booking_system.service.service_interface.UserService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -20,7 +21,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserViewController {
 
-    private final UserServiceImpl userService;
+    private final UserService userService;
     private final BookingRoomServiceImpl bookingRoomService;
     private final BookingHouseServiceImpl bookingHouseService;
 
@@ -51,5 +52,22 @@ public class UserViewController {
         model.addAttribute("bookingHouses", bookingHouses);
 
         return "user/profile";
+    }
+
+    @GetMapping("/create")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public String showCreateUserPage(Model model) {
+        model.addAttribute("roles", Role.values());
+
+        return "user/create-user";
+    }
+
+    @GetMapping("/all-users")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public String listUsers(Model model) {
+        List<User> users = userService.getAllUsers();
+
+        model.addAttribute("users", users);
+        return "user/all-users";
     }
 }

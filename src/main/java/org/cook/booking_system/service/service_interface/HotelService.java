@@ -12,10 +12,18 @@ public interface HotelService {
 
     Hotel createHotel(Hotel hotel);
     Hotel getHotelById(Long id);
+    Hotel getHotelByIdDeletedTrue(Long id);
+
+    Hotel getHotelByIdIncludeDeleted(Long id);
     List<Hotel> getAllHotels();
+    List<Hotel> getAllHotelsDeletedTrue();
     List<Room> getRoomsByHotelId(Long id);
+    List<Room> getRoomsByHotelIdDeletedTrue(Long id);
     List<RoomType> getRoomTypesByHotelId(Long id);
+    List<RoomType> getRoomTypesByHotelIdDeletedTrue(Long id);
     Hotel updateHotel(Long id, Hotel hotelToUpdate);
     void deleteHotel(Long id);
+    void markAsDeletedHotel(Long id);
+    void markAsRestoredHotel(Long id);
 
 }

@@ -17,8 +17,8 @@ public class HotelViewImageController {
     private final HotelServiceImpl hotelService;
 
     @GetMapping("/new")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public String showHouseCreateForm(@PathVariable Long hotelId, Model model){
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_HOTEL_KEEPER')")
+    public String showHotelCreateForm(@PathVariable Long hotelId, Model model){
         String hotelName = hotelService.getHotelById(hotelId).getName();
 
         model.addAttribute("hotelName", hotelName);

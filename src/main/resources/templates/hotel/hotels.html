@@ -18,24 +18,23 @@
         <div class="row g-4">
             <div th:each="hotel : ${hotels}" class="col-12 col-sm-6 col-lg-4">
                 <div class="card hotel-card-custom h-100">
-                    <img th:if="${hotel.images != null and !hotel.images.isEmpty()}"
-                         th:src="${hotel.images.get(0).url}"
-                         class="card-img-top" alt="Hotel image"
-                         style="height: 220px; object-fit: cover;">
+                    <img th:if="${hotel.images != null and !hotel.images.isEmpty()}" th:src="${hotel.images.get(0).url}"
+                         class="card-img-top" alt="Hotel image" style="height: 220px; object-fit: cover;">
 
                     <img th:unless="${hotel.images != null and !hotel.images.isEmpty()}"
-                         src="https://picsum.photos/600/400?random=1"
-                         alt="No image available" class="card-img-top">
+                         src="https://picsum.photos/600/400?random=1" alt="No image available" class="card-img-top">
 
                     <div class="card-body d-flex flex-column">
                         <h3 class="card-title fw-semibold" th:text="${hotel.name}">Hotel Name</h3>
                         <p class="text-muted mb-2 small" th:text="${hotel.address}">Address</p>
                         <p class="card-text text-dark" th:text="${#strings.abbreviate(hotel.description, 120)}">Description</p>
 
-                        <div class="mt-auto pt-3">
-                            <a th:href="@{'/hotels/' + ${hotel.id}}" class="btn btn-custom-warning">
-                                Details
-                            </a>
+                        <div class="mt-3">
+                            <th:block th:with="hotelUrl=${hotel.deleted ? '/hotels/deleted/' + hotel.id : '/hotels/' + hotel.id}">
+                                <a th:href="@{${hotelUrl}}" class="btn btn-custom-warning w-100">
+                                    Details
+                                </a>
+                            </th:block>
                         </div>
                     </div>
                 </div>

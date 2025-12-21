@@ -9,4 +9,6 @@ import java.util.List;
 @Repository
 public interface RoomTypeImageRepository extends JpaRepository<RoomTypeImageEntity, Long> {
     List<RoomTypeImageEntity> findByRoomTypeId(Long roomTypeId);
+
+    boolean existsByIdAndRoomTypeId(Long id, Long roomTypeId);
 }

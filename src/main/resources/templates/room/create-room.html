@@ -59,8 +59,9 @@
             const submitBtn = document.getElementById('submitBtn');
 
             function updateUIForAdminAccess() {
-                const isAdmin = checkAdminAccess();
-                if (!isAdmin) {
+                const hasAdminRights = checkAdminAccess() || checkHotelKeeperAccess();
+
+                if (!hasAdminRights) {
                     adminAlert.classList.remove('d-none');
                     submitBtn.disabled = true;
                     submitBtn.textContent = 'Admin Access Required';
@@ -69,7 +70,7 @@
                     submitBtn.disabled = false;
                     submitBtn.textContent = 'Save Room';
                 }
-                return isAdmin;
+                return hasAdminRights;
             }
 
             updateUIForAdminAccess();
@@ -124,11 +125,6 @@
                         roomForm.reset();
                         document.getElementById('roomType').innerHTML = '<option value="">First select a hotel</option>';
                         document.getElementById('roomType').disabled = true;
-
-                        setTimeout(() => {
-                            window.location.href = `/hotels/${hotelId}`;
-                        }, 1500);
-
                     } else if (response.status === 401 || response.status === 403) {
                         alert('Access denied. Please log in as administrator.');
                         logout();

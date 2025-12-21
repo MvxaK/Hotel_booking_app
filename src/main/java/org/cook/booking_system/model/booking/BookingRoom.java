@@ -1,7 +1,5 @@
 package org.cook.booking_system.model.booking;
 
-import jakarta.validation.constraints.FutureOrPresent;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,16 +14,11 @@ import java.time.LocalDate;
 public class BookingRoom {
 
     private Long id;
-    @NotNull
     private Long userId;
-    @NotNull
     private Long roomTypeId;
-    @NotNull @FutureOrPresent
     private LocalDate checkInDate;
-    @NotNull @FutureOrPresent
     private LocalDate checkOutDate;
-    @NotNull
     private BigDecimal totalPrice;
-    @NotNull
     private Status status;
+
 }

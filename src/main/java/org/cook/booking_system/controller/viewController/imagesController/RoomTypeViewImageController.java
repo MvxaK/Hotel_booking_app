@@ -17,8 +17,8 @@ public class RoomTypeViewImageController {
     private final RoomTypeServiceImpl roomTypeService;
 
     @GetMapping("/new")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public String showHouseCreateForm(@PathVariable Long roomTypeId, Model model){
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_HOTEL_KEEPER')")
+    public String showRoomTypoCreateForm(@PathVariable Long roomTypeId, Model model){
         String roomTypeName = roomTypeService.getRoomTypeById(roomTypeId).getName();
 
         model.addAttribute("roomTypeName", roomTypeName);

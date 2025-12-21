@@ -65,8 +65,9 @@
             const submitBtn = document.getElementById('submitBtn');
 
             function updateUIForAdminAccess() {
-                const isAdmin = checkAdminAccess();
-                if (!isAdmin) {
+                const hasAdminRights = checkAdminAccess() || checkHotelKeeperAccess();
+
+                if (!hasAdminRights) {
                     adminAlert.classList.remove('d-none');
                     submitBtn.disabled = true;
                     submitBtn.textContent = 'Admin Access Required';
@@ -75,7 +76,7 @@
                     submitBtn.disabled = false;
                     submitBtn.textContent = 'Update Room';
                 }
-                return isAdmin;
+                return hasAdminRights;
             }
 
             updateUIForAdminAccess();

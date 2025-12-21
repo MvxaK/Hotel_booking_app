@@ -1,4 +1,4 @@
-package org.cook.booking_system.mapper;
+package org.cook.booking_system.service.implementation;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +16,7 @@ import java.util.List;
 @Component
 @Transactional
 @RequiredArgsConstructor
-public class EntityLinker {
+public class AccommodationLinker {
 
     private final HotelRepository hotelRepository;
     private final RoomTypeRepository roomTypeRepository;
@@ -66,6 +66,10 @@ public class EntityLinker {
             RoomTypeEntity roomType = roomTypeRepository.findById(roomTypeId)
                     .orElseThrow(() -> new EntityNotFoundException("There is no roomType with id -> " + roomTypeId));
 
+            if(!roomType.getHotel().getId().equals(roomEntity.getHotel().getId())){
+                throw new IllegalArgumentException("RoomType not belongs to entered hotel");
+            }
+
             roomEntity.setRoomType(roomType);
         }
     }
@@ -75,7 +79,12 @@ public class EntityLinker {
             HotelEntity hotel = hotelRepository.findById(hotelId)
                     .orElseThrow(() -> new EntityNotFoundException("There is no hotel with id -> " + hotelId));
 
+            if(hotel.isDeleted()){
+                throw new IllegalStateException("Cannot create room with for Hotel that marked as deleted.");
+            }
+
             roomEntity.setHotel(hotel);
+            hotel.getRooms().add(roomEntity);
         }
     }
 
@@ -95,6 +104,10 @@ public class EntityLinker {
         if (hotelId != null) {
             HotelEntity hotel = hotelRepository.findById(hotelId)
                     .orElseThrow(() -> new EntityNotFoundException("There is no hotel with id -> " + hotelId));
+
+            if (hotel.isDeleted()) {
+                throw new IllegalStateException("Cannot link RoomType to a deleted Hotel");
+            }
 
             roomTypeEntity.setHotel(hotel);
         }

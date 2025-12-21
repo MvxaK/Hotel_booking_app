@@ -86,10 +86,10 @@
             const adminAlert = document.getElementById('adminAlert');
             const submitBtn = document.getElementById('submitBtn');
 
-            // Используем функции из common.js
             function updateUIForAdminAccess() {
-                const isAdmin = checkAdminAccess();
-                if (!isAdmin) {
+                const hasAdminRights = checkAdminAccess() || checkHouseKeeperAccess();
+
+                if (!hasAdminRights) {
                     adminAlert.classList.remove('d-none');
                     submitBtn.disabled = true;
                     submitBtn.textContent = 'Admin Access Required';
@@ -98,7 +98,7 @@
                     submitBtn.disabled = false;
                     submitBtn.textContent = 'Update House';
                 }
-                return isAdmin;
+                return hasAdminRights;
             }
 
             updateUIForAdminAccess();
@@ -177,7 +177,7 @@
                 try {
                     const response = await fetch(`/api/houses/${houseId}`, {
                         method: 'PUT',
-                        headers: getAuthHeaders(), // Используем общую функцию
+                        headers: getAuthHeaders(),
                         body: JSON.stringify(data)
                     });
 
@@ -191,7 +191,7 @@
 
                     } else if (response.status === 401 || response.status === 403) {
                         alert('Access denied. Please log in as administrator.');
-                        logout(); // Используем общую функцию
+                        logout();
                     } else if (response.status === 404) {
                         alert('House not found. It may have been deleted.');
                         window.location.href = '/houses';

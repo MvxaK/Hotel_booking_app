@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+<head>
+  <title>User Management</title>
+  <th:block layout:fragment="page-specific-head">
+    <link rel="stylesheet" href="/css/hotel-details.css">
+  </th:block>
+</head>
+<body class="hotel-details-page">
+<main layout:fragment="content">
+    <div class="container py-5">
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a th:href="@{/}">Home</a></li>
+                <li class="breadcrumb-item active">User Management</li>
+            </ol>
+        </nav>
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="fw-bold text-dark">User Management</h2>
+            <a href="/users/create" class="btn btn-warning fw-semibold shadow-sm">
+                <i class="bi bi-person-plus-fill me-2"></i>Create User
+            </a>
+        </div>
+
+        <div class="card border-0 shadow-sm">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="bg-light text-dark">
+                        <tr>
+                            <th class="ps-4">User</th>
+                            <th>Email</th>
+                            <th>Roles</th>
+                            <th class="text-end pe-4">Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="u : ${users}">
+                            <td class="ps-4">
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar-circle me-3 bg-warning text-dark fw-bold d-flex justify-content-center align-items-center rounded-circle"
+                                         style="width: 40px; height: 40px;" th:text="${#strings.substring(u.userName,0,1).toUpperCase()}">U</div>
+                                    <span class="fw-semibold text-dark" th:text="${u.userName}"></span>
+                                </div>
+                            </td>
+                            <td class="text-muted" th:text="${u.email}"></td>
+                            <td>
+                                <span th:each="role : ${u.roles}" class="badge bg-light text-dark border me-1" th:text="${role}"></span>
+                            </td>
+                            <td class="text-end pe-4">
+                                <a th:href="@{'/users/' + ${u.id}}" class="btn btn-sm btn-outline-warning me-2">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                <button class="btn btn-sm btn-outline-danger" th:onclick="'handleDeleteUser(' + ${u.id} + ')'">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<th:block layout:fragment="page-specific-scripts-bottom">
+    <script>
+        async function handleDeleteUser(userId) {
+            if (!confirm("Are you sure you want to delete this user? This action cannot be undone.")) return;
+
+            try {
+                const response = await makeAuthenticatedRequest(`/api/users/${userId}`, {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    alert("User deleted successfully");
+                    location.reload();
+                } else {
+                    const err = await response.text();
+                    alert("Error: " + err);
+                }
+            } catch (error) {
+              alert("Request failed: " + error.message);
+            }
+        }
+    </script>
+</th:block>
+</body>
+</html>

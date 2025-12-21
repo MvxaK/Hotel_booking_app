@@ -7,10 +7,10 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class RoomTypeImage {
+public class Image {
 
     private Long id;
     private String url;
-    private Long roomTypeId;
+    private Long accommodationId;
 
 }

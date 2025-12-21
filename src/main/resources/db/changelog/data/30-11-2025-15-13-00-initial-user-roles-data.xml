@@ -11,6 +11,12 @@
         <insert tableName="roles">
             <column name="role" value="ROLE_USER"/>
         </insert>
+        <insert tableName="roles">
+            <column name="role" value="ROLE_HOUSE_KEEPER"/>
+        </insert>
+        <insert tableName="roles">
+            <column name="role" value="ROLE_HOTEL_KEEPER"/>
+        </insert>
     </changeSet>
 
     <changeSet author="CrystaliK" id="insert-users">
@@ -24,6 +30,16 @@
             <column name="password" value="$2a$10$LJWYQeIv2qwsohRe3vCtrOkShTq0bX250X6vBWjG1QptGZH5UwKXG"/>
             <column name="user_name" value="floppa"/>
         </insert>
+        <insert tableName="users">
+            <column name="email" value="evgeniy@mail.ru"/>
+            <column name="password" value="$2a$10$Tn1oZcCdx0XKzYjTbU/1ZOyl9ZbahQpDpl99mCtsQeEEHXfl81YWi"/>
+            <column name="user_name" value="Evgeniy"/>
+        </insert>
+        <insert tableName="users">
+            <column name="email" value="dmitriy@mail.ru"/>
+            <column name="password" value="$2a$10$0ZqcrJDGL7fCcYb0raWIje3ilb4PkqUU03rT0wVLxtp78g3rb5/u6"/>
+            <column name="user_name" value="Dmitriy"/>
+        </insert>
     </changeSet>
 
     <changeSet author="CrystaliK" id="insert-users-roles">
@@ -34,6 +50,14 @@
         <insert tableName="user_roles">
             <column name="role_id" valueNumeric="1"/>
             <column name="user_id" valueNumeric="1"/>
+        </insert>
+        <insert tableName="user_roles">
+            <column name="role_id" valueNumeric="3"/>
+            <column name="user_id" valueNumeric="3"/>
+        </insert>
+        <insert tableName="user_roles">
+            <column name="role_id" valueNumeric="4"/>
+            <column name="user_id" valueNumeric="4"/>
         </insert>
     </changeSet>
 

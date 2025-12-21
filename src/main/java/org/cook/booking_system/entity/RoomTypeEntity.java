@@ -44,4 +44,7 @@ public class RoomTypeEntity {
 
     @OneToMany(mappedBy = "roomType", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<RoomTypeImageEntity> images;
+
+    @Column(name = "is_deleted", nullable = false)
+    private boolean deleted = false;
 }

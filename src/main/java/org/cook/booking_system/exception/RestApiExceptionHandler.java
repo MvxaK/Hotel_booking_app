@@ -3,6 +3,7 @@ package org.cook.booking_system.exception;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -19,6 +20,14 @@ public class RestApiExceptionHandler {
                 .body(exception);
     }
 
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<?> handleIllegalState(IllegalStateException e){
+        ExceptionDto exception = new ExceptionDto(e.getMessage(), "Can not perform this action", LocalDateTime.now());
+
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(exception);
+    }
+
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<?> handleEntityNotFound(EntityNotFoundException e){
         ExceptionDto exception = new ExceptionDto(e.getMessage(), "Entity not found", LocalDateTime.now());
@@ -26,6 +35,15 @@ public class RestApiExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(exception);
     }
+
+    @ExceptionHandler(AuthorizationDeniedException.class)
+    public ResponseEntity<?> handleEntityAccessDenied(AuthorizationDeniedException e){
+        ExceptionDto exception = new ExceptionDto(e.getMessage(), "You don`t have rights to perform this action", LocalDateTime.now());
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(exception);
+    }
+
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<?> handleInternal(Exception e){

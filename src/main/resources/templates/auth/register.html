@@ -1,119 +1,145 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
 <head>
     <meta charset="UTF-8">
     <title>Register</title>
-    <script src="/js/common.js"></script>
+    <th:block layout:fragment="page-specific-head">
+        <link rel="stylesheet" href="/css/forms.css">
+    </th:block>
 </head>
-<body>
-<div class="container">
-    <h2 style="text-align: center;">Register</h2>
+<body layout:fragment="content">
 
-    <div id="message"></div>
+<div class="container mt-5">
+    <div class="card shadow p-4 rounded">
 
-    <form id="registerForm">
-        <input type="text" name="username" placeholder="Username" required> <br>
-        <input type="email" name="email" placeholder="Email" required> <br>
-        <input type="password" name="password" placeholder="Password" required> <br>
-        <button type="button" id="registerBtn">Register</button>
-    </form>
+        <h2 class="text-center mb-4 fw-bold text-dark">Create Account</h2>
 
-    <p style="text-align: center;">
-        Already have an account? <a href="/login">Login here</a>
-    </p>
+        <div id="message" class="alert d-none" role="alert"></div>
+
+        <form id="registerForm">
+            <div class="mb-3">
+                <label for="userName" class="form-label">Username</label>
+                <input type="text" id="userName" name="userName" class="form-control" placeholder="Enter userName" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" id="email" name="email" class="form-control" placeholder="Enter your email" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="password" class="form-label">Password</label>
+                <input type="password" id="password" name="password" class="form-control" placeholder="Enter password" required>
+            </div>
+
+            <button type="button" id="registerBtn" class="btn btn-warning w-100 fw-semibold mt-3">Register</button>
+        </form>
+
+        <p class="text-center mt-3">
+            Already have an account? <a href="/login">Login here</a>
+        </p>
+
+    </div>
 </div>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const registerForm = document.getElementById('registerForm');
-        const registerBtn = document.getElementById('registerBtn');
-        const messageDiv = document.getElementById('message');
+<th:block layout:fragment="page-specific-scripts-bottom">
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const registerForm = document.getElementById('registerForm');
+            const registerBtn = document.getElementById('registerBtn');
+            const messageDiv = document.getElementById('message');
 
-        if (!registerForm || !registerBtn) {
-            console.error('Register form or button not found');
-            return;
-        }
-
-        if (!messageDiv) {
-            console.error('Message div not found');
-            return;
-        }
-
-        registerBtn.addEventListener('click', async function() {
-            console.log('Register button clicked');
-
-            const formData = new FormData(registerForm);
-            const registerData = {
-                username: formData.get('username'),
-                email: formData.get('email'),
-                password: formData.get('password')
-            };
-
-            messageDiv.innerHTML = '';
-            messageDiv.className = '';
-
-            if (!registerData.username || !registerData.email || !registerData.password) {
-                messageDiv.innerHTML = 'Please fill all fields';
-                messageDiv.className = 'error';
-                return;
+            function displayMessage(text, type) {
+                messageDiv.innerHTML = text;
+                messageDiv.classList.remove('d-none', 'alert-success', 'alert-danger');
+                if (type === 'success') {
+                    messageDiv.classList.add('alert-success');
+                } else if (type === 'error') {
+                    messageDiv.classList.add('alert-danger');
+                }
             }
 
-            try {
-                console.log('Sending registration request:', registerData);
+            displayMessage('', 'd-none');
 
-                const response = await fetch('/api/auth/register', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(registerData)
-                });
+            registerBtn.addEventListener('click', async function() {
+                console.log('Register button clicked');
 
-                console.log('Response status:', response.status);
+                const formData = new FormData(registerForm);
+                const registerData = {
+                    userName: formData.get('userName'),
+                    email: formData.get('email'),
+                    password: formData.get('password')
+                };
 
-                if (response.ok) {
-                    const authResponse = await response.json();
-                    console.log('Registration successful:', authResponse);
+                displayMessage('', 'd-none');
 
-                    setToken(authResponse.token);
-                    setUser({
-                        username: authResponse.username,
-                        email: authResponse.email,
-                        userId: authResponse.userId,
-                        roles: authResponse.roles || ['ROLE_USER']
+                if (!registerData.userName || !registerData.email || !registerData.password) {
+                    displayMessage('Please fill all fields', 'error');
+                    return;
+                }
+
+                try {
+                    registerBtn.disabled = true;
+                    registerBtn.textContent = 'Registering...';
+
+                    console.log('Sending registration request:', registerData);
+
+                    const response = await fetch('/api/auth/register', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(registerData)
                     });
 
-                    messageDiv.innerHTML = 'Registration successful! Redirecting...';
-                    messageDiv.className = 'success';
+                    console.log('Response status:', response.status);
 
-                    setTimeout(() => {
-                        window.location.href = '/';
-                    }, 1500);
+                    if (response.ok) {
+                        const authResponse = await response.json();
+                        console.log('Registration successful:', authResponse);
 
-                } else {
-                    let errorMessage = 'Registration failed';
-                    try {
-                        const errorText = await response.text();
-                        if (errorText) {
-                            errorMessage = errorText;
+                        setToken(authResponse.token);
+                        setUser({
+                            userName: authResponse.userName,
+                            email: authResponse.email,
+                            userId: authResponse.userId,
+                            roles: authResponse.roles || ['ROLE_USER']
+                        });
+
+                        displayMessage('Registration successful! Redirecting...', 'success');
+
+                        registerForm.reset();
+
+                        setTimeout(() => {
+                            window.location.href = '/';
+                        }, 1500);
+
+                    } else {
+                        let errorMessage = 'Registration failed. ';
+                        try {
+                            const errorText = await response.text();
+                            if (errorText) {
+                                errorMessage += errorText.length > 200 ? 'Server responded with an error.' : errorText;
+                            }
+                        } catch (e) {
+                            console.error('Error reading error response:', e);
                         }
-                    } catch (e) {
-                        console.error('Error reading error response:', e);
+                        displayMessage(errorMessage, 'error');
                     }
-                    messageDiv.innerHTML = errorMessage;
-                    messageDiv.className = 'error';
+                } catch (error) {
+                    console.error('Registration error:', error);
+                    displayMessage('Network Error: ' + error.message, 'error');
+                } finally {
+                    registerBtn.disabled = false;
+                    registerBtn.textContent = 'Register';
                 }
-            } catch (error) {
-                console.error('Registration error:', error);
-                messageDiv.innerHTML = 'Error: ' + error.message;
-                messageDiv.className = 'error';
+            });
+
+            if (isAuthenticated()) {
+                window.location.href = '/';
             }
         });
-
-        if (isAuthenticated()) {
-            window.location.href = '/';
-        }
-    });
-</script>
+    </script>
+</th:block>
 </body>
 </html>

@@ -26,13 +26,28 @@
             </div>
 
             <div class="ms-3 d-flex gap-2" id="admin-actions">
-                <a th:href="@{'/hotels/' + ${hotel.id} + '/images/new'}" class="btn btn-outline-info">
+                <a th:if="${!hotel.deleted}" th:href="@{'/hotels/' + ${hotel.id} + '/images/new'}" class="btn btn-outline-info admin-only-action">
                     <i class="bi bi-image-fill me-2"></i>Add Images
                 </a>
 
-                <a th:href="@{'/hotels/' + ${hotel.id} + '/update'}" class="btn btn-outline-warning">
+                <a th:if="${!hotel.deleted}" th:href="@{'/hotels/' + ${hotel.id} + '/update'}" class="btn btn-outline-warning admin-only-action">
                     <i class="bi bi-pencil-square me-2"></i>Edit Hotel
                 </a>
+
+                <button th:if="${!hotel.deleted}" id="deleteHotelBtn" th:data-hotel-id="${hotel.id}" class="btn btn-outline-danger admin-only-action"
+                        onclick="handleSoftDelete(this.getAttribute('data-hotel-id'))" style="display:none;">
+                    <i class="bi bi-trash-fill me-2"></i>Delete Hotel
+                </button>
+
+                <button th:if="${hotel.deleted}" id="restoreHotelBtn" th:data-hotel-id="${hotel.id}" class="btn btn-outline-success admin-only-action"
+                        onclick="handleSoftRestore(this.getAttribute('data-hotel-id'))" style="display:none;">
+                    <i class="bi bi-arrow-counterclockwise me-2"></i>Restore Hotel
+                </button>
+
+                <button th:data-hotel-id="${hotel.id}" class="btn btn-danger admin-only-action"
+                        onclick="handleHardDelete(this.getAttribute('data-hotel-id'))">
+                    <i class="bi bi-exclamation-octagon-fill me-2"></i>Destroy (Hard Delete)
+                </button>
             </div>
         </div>
 
@@ -40,8 +55,7 @@
             <div class="row g-3">
                 <div class="col-12 col-lg-8">
                     <img id="main-hotel-image" th:src="${hotel.images != null and !hotel.images.isEmpty() ? hotel.images.get(0).url : 'https://picsum.photos/600/400?random=1'}"
-                         alt="Hotel main image" class="img-fluid rounded shadow w-100"
-                         style="height: 400px; object-fit: cover;">
+                         alt="Hotel main image" class="img-fluid rounded shadow w-100" style="height: 400px; object-fit: cover;">
                 </div>
 
                 <div class="col-12 col-lg-4">
@@ -50,13 +64,10 @@
 
                             <img th:src="${image.url}" th:attr="data-src=${image.url}, data-index=${iterator.index}"
                                  alt="Hotel image" class="img-fluid rounded shadow-sm w-100 gallery-thumb"
-                                 th:classappend="${iterator.index == 0 ? 'active-thumb' : ''}"
-                                 style="height:120px; object-fit:cover;">
+                                 th:classappend="${iterator.index == 0 ? 'active-thumb' : ''}" style="height:120px; object-fit:cover;">
 
-                            <button class="delete-image-btn position-absolute top-0 end-0 btn p-0 border-0"
-                                    style="opacity: 0; transition: opacity 0.2s ease;"
-                                    th:data-hotel-id="${hotel.id}" th:data-image-id="${image.id}"
-                                    th:title="'Delete Image ID: ' + ${image.id}">
+                            <button th:if="${!hotel.deleted}" class="delete-image-btn position-absolute top-0 end-0 btn p-0 border-0" style="opacity: 0; transition: opacity 0.2s ease;"
+                                    th:data-hotel-id="${hotel.id}" th:data-image-id="${image.id}" th:title="'Delete Image ID: ' + ${image.id}">
                                 <i class="bi bi-trash-fill text-danger fs-5"></i>
                             </button>
                         </div>
@@ -81,14 +92,10 @@
                         <div th:with="roomType=${roomTypeMap[room.roomTypeId]}">
 
                             <img th:if="${roomType != null and roomType.images != null and !roomType.images.isEmpty()}"
-                                 th:src="${roomType.images.get(0).url}"
-                                 class="card-img-top" alt="Room image"
-                                 style="height: 220px; object-fit: cover;">
+                                 th:src="${roomType.images.get(0).url}" class="card-img-top" alt="Room image" style="height: 220px; object-fit: cover;">
 
                             <img th:unless="${roomType != null and roomType.images != null and !roomType.images.isEmpty()}"
-                                 src="https://picsum.photos/600/400?random=1"
-                                 class="card-img-top" alt="No room image available"
-                                 style="height: 220px; object-fit: cover;">
+                                 src="https://picsum.photos/600/400?random=1" class="card-img-top" alt="No room image available" style="height: 220px; object-fit: cover;">
 
                             <div class="card-body d-flex flex-column">
                                 <div class="flex-grow-1">
@@ -97,29 +104,29 @@
                                     <div th:if="${roomType != null}">
                                         <p class="text-muted small mb-2" th:text="${roomType.name}">Standard Room</p>
                                         <p class="text-muted small mb-3" th:text="${#strings.abbreviate(roomType.description, 100)}">Room description</p>
-                                        <p class="fw-bold text-warning fs-5 mb-2" th:text="${roomType.pricePerNight} + ' ₸/night'">5000 ₸/night</p>
                                         <p class="text-muted small mb-2" th:text="'Capacity: ' + ${roomType.capacity} + ' guests'">Capacity: 2 guests</p>
                                         <p class="text-muted small mb-2" th:text="'Beds: ' + ${roomType.bedsCount}">Beds: 2</p>
-                                    </div>
 
-                                    <div th:unless="${roomType != null}">
-                                        <p class="text-muted small mb-2">Room Type Not Specified</p>
-                                        <p class="text-muted small mb-3">No description available</p>
-                                        <p class="fw-bold text-warning fs-5 mb-2">Price not available</p>
-                                        <p class="text-muted small mb-2">Capacity: Not specified</p>
-                                    </div>
+                                        <p class="text-muted small mb-2"> Status:
+                                            <span th:if="${room.available}" class="badge bg-success">Available</span>
+                                            <span th:if="${!room.available}" class="badge bg-danger">Not available</span>
+                                        </p>
 
-                                    <p class="text-muted small mb-2"> Status:
-                                        <span th:if="${room.available}" class="badge bg-success">Available</span>
-                                        <span th:if="${!room.available}" class="badge bg-danger">Occupied</span>
-                                    </p>
+                                        <p class="fw-bold text-warning fs-5 mb-2" th:text="${roomType.pricePerNight} + ' ₸/night'">5000 ₸/night</p>
+                                    </div>
                                 </div>
 
                                 <div class="mt-3">
-                                    <a th:if="${room.available}"
-                                       th:href="@{'/rooms/' + ${room.id}}"
-                                       class="btn btn-custom-warning">View Room Details</a>
-                                    <button th:if="${!room.available}" class="btn btn-custom-secondary" disabled>Not Available</button>
+                                    <th:block th:with="roomUrl=${hotel.deleted ? '/rooms/deleted/' + room.id : '/rooms/' + room.id}">
+
+                                        <a th:if="${(room.available or hotel.deleted) or (hotel.deleted == false and room.available == false)}" th:href="@{${roomUrl}}" th:classappend="${room.available ? 'btn-custom-warning' : 'btn-outline-secondary'}" class="btn">
+                                            View Room Details
+                                        </a>
+
+                                        <button th:if="${!room.available and !hotel.deleted}" class="btn btn-custom-secondary" disabled>
+                                            Not Available
+                                        </button>
+                                    </th:block>
                                 </div>
                             </div>
                         </div>
@@ -142,17 +149,40 @@
             const thumbnailImages = document.querySelectorAll('.gallery-thumb');
             const adminActionsContainer = document.getElementById('admin-actions');
             const deleteButtons = document.querySelectorAll('.delete-image-btn');
+            const adminButtons = document.querySelectorAll('.admin-only-action');
 
-            function updateAdminUI() {
-                const isAdmin = typeof checkAdminAccess === 'function' && checkAdminAccess();
+            function updateUIForAdminAccess() {
+                const hasAdminRights = checkAdminAccess() || checkHotelKeeperAccess();
 
                 if (adminActionsContainer) {
-                    adminActionsContainer.style.display = isAdmin ? 'flex' : 'none';
+                    if (!hasAdminRights) {
+                        adminActionsContainer.style.display = 'none';
+                    } else {
+                        adminActionsContainer.style.display = 'flex';
+                    }
                 }
 
-                deleteButtons.forEach(btn => {
-                    btn.style.display = isAdmin ? 'block' : 'none';
+                adminButtons.forEach(btn => {
+                    btn.style.display = hasAdminRights ? 'block' : 'none';
                 });
+
+                deleteButtons.forEach(btn => {
+                    if (hasAdminRights) {
+                        btn.style.display = 'block';
+                        btn.style.opacity = '0';
+                        const wrapper = btn.closest('.thumbnail-wrapper');
+                        if (wrapper) {
+                            wrapper.onmouseenter = () => btn.style.opacity = '1';
+                            wrapper.onmouseleave = () => btn.style.opacity = '0';
+                        }
+                    } else {
+                        btn.style.display = 'none';
+                    }
+                });
+
+                if (!hasAdminRights && adminActionsContainer) {
+                    adminActionsContainer.style.display = 'none';
+                }
             }
 
             if (mainImage && thumbnailImages.length > 0) {
@@ -173,6 +203,74 @@
                 });
             }
 
+            async function executeHotelAction(url, actionName) {
+                const confirmed = confirm(`Are you sure that you want to ${actionName.toLowerCase()} this hotel?`);
+                if (!confirmed) {
+                    return;
+                }
+
+                try {
+                    const response = await makeAuthenticatedRequest(url, {
+                        method: 'PATCH',
+                        headers: getAuthHeaders()
+                    });
+
+                    if (response.ok) {
+                        alert(`Hotel ${actionName}d successfully!`);
+
+                        setTimeout(() => {
+                            window.location.href = '/hotels';
+                        }, 1500);
+                    } else if (response.status === 403) {
+                        alert('Access denied. Only an administrator can perform this action.');
+                    } else {
+                        const errorText = await response.text();
+                        alert(`Failed to ${actionName.toLowerCase()} hotel: ` + (errorText || 'Unknown error'));
+                    }
+                } catch (err) {
+                    console.error(`Connection error during ${actionName}:`, err);
+                    alert(`Server connection error. Failed to ${actionName.toLowerCase()} hotel.`);
+                }
+            }
+
+            window.handleSoftDelete = function(hotelId) {
+                const deleteUrl = `/api/hotels/${hotelId}/delete`;
+                executeHotelAction(deleteUrl, 'Delete');
+            };
+
+            window.handleSoftRestore = function(hotelId) {
+                const restoreUrl = `/api/hotels/${hotelId}/restore`;
+                executeHotelAction(restoreUrl, 'Restore');
+            };
+
+            window.handleHardDelete = async function(hotelId) {
+                const firstConfirm = confirm("WARNING: This will PERMANENTLY delete the hotel, all its rooms, and all images. This cannot be undone");
+                if (!firstConfirm)
+                    return;
+
+                const secondConfirm = confirm("Are you ABSOLUTELY sure? All booking history for this hotel might be affected.");
+                if (!secondConfirm)
+                    return;
+
+                try {
+                    const response = await makeAuthenticatedRequest(`/api/hotels/${hotelId}`, {
+                        method: 'DELETE',
+                        headers: getAuthHeaders()
+                    });
+
+                    if (response.ok || response.status === 204) {
+                        alert("Hotel has been permanently deleted.");
+                        window.location.href = '/hotels';
+                    } else {
+                        const errorText = await response.text();
+                        alert("Failed to permanently delete: " + (errorText || "Check server constraints"));
+                    }
+                } catch (err) {
+                    console.error(err);
+                    alert("Connection error during permanent deletion.");
+                }
+            };
+
             deleteButtons.forEach(button => {
                 button.addEventListener('click', async function (e) {
                     e.stopPropagation();
@@ -180,7 +278,7 @@
                     const hotelId = this.getAttribute('data-hotel-id');
                     const imageId = this.getAttribute('data-image-id');
 
-                    if (!confirm(`Are you sure you want to delete image ID: ${imageId}?`)) {
+                    if (!confirm(`Are you sure you want to delete image ID: ${imageId}? for Hotel ${hotelId}?`)) {
                         return;
                     }
 
@@ -209,10 +307,11 @@
                 });
             });
 
-            updateAdminUI();
+            updateUIForAdminAccess();
+
             window.addEventListener('storage', function(e) {
                 if (e.key === 'jwtToken' || e.key === 'user') {
-                    updateAdminUI();
+                    updateUIForAdminAccess();
                 }
             });
         });

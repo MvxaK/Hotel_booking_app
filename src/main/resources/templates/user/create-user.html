@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin - Create User</title>
+    <th:block layout:fragment="page-specific-head">
+        <link rel="stylesheet" href="/css/forms.css">
+    </th:block>
+</head>
+<body layout:fragment="content">
+
+<div class="container mt-5">
+    <div class="card shadow p-4 rounded border-0">
+        <h2 class="text-center mb-4 fw-bold text-dark">Create New User</h2>
+
+        <div id="message" class="alert d-none" role="alert"></div>
+
+        <form id="adminCreateUserForm">
+            <div class="mb-3">
+                <label for="userName" class="form-label">Username</label>
+                <input type="text" id="userName" name="userName" class="form-control" placeholder="Enter username" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" id="email" name="email" class="form-control" placeholder="Enter email address" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="password" class="form-label">Password</label>
+                <input type="password" id="password" name="password" class="form-control" placeholder="Enter password" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="role" class="form-label">User Role</label>
+                <select id="role" name="role" class="form-select" required>
+                    <option value="" selected disabled>Select a role</option>
+                    <option th:each="roleOption : ${roles}" th:value="${roleOption}" th:text="${roleOption}">ROLE_USER</option>
+              </select>
+            </div>
+
+            <button type="button" id="createUserBtn" class="btn btn-warning w-100 fw-semibold mt-3">
+                Create User
+            </button>
+        </form>
+
+        <div class="text-center mt-3">
+            <a th:href="@{'/'}" class="btn btn-outline-secondary">← Back to Main</a>
+        </div>
+    </div>
+</div>
+
+<th:block layout:fragment="page-specific-scripts-bottom">
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('adminCreateUserForm');
+            const btn = document.getElementById('createUserBtn');
+            const messageDiv = document.getElementById('message');
+
+            function displayMessage(text, type) {
+                messageDiv.innerHTML = text;
+                messageDiv.classList.remove('d-none', 'alert-success', 'alert-danger');
+                if (type === 'success') messageDiv.classList.add('alert-success');
+                else if (type === 'error') messageDiv.classList.add('alert-danger');
+            }
+
+            btn.addEventListener('click', async function() {
+                const formData = new FormData(form);
+
+                const userData = {
+                  userName: formData.get('userName'),
+                  email: formData.get('email'),
+                  password: formData.get('password'),
+                  role: formData.get('role')
+                };
+
+                if (!userData.userName || !userData.email || !userData.password || !userData.role) {
+                    displayMessage('Please fill all fields, including the role', 'error');
+                    return;
+                }
+
+                try {
+                    btn.disabled = true;
+                    btn.textContent = 'Processing...';
+
+                    const response = await makeAuthenticatedRequest('/api/users', {
+                        method: 'POST',
+                        body: JSON.stringify(userData)
+                    });
+
+                    if (response.ok) {
+                        displayMessage('User created successfully!', 'success');
+                        form.reset();
+
+                      setTimeout(() => {
+                          window.location.href = `/`;
+                      }, 1000);
+
+                    } else {
+                        const errorMsg = await response.text();
+                        displayMessage('Error: ' + (errorMsg || 'Failed to create user'), 'error');
+                    }
+                } catch (error) {
+                    displayMessage('Network error or access denied', 'error');
+                    console.error(error);
+                } finally {
+                    btn.disabled = false;
+                    btn.textContent = 'Create User';
+                }
+            });
+        });
+    </script>
+</th:block>
+</body>
+</html>

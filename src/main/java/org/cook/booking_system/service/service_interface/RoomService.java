@@ -8,9 +8,13 @@ import java.util.List;
 @Service
 public interface RoomService {
 
-    Room createRoomForHotel(Long hotelId, Room room);
+    Room createRoomForHotel(Room room);
     List<Room> getAllRooms();
+    List<Room> getAllRoomsDeletedTrue();
     Room getRoomById(Long id);
+    Room getRoomByIdDeletedTrue(Long id);
     Room updateRoom(Long id, Room roomToUpdate);
     void deleteRoom(Long id);
+    void markAsDeletedRoom(Long id);
+    void markAsRestoredRoom(Long id);
 }

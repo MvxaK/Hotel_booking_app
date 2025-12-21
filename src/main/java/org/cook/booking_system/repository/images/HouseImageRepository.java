@@ -9,4 +9,6 @@ import java.util.List;
 @Repository
 public interface HouseImageRepository extends JpaRepository<HouseImageEntity, Long> {
     List<HouseImageEntity> findByHouseId(Long houseId);
+
+    boolean existsByIdAndHouseId(Long id, Long houseId);
 }

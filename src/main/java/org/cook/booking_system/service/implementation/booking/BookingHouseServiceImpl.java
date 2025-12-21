@@ -84,8 +84,21 @@ public class BookingHouseServiceImpl implements BookingHouseService{
             throw new IllegalStateException("Booking is already canceled");
         }
 
+        if (booking.getStatus() == Status.COMPLETED) {
+            throw new IllegalStateException("Booking is already completed");
+        }
+
         booking.setStatus(Status.CANCELLED);
         bookingHouseRepository.save(booking);
+    }
+
+    @Transactional
+    public void deleteBooking(Long bookingId) {
+        if(!bookingHouseRepository.existsById(bookingId)){
+            throw new EntityNotFoundException("Booking not found with id -> " + bookingId);
+        }
+
+        bookingHouseRepository.deleteById(bookingId);
     }
 
     private boolean isAvailable(Long houseId, LocalDate checkInDate, LocalDate checkOutDate){

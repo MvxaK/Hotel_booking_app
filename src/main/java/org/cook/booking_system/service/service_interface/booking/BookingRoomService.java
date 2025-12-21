@@ -15,5 +15,6 @@ public interface BookingRoomService {
     List<BookingRoom> getAllBookingByUserId(Long userId);
     List<BookingRoomDetails> getAllBookingWithDetailsByUserId(Long userId);
     void cancelBooking(Long bookingId);
+    void deleteBooking(Long bookingId);
 
 }

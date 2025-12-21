@@ -5,29 +5,23 @@ import lombok.RequiredArgsConstructor;
 import org.cook.booking_system.entity.HouseEntity;
 import org.cook.booking_system.mapper.HouseMapper;
 import org.cook.booking_system.model.House;
+import org.cook.booking_system.model.Status;
 import org.cook.booking_system.repository.HouseRepository;
+import org.cook.booking_system.repository.booking.BookingHouseRepository;
 import org.cook.booking_system.service.service_interface.HouseService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class HouseServiceImpl implements HouseService{
 
-    private final HouseRepository houseRepository;
     private final HouseMapper houseMapper;
-
-    @Transactional
-    public House createHouse(House house){
-        HouseEntity houseEntity = houseMapper.toEntity(house);
-        HouseEntity saved = houseRepository.save(houseEntity);
-
-        return houseMapper.toModel(saved);
-    }
+    private final HouseRepository houseRepository;
+    private final BookingHouseRepository bookingHouseRepository;
 
     @Transactional(readOnly = true)
     public List<House> getAllHouses(){
@@ -37,16 +31,44 @@ public class HouseServiceImpl implements HouseService{
     }
 
     @Transactional(readOnly = true)
-    public House getHouseById(Long id){
-        return houseRepository.findById(id)
+    public List<House> getAllHousesDeletedTrue() {
+        return houseRepository.findByDeletedTrue().stream()
                 .map(houseMapper::toModel)
-                .orElseThrow( ()-> new EntityNotFoundException("House not found with id -> " + id));
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public House getHouseById(Long id){
+        return houseRepository.findByIdAndDeletedFalse(id)
+                .map(houseMapper::toModel)
+                .orElseThrow( ()-> new EntityNotFoundException("House not found or marked as deleted with id -> " + id));
+    }
+
+    @Transactional(readOnly = true)
+    public House getHouseByIdDeletedTrue(Long id) {
+        return houseRepository.findByIdAndDeletedTrue(id)
+                .map(houseMapper::toModel)
+                .orElseThrow( ()-> new EntityNotFoundException("Deleted House not found with id -> " + id));
+    }
+
+    @Transactional
+    public House createHouse(House house){
+        HouseEntity houseEntity = houseMapper.toEntity(house);
+        houseEntity.setDeleted(false);
+
+        HouseEntity saved = houseRepository.save(houseEntity);
+
+        return houseMapper.toModel(saved);
     }
 
     @Transactional
     public House updateHouse(Long id, House houseToUpdate){
         HouseEntity houseEntity = houseRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("House not found with id -> " + id));
+        
+        if(houseEntity.isDeleted()){
+            throw new IllegalStateException("Cannot update house that marked as deleted");
+        }
 
         houseEntity.setName(houseToUpdate.getName());
         houseEntity.setLocation(houseToUpdate.getLocation());
@@ -66,6 +88,49 @@ public class HouseServiceImpl implements HouseService{
         if (!houseRepository.existsById(id)){
             throw new EntityNotFoundException("House not found with id -> " + id);
         }
+
+        boolean hasActiveBookings = bookingHouseRepository.existsActiveBookingsByHouseId(id, LocalDate.now(), Status.RESERVED);
+        if (hasActiveBookings) {
+            throw new IllegalStateException("Cannot delete house with active or future bookings.");
+        }
+
+        bookingHouseRepository.deleteByHouseId(id);
         houseRepository.deleteById(id);
     }
+
+    @Transactional
+    public void markAsDeletedHouse(Long id){
+        HouseEntity houseEntity = houseRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("House not found with id -> " + id));
+
+        if(houseEntity.isDeleted()){
+            throw new IllegalStateException("Cannot delete house that already marked as deleted");
+        }
+
+        boolean hasActiveBookings = bookingHouseRepository.existsActiveBookingsByHouseId(id, LocalDate.now(), Status.RESERVED);
+        if (hasActiveBookings) {
+            throw new IllegalStateException("Cannot delete house with active or future bookings.");
+        }
+        
+        houseEntity.setDeleted(true);
+        houseEntity.setAvailable(false);
+
+        houseRepository.save(houseEntity);
+    }
+
+    @Transactional
+    public void markAsRestoredHouse(Long id){
+        HouseEntity houseEntity = houseRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("House not found with id -> " + id));
+
+        if (!houseEntity.isDeleted()) {
+            throw new IllegalStateException("Cannot restore house that already restored");
+        }
+
+        houseEntity.setDeleted(false);
+        houseEntity.setAvailable(true);
+
+        houseRepository.save(houseEntity);
+    }
+
 }

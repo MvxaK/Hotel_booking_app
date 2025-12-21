@@ -10,9 +10,15 @@ import java.util.List;
 public interface RoomTypeService {
 
     List<RoomType> getAllRoomTypes();
+    List<RoomType> getAllRoomTypesDeletedTrue();
+    List<RoomType> findAllIncludeDeleted();
     RoomType getRoomTypeById(Long id);
+    RoomType getRoomTypeByIdDeletedTrue(Long id);
+    RoomType getRoomTypeByIdIncludeDeleted(Long id);
     List<Room> getRoomsByRoomTypeId(Long id);
-    RoomType createRoomType(RoomType roomType);
+    RoomType createRoomTypeForHotel(RoomType roomType);
     RoomType updateRoomType(Long id, RoomType updated);
     void deleteRoomType(Long id);
+    void markAsDeletedRoomType(Long id);
+    void markAsRestoredRoomType(Long id);
 }

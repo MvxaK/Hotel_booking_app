@@ -1,11 +1,12 @@
 package org.cook.booking_system.controller.apiController.bookingController;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.cook.booking_system.model.User;
 import org.cook.booking_system.model.booking.BookingRoom;
 import org.cook.booking_system.model.booking.BookingRoomRequest;
-import org.cook.booking_system.service.implementation.UserServiceImpl;
-import org.cook.booking_system.service.implementation.booking.BookingRoomServiceImpl;
+import org.cook.booking_system.service.service_interface.UserService;
+import org.cook.booking_system.service.service_interface.booking.BookingRoomService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -20,12 +21,13 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BookingRoomApiController {
 
-    private final BookingRoomServiceImpl bookingRoomService;
-    private final UserServiceImpl userService;
+    private final BookingRoomService bookingRoomService;
+    private final UserService userService;
 
     @GetMapping("/{id}")
     public ResponseEntity<BookingRoom> getBookingById(@PathVariable Long id) {
         BookingRoom booking = bookingRoomService.getBookingById(id);
+
         return ResponseEntity.ok(booking);
     }
 
@@ -37,14 +39,15 @@ public class BookingRoomApiController {
     }
 
     @PostMapping
-    public ResponseEntity<BookingRoom> createBooking(@RequestBody BookingRoomRequest bookingRequest, Authentication authentication) {
+    public ResponseEntity<BookingRoom> createBooking(@Valid @RequestBody BookingRoomRequest bookingRequest, Authentication authentication) {
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         User user = userService.getUserByUserName(userDetails.getUsername());
 
         BookingRoom booking = bookingRoomService.createBookingForUser(user.getId(), bookingRequest);
         URI location = URI.create("/api/bookings/rooms/" + booking.getId());
 
-        return ResponseEntity.created(location).body(booking);
+        return ResponseEntity.created(location)
+                .body(booking);
     }
 
     @DeleteMapping("/{id}/cancel")
@@ -52,6 +55,16 @@ public class BookingRoomApiController {
     public ResponseEntity<Void> cancelBooking(@PathVariable Long id) {
         bookingRoomService.cancelBooking(id);
 
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.noContent()
+                .build();
+    }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public ResponseEntity<Void> deleteBooking(@PathVariable Long id) {
+        bookingRoomService.deleteBooking(id);
+
+        return ResponseEntity.noContent()
+                .build();
     }
 }

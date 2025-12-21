@@ -15,4 +15,5 @@ public interface BookingHouseService {
     List<BookingHouse> getAllBookingByUserId(Long userId);
     List<BookingHouseDetails> getAllBookingWithDetailsByUserId(Long userId);
     void cancelBooking(Long bookingId);
+    void deleteBooking(Long bookingId);
 }

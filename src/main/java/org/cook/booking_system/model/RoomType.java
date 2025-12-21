@@ -1,10 +1,11 @@
 package org.cook.booking_system.model;
 
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.cook.booking_system.model.images.RoomTypeImage;
+import org.cook.booking_system.model.images.Image;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -21,12 +22,14 @@ public class RoomType {
     private int capacity;
     @NotNull
     private String description;
-    @NotNull
+    @NotNull @Positive
     private BigDecimal pricePerNight;
-    @NotNull
+    @NotNull @Positive
     private int bedsCount;
     @NotNull
     private Long hotelId;
     private List<Long> roomIds;
-    private List<RoomTypeImage> images;
+    private List<Image> images;
+    private boolean deleted;
+
 }

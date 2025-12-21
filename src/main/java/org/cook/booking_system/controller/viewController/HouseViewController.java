@@ -25,6 +25,15 @@ public class HouseViewController {
         return "house/houses";
     }
 
+    @GetMapping("/deleted")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_HOUSE_KEEPER')")
+    public String showAllHousesDeletedTrue(Model model){
+        List<House> houses = houseService.getAllHousesDeletedTrue();
+        model.addAttribute("houses", houses);
+
+        return "house/houses";
+    }
+
     @GetMapping("/{id}")
     public String showHouseDetails(@PathVariable Long id, Model model){
         House house = houseService.getHouseById(id);
@@ -33,15 +42,24 @@ public class HouseViewController {
         return "house/house-details";
     }
 
+    @GetMapping("/deleted/{id}")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_HOUSE_KEEPER')")
+    public String showHouseDetailsDeletedTrue(@PathVariable Long id, Model model){
+        House house = houseService.getHouseByIdDeletedTrue(id);
+        model.addAttribute("house", house);
+
+        return "house/house-details";
+    }
+
     @GetMapping("/new")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_HOUSE_KEEPER')")
     public String showHouseCreateForm(){
 
         return "house/create-house";
     }
 
     @GetMapping("/{id}/update")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_HOUSE_KEEPER')")
     public String showHouseUpdateForm(@PathVariable Long id, Model model){
         House house = houseService.getHouseById(id);
         model.addAttribute("house", house);

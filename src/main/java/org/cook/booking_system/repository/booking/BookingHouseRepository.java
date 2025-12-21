@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Repository
@@ -17,4 +18,9 @@ public interface BookingHouseRepository extends JpaRepository<BookingHouseEntity
 
     @Query("select new org.cook.booking_system.model.booking.BookingHouseDetails(b.id, b.user.id, hs.name, hs.location, b.checkInDate, b.checkOutDate, b.totalPrice, b.status) from BookingHouseEntity b join b.house hs where b.user.id = :userId")
     List<BookingHouseDetails> findBookingDetailsByUserId(@Param("userId") Long userId);
+
+    @Query("select case when count(b) > 0 then true else false end from BookingHouseEntity b where b.house.id = :houseId and b.checkOutDate >= :currentDate and b.status = :status")
+    boolean existsActiveBookingsByHouseId(@Param("houseId") Long houseId, @Param("currentDate") LocalDate currentDate, @Param("status") Status status);
+
+    void deleteByHouseId(Long id);
 }

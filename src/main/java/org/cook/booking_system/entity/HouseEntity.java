@@ -3,9 +3,7 @@ package org.cook.booking_system.entity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
 import org.cook.booking_system.entity.images.HouseImageEntity;
 
 import java.math.BigDecimal;
@@ -52,4 +50,7 @@ public class HouseEntity {
 
     @OneToMany(mappedBy = "house", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<HouseImageEntity> images;
+
+    @Column(name = "is_deleted", nullable = false)
+    private boolean deleted = false;
 }

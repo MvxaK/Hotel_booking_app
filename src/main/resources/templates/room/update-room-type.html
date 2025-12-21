@@ -13,7 +13,6 @@
     <div class="card shadow p-4 rounded">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2 class="fw-bold mb-0">Update Room Type: <span th:text="${roomType.name}"></span></h2>
-            <a th:href="@{'/rooms/' + ${roomId}}" class="btn btn-outline-secondary"> ← Back to Room</a>
         </div>
 
         <div id="adminAlert" class="alert alert-warning d-none" role="alert">
@@ -24,7 +23,6 @@
         <form id="roomTypeForm">
             <input type="hidden" id="roomTypeId" th:value="${roomType.id}">
             <input type="hidden" id="hotelId" th:value="${roomType.hotelId}">
-            <input type="hidden" id="roomId" th:value="${roomId}">
 
             <div class="mb-3">
                 <label class="form-label">Hotel</label>
@@ -70,8 +68,9 @@
             const submitBtn = document.getElementById('submitBtn');
 
             function updateUIForAdminAccess() {
-                const isAdmin = typeof checkAdminAccess === 'function' && checkAdminAccess();
-                if (!isAdmin) {
+                const hasAdminRights = checkAdminAccess() || checkHotelKeeperAccess();
+
+                if (!hasAdminRights) {
                     adminAlert.classList.remove('d-none');
                     submitBtn.disabled = true;
                     submitBtn.textContent = 'Admin Access Required';
@@ -80,7 +79,7 @@
                     submitBtn.disabled = false;
                     submitBtn.textContent = 'Update Room Type';
                 }
-                return isAdmin;
+                return hasAdminRights;
             }
 
             updateUIForAdminAccess();
@@ -103,7 +102,6 @@
 
                 const roomTypeId = document.getElementById('roomTypeId').value;
                 const hotelId = document.getElementById('hotelId').value;
-                const roomId = document.getElementById('roomId').value
 
                 const name = document.getElementById('roomTypeName').value.trim();
                 const capacity = parseInt(document.getElementById('capacity').value);
@@ -153,8 +151,8 @@
                         alert('Room Type successfully updated!');
 
                         setTimeout(() => {
-                            window.location.href = '/rooms/' + roomId;
-                        }, 1500);
+                            window.location.href = `/room-types/${roomTypeId}`;
+                        }, 1000);
 
                     } else if (response.status === 401 || response.status === 403) {
                         alert('Access denied. Please log in as administrator.');

@@ -17,7 +17,7 @@ public class HouseViewImageController {
     private final HouseServiceImpl houseService;
 
     @GetMapping("/new")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_HOUSE_KEEPER')")
     public String showHouseCreateForm(@PathVariable Long houseId, Model model){
         String houseName = houseService.getHouseById(houseId).getName();
 

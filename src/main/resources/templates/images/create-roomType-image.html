@@ -29,7 +29,10 @@
             </button>
         </form>
 
-        <a th:href="@{/}" class="btn btn-warning mt-3">Back to Main</a>
+        <br>
+        <a th:if="${roomTypeId != null}" th:href="@{'/room-types/' + ${roomTypeId}}" class="btn btn-warning w-100 fw-semibold">
+            Back to RoomType
+        </a>
     </div>
 </div>
 
@@ -49,8 +52,9 @@
             }
 
             function updateUIForAdminAccess() {
-                const isAdmin = checkAdminAccess();
-                if (!isAdmin) {
+                const hasAdminRights = checkAdminAccess() || checkHotelKeeperAccess();
+
+                if (!hasAdminRights) {
                     adminAlert.classList.remove('d-none');
                     submitBtn.disabled = true;
                     submitBtn.textContent = 'Admin Access Required';
@@ -59,7 +63,7 @@
                     submitBtn.disabled = false;
                     submitBtn.textContent = 'Upload Image';
                 }
-                return isAdmin;
+                return hasAdminRights;
             }
 
             updateUIForAdminAccess();

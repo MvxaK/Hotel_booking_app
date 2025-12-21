@@ -95,8 +95,21 @@ public class BookingRoomServiceImpl implements BookingRoomService{
             throw new IllegalStateException("Booking is already canceled");
         }
 
+        if (booking.getStatus() == Status.COMPLETED) {
+            throw new IllegalStateException("Booking is already completed");
+        }
+
         booking.setStatus(Status.CANCELLED);
         bookingRoomRepository.save(booking);
+    }
+
+    @Transactional
+    public void deleteBooking(Long bookingId) {
+        if(!bookingRoomRepository.existsById(bookingId)){
+            throw new EntityNotFoundException("Booking not found with id -> " + bookingId);
+        }
+
+        bookingRoomRepository.deleteById(bookingId);
     }
 
     private boolean isAvailable(Long roomId, LocalDate checkInDate, LocalDate checkOutDate){

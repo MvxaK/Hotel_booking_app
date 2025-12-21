@@ -14,7 +14,10 @@
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a th:href="@{/}">Home</a></li>
                 <li class="breadcrumb-item"><a th:href="@{/hotels}">Hotels</a></li>
-                <li class="breadcrumb-item"><a th:href="@{'/hotels/' + ${hotel.id}}" th:text="${hotel.name}">Hotel</a></li>
+                <li class="breadcrumb-item">
+                    <a th:if="${hotel.deleted}" th:href="@{'/hotels/deleted/' + ${hotel.id}}" th:text="${hotel.name}">Hotel</a>
+                    <a th:unless="${hotel.deleted}" th:href="@{'/hotels/' + ${hotel.id}}" th:text="${hotel.name}">Hotel</a>
+                </li>
                 <li class="breadcrumb-item active" aria-current="page" th:text="'Room ' + ${room.roomNumber}">Room</li>
             </ol>
         </nav>
@@ -26,17 +29,28 @@
             </div>
 
             <div class="ms-3 d-flex gap-2" id="admin-actions">
-                <a th:if="${roomType != null}" th:href="@{'/room-types/' + ${roomType.id} + '/images/new'}" class="btn btn-outline-info">
+                <a th:if="${roomType != null && !room.deleted}" th:href="@{'/room-types/' + ${roomType.id} + '/images/new'}" class="btn btn-outline-info admin-only-action">
                     <i class="bi bi-image-fill me-2"></i>Add Type Images
                 </a>
 
-                <a th:if="${roomType != null}" th:href="@{'/room-types/' + ${roomType.id} + '/update' + '?roomId=' + ${room.id}}" class="btn btn-outline-primary">
-                    <i class="bi bi-card-heading me-2"></i>Edit Room Type
-                </a>
-
-                <a th:href="@{'/rooms/' + ${room.id} + '/update'}" class="btn btn-outline-warning">
+                <a th:if="${!room.deleted}" th:href="@{'/rooms/' + ${room.id} + '/update'}" class="btn btn-outline-warning admin-only-action">
                     <i class="bi bi-pencil-square me-2"></i>Edit Room
                 </a>
+
+                <button th:if="${!room.deleted}" id="deleteRoomBtn" th:data-room-id="${room.id}" class="btn btn-outline-danger admin-only-action"
+                        onclick="handleSoftDelete(this.getAttribute('data-room-id'))" style="display:none;">
+                    <i class="bi bi-trash-fill me-2"></i>Delete Room
+                </button>
+
+                <button th:if="${room.deleted}" id="restoreRoomBtn" th:data-room-id="${room.id}" class="btn btn-outline-success admin-only-action"
+                        onclick="handleSoftRestore(this.getAttribute('data-room-id'))" style="display:none;">
+                    <i class="bi bi-arrow-counterclockwise me-2"></i>Restore Room
+                </button>
+
+                <button class="btn btn-danger admin-only-action" th:data-room-id="${room.id}"
+                        onclick="handleHardDelete(this.getAttribute('data-room-id'))">
+                    <i class="bi bi-exclamation-octagon-fill me-2"></i>Destroy (Hard Delete)
+                </button>
             </div>
         </div>
 
@@ -53,13 +67,10 @@
 
                             <img th:src="${image.url}" th:attr="data-src=${image.url}, data-index=${iterator.index}"
                                  alt="Room image" class="img-fluid rounded shadow-sm w-100 gallery-thumb"
-                                 th:classappend="${iterator.index == 0 ? 'active-thumb' : ''}"
-                                 style="height:120px; object-fit:cover;">
+                                 th:classappend="${iterator.index == 0 ? 'active-thumb' : ''}" style="height:120px; object-fit:cover;">
 
-                            <button class="delete-image-btn position-absolute top-0 end-0 btn p-0 border-0"
-                                    style="opacity: 0; transition: opacity 0.2s ease;"
-                                    th:data-room-type-id="${roomType.id}" th:data-image-id="${image.id}"
-                                    th:title="'Delete Image ID: ' + ${image.id}">
+                            <button th:if="${!room.deleted}" class="delete-image-btn position-absolute top-0 end-0 btn p-0 border-0" style="opacity: 0; transition: opacity 0.2s ease;"
+                                    th:data-room-type-id="${roomType.id}" th:data-image-id="${image.id}" th:title="'Delete Image ID: ' + ${image.id}">
                                 <i class="bi bi-trash-fill text-danger fs-5"></i>
                             </button>
                         </div>
@@ -89,8 +100,9 @@
 
                                 <li class="mb-2" th:if="${roomType != null}">
                                     <strong class="text-dark">Price per night:</strong>
-                                    <span class="text-warning fw-bold fs-5 ms-2" th:text="${roomType.pricePerNight} + ' ₸'">5000 ₸</span>
+                                    <span class="text-warning fw-bold fs-5 ms-2" th:text="${roomType.pricePerNight} + ' ₸'">676767 ₸</span>
                                 </li>
+
                                 <li class="mb-2" th:unless="${roomType != null}">
                                     <strong class="text-dark">Price per night:</strong>
                                     <span class="text-warning fw-bold fs-5 ms-2">Not available</span>
@@ -113,8 +125,8 @@
 
                                 <li class="mb-2">
                                     <strong class="text-dark">Status:</strong>
-                                    <span th:if="${room.available}" class="badge bg-success ms-2">Available</span>
-                                    <span th:if="${!room.available}" class="badge bg-danger ms-2">Occupied</span>
+                                    <span th:if="${room.available}" class="badge bg-success">Available</span>
+                                    <span th:if="${!room.available}" class="badge bg-danger">Not available</span>
                                 </li>
                             </ul>
 
@@ -135,6 +147,26 @@
                     </div>
                 </section>
             </div>
+
+            <div class="col-lg-4">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title text-dark mb-3">Quick Facts</h5>
+                        <div class="d-flex justify-content-between mb-2 pb-2 border-bottom">
+                            <span class="text-muted">Check-in:</span>
+                            <strong>14:00</strong>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2 pb-2 border-bottom">
+                            <span class="text-muted">Check-out:</span>
+                            <strong>12:00</strong>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2 pb-2 border-bottom">
+                            <span class="text-muted">Mini-fridge:</span>
+                            <strong>Seperated payment fee</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </main>
@@ -146,21 +178,40 @@
             const thumbnailImages = document.querySelectorAll('.gallery-thumb');
             const adminActionsContainer = document.getElementById('admin-actions');
             const deleteButtons = document.querySelectorAll('.delete-image-btn');
+            const adminButtons = document.querySelectorAll('.admin-only-action');
 
             function updateUIForAdminAccess() {
-                const isAdmin = typeof checkAdminAccess === 'function' && checkAdminAccess();
+                const hasAdminRights = checkAdminAccess() || checkHotelKeeperAccess();
 
                 if (adminActionsContainer) {
-                    adminActionsContainer.style.display = isAdmin ? 'flex' : 'none';
+                    if (!hasAdminRights) {
+                        adminActionsContainer.style.display = 'none';
+                    } else {
+                        adminActionsContainer.style.display = 'flex';
+                    }
                 }
 
+                adminButtons.forEach(btn => {
+                    btn.style.display = hasAdminRights ? 'block' : 'none';
+                });
+
                 deleteButtons.forEach(btn => {
-                    if (isAdmin) {
+                    if (hasAdminRights) {
                         btn.style.display = 'block';
+                        btn.style.opacity = '0';
+                        const wrapper = btn.closest('.thumbnail-wrapper');
+                        if (wrapper) {
+                            wrapper.onmouseenter = () => btn.style.opacity = '1';
+                            wrapper.onmouseleave = () => btn.style.opacity = '0';
+                        }
                     } else {
                         btn.style.display = 'none';
                     }
                 });
+
+                if (!hasAdminRights && adminActionsContainer) {
+                    adminActionsContainer.style.display = 'none';
+                }
             }
 
             if (mainImage && thumbnailImages.length > 0) {
@@ -180,6 +231,74 @@
                     thumbnail.addEventListener('click', handleThumbnailClick);
                 });
             }
+
+            async function executeRoomAction(url, actionName) {
+                const confirmed = confirm(`Are you sure that you want to ${actionName.toLowerCase()} this room?`);
+                if (!confirmed) {
+                    return;
+                }
+
+                try {
+                    const response = await makeAuthenticatedRequest(url, {
+                        method: 'PATCH',
+                        headers: getAuthHeaders()
+                    });
+
+                    if (response.ok) {
+                        alert(`Room ${actionName}d successfully!`);
+
+                        setTimeout(() => {
+                            window.location.href = '/hotels';
+                        }, 1500);
+                    } else if (response.status === 403) {
+                        alert('Access denied. Only an administrator can perform this action.');
+                    } else {
+                        const errorText = await response.text();
+                        alert(`Failed to ${actionName.toLowerCase()} room: ` + (errorText || 'Unknown error'));
+                    }
+                } catch (err) {
+                    console.error(`Connection error during ${actionName}:`, err);
+                    alert(`Server connection error. Failed to ${actionName.toLowerCase()} room.`);
+                }
+            }
+
+            window.handleSoftDelete = function(roomId) {
+                const deleteUrl = `/api/rooms/${roomId}/delete`;
+                executeRoomAction(deleteUrl, 'Delete');
+            };
+
+            window.handleSoftRestore = function(roomId) {
+                const restoreUrl = `/api/rooms/${roomId}/restore`;
+                executeRoomAction(restoreUrl, 'Restore');
+            };
+
+            window.handleHardDelete = async function(roomId) {
+                const firstConfirm = confirm("WARNING: This will PERMANENTLY delete the room. This cannot be undone");
+                if (!firstConfirm)
+                    return;
+
+                const secondConfirm = confirm("Are you ABSOLUTELY sure? All booking history for this room might be affected.");
+                if (!secondConfirm)
+                    return;
+
+                try {
+                    const response = await makeAuthenticatedRequest(`/api/rooms/${roomId}`, {
+                        method: 'DELETE',
+                        headers: getAuthHeaders()
+                    });
+
+                    if (response.ok || response.status === 204) {
+                        alert("Room has been permanently deleted.");
+                        window.location.href = '/hotels';
+                    }  else {
+                        const errorText = await response.text();
+                        alert("Failed to permanently delete: " + (errorText || "Check server constraints"));
+                    }
+                } catch (err) {
+                    console.error(err);
+                    alert("Connection error during permanent deletion.");
+                }
+            };
 
             deleteButtons.forEach(button => {
                 button.addEventListener('click', async function (e) {

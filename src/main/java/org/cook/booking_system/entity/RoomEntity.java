@@ -1,11 +1,7 @@
 package org.cook.booking_system.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
-import lombok.experimental.SuperBuilder;
-
 
 @Entity
 @Data
@@ -31,4 +27,7 @@ public class RoomEntity{
     @ManyToOne
     @JoinColumn(name = "room_type_id", referencedColumnName = "id")
     private RoomTypeEntity roomType;
+
+    @Column(name = "is_deleted", nullable = false)
+    private boolean deleted = false;
 }

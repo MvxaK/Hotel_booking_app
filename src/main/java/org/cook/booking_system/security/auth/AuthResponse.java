@@ -13,7 +13,7 @@ public class AuthResponse {
 
     private String token;
     private String type = "Bearer";
-    private String username;
+    private String userName;
     private String email;
     private Long userId;
     private List<String> roles;

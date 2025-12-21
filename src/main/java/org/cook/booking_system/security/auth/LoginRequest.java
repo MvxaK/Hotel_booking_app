@@ -1,5 +1,6 @@
 package org.cook.booking_system.security.auth;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,7 +10,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class LoginRequest {
 
-    private String username;
+    @NotNull
+    private String userName;
+    @NotNull
     private String password;
 
 }

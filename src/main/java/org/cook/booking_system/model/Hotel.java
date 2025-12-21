@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.cook.booking_system.model.images.HotelImage;
+import org.cook.booking_system.model.images.Image;
 
 import java.util.List;
 
@@ -22,5 +22,7 @@ public class Hotel {
     private String description;
     private List<Long> roomIds;
     private List<Long> roomTypeIds;
-    private List<HotelImage> images;
+    private List<Image> images;
+    private boolean deleted;
+
 }

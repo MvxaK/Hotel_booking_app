@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+  <meta charset="UTF-8">
+  <title>Room Types</title>
+  <th:block layout:fragment="page-specific-head">
+    <link rel="stylesheet" href="/css/hotels.css">
+  </th:block>
+</head>
+<body>
+
+<main layout:fragment="content">
+    <div class="container py-4">
+        <h1 class="text-center mb-5 fw-bold text-dark">All Room Types</h1>
+
+        <div th:if="${roomTypes == null or roomTypes.isEmpty()}" class="text-center py-5">
+          <h4 class="text-muted">No room types defined yet.</h4>
+          <p class="text-muted">Please add new room types to the system.</p>
+        </div>
+
+        <div class="row g-4">
+            <div th:each="roomType : ${roomTypes}" class="col-12 col-sm-6 col-lg-4">
+                <div class="card hotel-card-custom h-100">
+
+                    <img th:if="${roomType.images != null and !roomType.images.isEmpty()}" th:src="${roomType.images.get(0).url}"
+                         class="card-img-top" alt="Room Type image" style="height: 220px; object-fit: cover;">
+
+                    <img th:unless="${roomType.images != null and !roomType.images.isEmpty()}"
+                         src="https://picsum.photos/600/400?random=2" alt="No image available" class="card-img-top" style="height: 220px; object-fit: cover;">
+
+                    <div class="card-body d-flex flex-column">
+                        <h3 class="card-title fw-semibold" th:text="${roomType.name}">Standard Room</h3>
+
+                        <p class="text-muted small mb-3" th:text="${#strings.abbreviate(roomType.description, 100)}">Room description</p>
+                        <p class="text-muted small mb-2" th:text="'Capacity: ' + ${roomType.capacity} + ' guests'">Capacity: 2 guests</p>
+                        <p class="text-muted small mb-2" th:text="'Beds: ' + ${roomType.bedsCount}">Beds: 2</p>
+                        <p class="fw-bold text-warning fs-5 mb-2" th:text="${roomType.pricePerNight} + ' ₸/night'">5000 ₸/night</p>
+
+                        <div class="mt-auto">
+                            <th:block th:with="typeUrl=${roomType.deleted ? '/room-types/deleted/' + roomType.id : '/room-types/' + roomType.id}">
+                                <a th:href="@{${typeUrl}}" class="btn btn-custom-warning w-100">
+                                    View Details
+                                </a>
+                            </th:block>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+</body>
+</html>

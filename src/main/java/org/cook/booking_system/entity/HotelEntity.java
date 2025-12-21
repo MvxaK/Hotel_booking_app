@@ -1,6 +1,5 @@
 package org.cook.booking_system.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -39,5 +38,8 @@ public class HotelEntity {
 
     @OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<HotelImageEntity> images;
+
+    @Column(name = "is_deleted", nullable = false)
+    private boolean deleted = false;
 
 }

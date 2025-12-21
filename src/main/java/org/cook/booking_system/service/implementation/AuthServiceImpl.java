@@ -37,14 +37,14 @@ public class AuthServiceImpl implements AuthService {
     @Transactional
     public AuthResponse login(LoginRequest loginRequest) {
         Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword())
+                new UsernamePasswordAuthenticationToken(loginRequest.getUserName(), loginRequest.getPassword())
         );
         SecurityContextHolder.getContext().setAuthentication(authentication);
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 
         String jwt = jwtService.generateToken(userDetails);
 
-        UserEntity userEntity = userRepository.findByUserName(loginRequest.getUsername())
+        UserEntity userEntity = userRepository.findByUserName(loginRequest.getUserName())
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
         List<String> rolesList = userEntity.getRoles().stream()
@@ -56,7 +56,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Transactional
     public AuthResponse register(RegisterRequest registerRequest) {
-        if(userRepository.findByUserName(registerRequest.getUsername()).isPresent()){
+        if(userRepository.findByUserName(registerRequest.getUserName()).isPresent()){
             throw new IllegalArgumentException("Username already exists");
         }
 
@@ -65,7 +65,7 @@ public class AuthServiceImpl implements AuthService {
         }
 
         UserEntity userEntity = new UserEntity();
-        userEntity.setUserName(registerRequest.getUsername());
+        userEntity.setUserName(registerRequest.getUserName());
         userEntity.setEmail(registerRequest.getEmail());
         userEntity.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
 
@@ -75,7 +75,7 @@ public class AuthServiceImpl implements AuthService {
         UserEntity savedUser = userRepository.save(userEntity);
 
         Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(registerRequest.getUsername(), registerRequest.getPassword())
+                new UsernamePasswordAuthenticationToken(registerRequest.getUserName(), registerRequest.getPassword())
         );
 
         SecurityContextHolder.getContext().setAuthentication(authentication);

@@ -31,6 +31,15 @@ public class HotelViewController {
         return "hotel/hotels";
     }
 
+    @GetMapping("/deleted")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_HOTEL_KEEPER')")
+    public String showAllHotelsDeletedTrue(Model model){
+        List<Hotel> hotels = hotelService.getAllHotelsDeletedTrue();
+        model.addAttribute("hotels", hotels);
+
+        return "hotel/hotels";
+    }
+
     @GetMapping("/{id}")
     public String showHotelDetails(@PathVariable Long id, Model model){
         Hotel hotel = hotelService.getHotelById(id);
@@ -38,7 +47,24 @@ public class HotelViewController {
         List<RoomType> roomTypes = hotelService.getRoomTypesByHotelId(id);
 
         Map<Long, RoomType> roomTypeMap = roomTypes.stream()
-                        .collect(Collectors.toMap(RoomType::getId, x -> x));
+                        .collect(Collectors.toMap(RoomType::getId, roomType -> roomType));
+
+        model.addAttribute("hotel", hotel);
+        model.addAttribute("rooms", rooms);
+        model.addAttribute("roomTypeMap", roomTypeMap);
+
+        return "hotel/hotel-details";
+    }
+
+    @GetMapping("/deleted/{id}")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_HOTEL_KEEPER')")
+    public String showHotelDetailsIncludeDeleted(@PathVariable Long id, Model model){
+        Hotel hotel = hotelService.getHotelByIdDeletedTrue(id);
+        List<Room> rooms = hotelService.getRoomsByHotelIdDeletedTrue(id);
+        List<RoomType> roomTypes = hotelService.getRoomTypesByHotelIdDeletedTrue(id);
+
+        Map<Long, RoomType> roomTypeMap = roomTypes.stream()
+                .collect(Collectors.toMap(RoomType::getId, x -> x));
 
         model.addAttribute("hotel", hotel);
         model.addAttribute("rooms", rooms);
@@ -48,14 +74,14 @@ public class HotelViewController {
     }
 
     @GetMapping("/new")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_HOTEL_KEEPER')")
     public String showCreateHotelForm(){
 
         return "hotel/create-hotel";
     }
 
     @GetMapping("/{id}/update")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_HOTEL_KEEPER')")
     public String showUpdateHotelForm(@PathVariable Long id, Model model){
         Hotel hotel = hotelService.getHotelById(id);
         model.addAttribute("hotel", hotel);

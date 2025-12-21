@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+<head>
+    <title>Deleted rooms</title>
+    <th:block layout:fragment="page-specific-head">
+        <link rel="stylesheet" href="/css/hotel-details.css">
+    </th:block>
+</head>
+
+<body>
+
+<main layout:fragment="content">
+    <div class="container py-5">
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a th:href="@{/}">Home</a></li>
+                <li class="breadcrumb-item"><a th:href="@{/hotels/deleted}">Hotels</a></li>
+                <li class="breadcrumb-item active">Deleted Rooms</li>
+            </ol>
+        </nav>
+
+        <h1 class="text-center mb-5 fw-bold text-dark">Deleted Rooms</h1>
+
+        <section class="mt-5">
+            <div th:if="${rooms != null and !rooms.isEmpty()}" class="row g-4">
+
+                <div class="col-12 col-sm-6 col-lg-4" th:each="room : ${rooms}">
+                    <div class="card border-0 shadow h-100 hotel-room-card bg-light">
+                        <div th:with="roomType=${roomTypeMap[room.roomTypeId]}">
+
+                            <img th:if="${roomType != null and roomType.images != null and !roomType.images.isEmpty()}"
+                                 th:src="${roomType.images.get(0).url}" class="card-img-top" alt="Room image" style="height: 220px; object-fit: cover;">
+
+                            <img th:unless="${roomType != null and roomType.images != null and !roomType.images.isEmpty()}"
+                                 src="https://picsum.photos/600/400?random=1" class="card-img-top" alt="No room image available" style="height: 220px; object-fit: cover;">
+
+                            <div class="card-body d-flex flex-column">
+                                <div class="flex-grow-1">
+                                    <h5 class="fw-semibold" th:text="'Deleted Room ' + ${room.roomNumber}">Deleted Room 101</h5>
+
+                                    <p class="text-muted small mb-2">Hotel ID: <span th:text="${room.hotelId}"></span></p>
+
+                                    <div th:if="${roomType != null}">
+                                        <p class="text-muted small mb-2" th:text="${roomType.name}">Standard Room</p>
+                                        <p class="text-muted small mb-3" th:text="${#strings.abbreviate(roomType.description, 100)}">Room description</p>
+                                        <p class="fw-bold text-warning fs-5 mb-2" th:text="${roomType.pricePerNight} + ' ₸/night'">5000 ₸/night</p>
+                                    </div>
+
+                                    <div th:unless="${roomType != null}">
+                                        <p class="text-muted small mb-2">Room Type Not Specified</p>
+                                    </div>
+
+                                    <p class="text-muted small mb-2"> Status:
+                                        <span class="badge bg-danger">DELETED</span>
+                                    </p>
+                                </div>
+
+                                <div class="mt-3">
+                                    <a th:href="@{'/rooms/deleted/' + ${room.id}}" class="btn btn-custom-warning w-100">
+                                        View Room Details
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div th:unless="${rooms != null and !rooms.isEmpty()}" class="text-center py-5">
+                <h4 class="text-muted">No deleted rooms found.</h4>
+            </div>
+        </section>
+    </div>
+</main>
+</body>
+</html>
