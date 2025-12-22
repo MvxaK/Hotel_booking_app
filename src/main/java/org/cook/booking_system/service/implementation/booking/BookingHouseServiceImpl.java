@@ -14,8 +14,6 @@ import org.cook.booking_system.repository.HouseRepository;
 import org.cook.booking_system.repository.UserRepository;
 import org.cook.booking_system.repository.booking.BookingHouseRepository;
 import org.cook.booking_system.service.service_interface.booking.BookingHouseService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,8 +36,16 @@ public class BookingHouseServiceImpl implements BookingHouseService{
         UserEntity userEntity = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found with id -> " + userId));
 
-        HouseEntity houseEntity = houseRepository.findById(bookingRequest.getHouseId())
-                .orElseThrow(() -> new EntityNotFoundException("House not found with id -> " + bookingRequest.getHouseId()));
+        HouseEntity houseEntity = houseRepository.findByIdAndDeletedFalse(bookingRequest.getHouseId())
+                .orElseThrow(() -> new EntityNotFoundException("House not found or marked as deleted with id -> " + bookingRequest.getHouseId()));
+
+        if (!houseEntity.isAvailable()) {
+            throw new IllegalArgumentException("House not available for now, choose other house");
+        }
+
+        if (bookingRequest.getCheckInDate().isAfter(bookingRequest.getCheckOutDate())) {
+            throw new IllegalArgumentException("Invalid date range");
+        }
 
         if (!isAvailable(houseEntity.getId(), bookingRequest.getCheckInDate(), bookingRequest.getCheckOutDate())) {
             throw new IllegalArgumentException("House not available for these dates");

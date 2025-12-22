@@ -27,6 +27,7 @@
             <column name="user_name" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
+            <column name="role_id" type="BIGINT"/>
         </createTable>
     </changeSet>
 
@@ -36,25 +37,8 @@
         </createIndex>
     </changeSet>
 
-    <changeSet author="CrystaliK" id="create-user-roles-table">
-        <createTable tableName="user_roles">
-            <column name="role_id" type="BIGINT">
-                <constraints nullable="false" primaryKey="true" primaryKeyName="user_roles_pkey"/>
-            </column>
-            <column name="user_id" type="BIGINT">
-                <constraints nullable="false" primaryKey="true" primaryKeyName="user_roles_pkey"/>
-            </column>
-        </createTable>
+    <changeSet author="CrystaliK" id="fk-users-to-roles">
+        <addForeignKeyConstraint baseColumnNames="role_id" baseTableName="users" constraintName="fk_users_roles" referencedColumnNames="id" referencedTableName="roles" onDelete="SET NULL"/>
     </changeSet>
-
-    <changeSet author="CrystaliK" id="fk-user-roles-to-roles">
-        <addForeignKeyConstraint baseColumnNames="role_id" baseTableName="user_roles" constraintName="fk_user_roles_roles" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="roles" validate="true"/>
-    </changeSet>
-
-    <changeSet author="CrystaliK" id="fk-user-roles-to-users">
-        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="user_roles" constraintName="fk_user_roles_users" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="users" validate="true"/>
-    </changeSet>
-
-
 
 </databaseChangeLog>

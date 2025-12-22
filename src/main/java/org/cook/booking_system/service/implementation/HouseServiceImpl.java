@@ -56,9 +56,7 @@ public class HouseServiceImpl implements HouseService{
         HouseEntity houseEntity = houseMapper.toEntity(house);
         houseEntity.setDeleted(false);
 
-        HouseEntity saved = houseRepository.save(houseEntity);
-
-        return houseMapper.toModel(saved);
+        return houseMapper.toModel(houseRepository.save(houseEntity));
     }
 
     @Transactional

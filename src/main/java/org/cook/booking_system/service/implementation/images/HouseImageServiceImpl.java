@@ -50,7 +50,7 @@ public class HouseImageServiceImpl implements ImageService {
                 .orElseThrow(() -> new EntityNotFoundException("House not found or marked as deleted with id -> " + houseId));
 
         if (!houseImageRepository.existsByIdAndHouseId(id, houseId)) {
-            throw new EntityNotFoundException("Image not found with id -> " + id);
+            throw new EntityNotFoundException("Image not found with id in house -> " + id);
         }
 
         houseImageRepository.deleteById(id);

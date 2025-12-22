@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Controller
@@ -30,7 +29,7 @@ public class RoomViewController {
     @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_HOTEL_KEEPER')")
     public String showDeletedRooms(Model model){
         List<Room> rooms = roomService.getAllRoomsDeletedTrue();
-        List<RoomType> roomTypes = roomTypeService.findAllIncludeDeleted();
+        List<RoomType> roomTypes = roomTypeService.getAllIncludeDeleted();
 
         Map<Long, RoomType> roomTypeMap = roomTypes.stream()
                 .collect(Collectors.toMap(RoomType::getId, roomType -> roomType));

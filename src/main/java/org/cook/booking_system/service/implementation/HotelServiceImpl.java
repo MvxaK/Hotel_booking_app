@@ -128,6 +128,10 @@ public class HotelServiceImpl implements HotelService{
         HotelEntity hotelEntity = hotelRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Hotel not found with id -> " + id));
 
+        if(hotelEntity.isDeleted()){
+            throw new IllegalStateException("Cannot update hotel that already marked as deleted");
+        }
+
         hotelEntity.setName(hotelToUpdate.getName());
         hotelEntity.setAddress(hotelToUpdate.getAddress());
         hotelEntity.setDescription(hotelToUpdate.getDescription());

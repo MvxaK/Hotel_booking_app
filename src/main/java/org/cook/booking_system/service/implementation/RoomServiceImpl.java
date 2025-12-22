@@ -2,12 +2,10 @@ package org.cook.booking_system.service.implementation;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.cook.booking_system.entity.HotelEntity;
 import org.cook.booking_system.entity.RoomEntity;
 import org.cook.booking_system.mapper.RoomMapper;
 import org.cook.booking_system.model.Room;
 import org.cook.booking_system.model.Status;
-import org.cook.booking_system.repository.HotelRepository;
 import org.cook.booking_system.repository.RoomRepository;
 import org.cook.booking_system.repository.booking.BookingRoomRepository;
 import org.cook.booking_system.service.service_interface.RoomService;

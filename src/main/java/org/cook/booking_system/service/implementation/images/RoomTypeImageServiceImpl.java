@@ -50,7 +50,7 @@ public class RoomTypeImageServiceImpl implements ImageService {
                 .orElseThrow(() -> new EntityNotFoundException("Room type not found or marked as deleted with id -> " + roomTypeId));
 
         if (!roomTypeImageRepository.existsByIdAndRoomTypeId(id, roomTypeId)) {
-            throw new EntityNotFoundException("Image not found with id -> " + id);
+            throw new EntityNotFoundException("Image not found with id in roomType -> " + id);
         }
 
         roomTypeImageRepository.deleteById(id);

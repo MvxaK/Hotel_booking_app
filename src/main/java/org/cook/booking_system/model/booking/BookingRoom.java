@@ -15,7 +15,7 @@ public class BookingRoom {
 
     private Long id;
     private Long userId;
-    private Long roomTypeId;
+    private Long roomId;
     private LocalDate checkInDate;
     private LocalDate checkOutDate;
     private BigDecimal totalPrice;

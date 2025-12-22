@@ -34,9 +34,7 @@ public class ApplicationConfig {
     }
 
     private UserDetails createUserDetails(@NotNull UserEntity userEntity) {
-        List<SimpleGrantedAuthority> authorities = userEntity.getRoles().stream()
-                .map(role -> new SimpleGrantedAuthority(role.getRole().name()))
-                .toList();
+        SimpleGrantedAuthority authorities =  new SimpleGrantedAuthority(userEntity.getRole().getRole().name());
 
         return User.builder()
                 .username(userEntity.getUserName())

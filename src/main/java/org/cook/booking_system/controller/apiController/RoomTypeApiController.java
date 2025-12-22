@@ -2,6 +2,7 @@ package org.cook.booking_system.controller.apiController;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.cook.booking_system.model.Room;
 import org.cook.booking_system.model.RoomType;
 import org.cook.booking_system.service.service_interface.RoomTypeService;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +31,13 @@ public class RoomTypeApiController {
         List<RoomType> roomTypes = roomTypeService.getAllRoomTypes();
 
         return ResponseEntity.ok(roomTypes);
+    }
+
+    @GetMapping("/{id}/rooms")
+    public ResponseEntity<List<Room>> getRoomsByRoomTypeById(@PathVariable Long id){
+        List<Room> rooms = roomTypeService.getRoomsByRoomTypeId(id);
+
+        return ResponseEntity.ok(rooms);
     }
 
     @GetMapping("/deleted/{id}")

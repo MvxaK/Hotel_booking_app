@@ -9,6 +9,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import java.util.List;
+
 @Controller
 @RequiredArgsConstructor
 public class MainController {
@@ -18,13 +20,13 @@ public class MainController {
 
     @GetMapping("/")
     public String index(Model model){
-        Hotel grandHotel = hotelService.getHotelById(1L);
-        Hotel TwF = hotelService.getHotelById(2L);
-        House house = houseService.getHouseById(1L);
+        List<Hotel> popularHotels = hotelService.getAllHotels();
+        List<House> popularHouses = houseService.getAllHouses();
 
-        model.addAttribute("grandHotel", grandHotel);
-        model.addAttribute("TwF", TwF);
-        model.addAttribute("house", house);
+        model.addAttribute("grandHotel", popularHotels.size() > 0 ? popularHotels.get(0) : null);
+        model.addAttribute("TwF", popularHotels.size() > 1 ? popularHotels.get(1) : null);
+        model.addAttribute("house", popularHouses.size() > 0 ? popularHouses.getFirst() : null);
+
         return "main";
     }
 

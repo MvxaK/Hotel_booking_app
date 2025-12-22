@@ -1,128 +1,105 @@
 package org.cook.booking_system.images;
 
 import jakarta.persistence.EntityNotFoundException;
-import org.cook.booking_system.entity.HotelEntity;
-import org.cook.booking_system.entity.images.HotelImageEntity;
-import org.cook.booking_system.mapper.images.HotelImageMapper;
+import org.cook.booking_system.model.Hotel;
 import org.cook.booking_system.model.images.Image;
-import org.cook.booking_system.repository.HotelRepository;
-import org.cook.booking_system.repository.images.HotelImageRepository;
+import org.cook.booking_system.service.implementation.HotelServiceImpl;
 import org.cook.booking_system.service.implementation.images.HotelImageServiceImpl;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 
-@ExtendWith(MockitoExtension.class)
+@ExtendWith(SpringExtension.class)
+@SpringBootTest
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class HotelImageServiceTest {
 
-    @Mock
-    private HotelImageRepository hotelImageRepository;
-
-    @Mock
-    private HotelRepository hotelRepository;
-
-    @Mock
-    private HotelImageMapper hotelImageMapper;
-
-    @InjectMocks
+    @Autowired
     private HotelImageServiceImpl hotelImageService;
 
-    private HotelEntity hotelEntity;
-    private HotelImageEntity hotelImageEntity;
-    private Image image;
+    @Autowired
+    private HotelServiceImpl hotelService;
 
-    private final Long hotelId = 1L;
-    private final Long imageId = 42L;
-    private final String url = "https://cdn-icons-png.flaticon.com/512/8068/8068148.png";
+    private static Long testImageId;
+    private static Long testHotelId;
+    private static final String url = "https://m.ahstatic.com/is/image/accorhotels/HCM_P_8147067:4by3?fmt=jpg&op_usm=1.75,0.3,2,0&resMode=sharp2&iccEmbed=true&icc=sRGB&dpr=on,1.5&wid=335&hei=251&qlt=80";
 
-    @BeforeEach
-    void testData(){
-        hotelEntity = new HotelEntity();
-        hotelEntity.setId(hotelId);
-        hotelEntity.setName("Great Cat Hotel");
+    @Test
+    @Order(1)
+    void setupDependency() {
+        Hotel hotel = new Hotel();
+        hotel.setName("Amazing Hotel");
+        hotel.setAddress("St. Somewhere 42");
+        hotel.setDescription("Amazing Hotel description");
 
-        hotelImageEntity = new HotelImageEntity();
-        hotelImageEntity.setId(imageId);
-        hotelImageEntity.setUrl(url);
-        hotelImageEntity.setHotel(hotelEntity);
+        Hotel createdHotel = hotelService.createHotel(hotel);
+        testHotelId = createdHotel.getId();
 
-        image = new Image();
-        image.setId(imageId);
-        image.setUrl(url);
-        image.setAccommodationId(hotelId);
+        assertNotNull(testHotelId);
     }
 
     @Test
-    void addImage(){
-        when(hotelRepository.findByIdAndDeletedFalse(hotelId)).thenReturn(Optional.of(hotelEntity));
-        when(hotelImageRepository.save(any(HotelImageEntity.class))).thenReturn(hotelImageEntity);
-        when(hotelImageMapper.toModel(any(HotelImageEntity.class))).thenReturn(image);
-
-        Image result = hotelImageService.addImage(hotelId, url);
+    @Order(2)
+    void addImage() {
+        Image result = hotelImageService.addImage(testHotelId, url);
 
         assertNotNull(result);
-        verify(hotelRepository).findByIdAndDeletedFalse(hotelId);
-        verify(hotelImageRepository).save(any());
+        assertEquals(url, result.getUrl());
+        assertNotNull(result.getId());
+
+        testImageId = result.getId();
+
+        hotelService.markAsDeletedHotel(testHotelId);
+
+        assertThrows(EntityNotFoundException.class, () -> {
+            hotelImageService.addImage(testHotelId, "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcShoZE9NzCklTm5urZecdcb6aYdQU69fUnJMw&s");
+        });
+
+        hotelService.markAsRestoredHotel(testHotelId);
     }
 
     @Test
-    void addImage_HotelNotFoundOrDeleted(){
-        when(hotelRepository.findByIdAndDeletedFalse(hotelId)).thenReturn(Optional.empty());
+    @Order(3)
+    void getImages() {
+        List<Image> result = hotelImageService.getImages(testHotelId);
+
+        assertNotNull(result);
+        for (Image image: result){
+            assertNotNull(image.getId());
+            assertNotNull(image.getUrl());
+            assertNotNull(image.getAccommodationId());
+        }
 
         assertThrows(EntityNotFoundException.class, () -> {
-            Image result = hotelImageService.addImage(hotelId, url);
+            hotelImageService.getImages(-999L);
         });
     }
 
     @Test
-    void getImages(){
-        when(hotelRepository.findById(hotelId)).thenReturn(Optional.of(hotelEntity));
-        when(hotelImageRepository.findByHotelId(hotelId)).thenReturn(List.of(hotelImageEntity, hotelImageEntity));
-        when(hotelImageMapper.toModel(hotelImageEntity)).thenReturn(image);
-
-        List<Image> result = hotelImageService.getImages(hotelId);
-
-        assertEquals(2, result.size());
-        verify(hotelImageRepository).findByHotelId(hotelId);
-    }
-
-    @Test
+    @Order(4)
     void deleteImage() {
-        when(hotelRepository.findByIdAndDeletedFalse(hotelId)).thenReturn(Optional.of(hotelEntity));
-        when(hotelImageRepository.existsByIdAndHotelId(imageId, hotelId)).thenReturn(true);
+        hotelService.markAsDeletedHotel(testHotelId);
+        assertThrows(EntityNotFoundException.class, () -> {
+            hotelImageService.deleteImage(testHotelId, testImageId);
+        });
+        hotelService.markAsRestoredHotel(testHotelId);
 
-        hotelImageService.deleteImage(hotelId, imageId);
-
-        verify(hotelImageRepository).deleteById(imageId);
-    }
-
-    @Test
-    void deleteImage_HotelNotFoundOrDeleted() {
-        when(hotelRepository.findByIdAndDeletedFalse(hotelId)).thenReturn(Optional.empty());
+        hotelImageService.deleteImage(testHotelId, testImageId);
 
         assertThrows(EntityNotFoundException.class, () -> {
-            hotelImageService.deleteImage(hotelId, imageId);
+            hotelImageService.deleteImage(testHotelId, testImageId);
         });
-    }
-
-    @Test
-    void deleteImage_ImageNotBelongsToHotel() {
-        when(hotelRepository.findByIdAndDeletedFalse(hotelId)).thenReturn(Optional.of(hotelEntity));
-        when(hotelImageRepository.existsByIdAndHotelId(imageId, hotelId)).thenReturn(false);
 
         assertThrows(EntityNotFoundException.class, () -> {
-            hotelImageService.deleteImage(hotelId, imageId);
+            hotelImageService.deleteImage(-999L, testImageId);
         });
-    }
 
+        hotelService.deleteHotel(testHotelId);
+    }
 }

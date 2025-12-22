@@ -36,23 +36,23 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <tr th:each="u : ${users}">
+                        <tr th:each="user : ${users}">
                             <td class="ps-4">
                                 <div class="d-flex align-items-center">
                                     <div class="avatar-circle me-3 bg-warning text-dark fw-bold d-flex justify-content-center align-items-center rounded-circle"
-                                         style="width: 40px; height: 40px;" th:text="${#strings.substring(u.userName,0,1).toUpperCase()}">U</div>
-                                    <span class="fw-semibold text-dark" th:text="${u.userName}"></span>
+                                         style="width: 40px; height: 40px;" th:text="${#strings.substring(user.userName,0,1).toUpperCase()}">U</div>
+                                    <span class="fw-semibold text-dark" th:text="${user.userName}"></span>
                                 </div>
                             </td>
-                            <td class="text-muted" th:text="${u.email}"></td>
+                            <td class="text-muted" th:text="${user.email}"></td>
                             <td>
-                                <span th:each="role : ${u.roles}" class="badge bg-light text-dark border me-1" th:text="${role}"></span>
+                                <span class="badge bg-light text-dark border me-1" th:text="${user.role}"></span>
                             </td>
                             <td class="text-end pe-4">
-                                <a th:href="@{'/users/' + ${u.id}}" class="btn btn-sm btn-outline-warning me-2">
+                                <a th:href="@{'/users/' + ${user.id}}" class="btn btn-sm btn-outline-warning me-2">
                                     <i class="bi bi-eye"></i>
                                 </a>
-                                <button class="btn btn-sm btn-outline-danger" th:onclick="'handleDeleteUser(' + ${u.id} + ')'">
+                                <button class="btn btn-sm btn-outline-danger" th:onclick="'handleDeleteUser(' + ${user.id} + ')'">
                                     <i class="bi bi-trash"></i>
                                 </button>
                             </td>

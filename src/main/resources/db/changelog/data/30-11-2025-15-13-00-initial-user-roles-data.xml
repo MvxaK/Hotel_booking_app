@@ -24,43 +24,26 @@
             <column name="email" value="admin@admin"/>
             <column name="password" value="$2a$10$XCuDgcZeLn7.QMx5lxbl1uyWyqsuJnnzkcfjO5f1j5NtzZm6L5Ng6"/>
             <column name="user_name" value="admin"/>
+            <column name="role_id" value="1"/>
         </insert>
         <insert tableName="users">
             <column name="email" value="floppa@floppa"/>
             <column name="password" value="$2a$10$LJWYQeIv2qwsohRe3vCtrOkShTq0bX250X6vBWjG1QptGZH5UwKXG"/>
             <column name="user_name" value="floppa"/>
+            <column name="role_id" value="2"/>
         </insert>
         <insert tableName="users">
             <column name="email" value="evgeniy@mail.ru"/>
             <column name="password" value="$2a$10$Tn1oZcCdx0XKzYjTbU/1ZOyl9ZbahQpDpl99mCtsQeEEHXfl81YWi"/>
             <column name="user_name" value="Evgeniy"/>
+            <column name="role_id" value="3"/>
         </insert>
         <insert tableName="users">
             <column name="email" value="dmitriy@mail.ru"/>
             <column name="password" value="$2a$10$0ZqcrJDGL7fCcYb0raWIje3ilb4PkqUU03rT0wVLxtp78g3rb5/u6"/>
             <column name="user_name" value="Dmitriy"/>
+            <column name="role_id" value="4"/>
         </insert>
     </changeSet>
-
-    <changeSet author="CrystaliK" id="insert-users-roles">
-        <insert tableName="user_roles">
-            <column name="role_id" valueNumeric="2"/>
-            <column name="user_id" valueNumeric="2"/>
-        </insert>
-        <insert tableName="user_roles">
-            <column name="role_id" valueNumeric="1"/>
-            <column name="user_id" valueNumeric="1"/>
-        </insert>
-        <insert tableName="user_roles">
-            <column name="role_id" valueNumeric="3"/>
-            <column name="user_id" valueNumeric="3"/>
-        </insert>
-        <insert tableName="user_roles">
-            <column name="role_id" valueNumeric="4"/>
-            <column name="user_id" valueNumeric="4"/>
-        </insert>
-    </changeSet>
-
-
 
 </databaseChangeLog>

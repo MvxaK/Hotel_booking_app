@@ -41,18 +41,22 @@ public class BookingRoomServiceImpl implements BookingRoomService{
         UserEntity userEntity = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found with id -> " + userId));
 
-        RoomEntity roomEntity = roomRepository.findById(bookingRequest.getRoomId())
-                .orElseThrow(() -> new EntityNotFoundException("Room not found with id -> " + bookingRequest.getRoomId()));
+        RoomEntity roomEntity = roomRepository.findByIdAndDeletedFalse(bookingRequest.getRoomId())
+                .orElseThrow(() -> new EntityNotFoundException("Room not found or marked as deleted with id -> " + bookingRequest.getRoomId()));
 
-        RoomTypeEntity roomTypeEntity = roomTypeRepository.findById(roomEntity.getRoomType().getId())
-                .orElseThrow(() -> new EntityNotFoundException("Room type not found with id -> " + roomEntity.getRoomType().getId()));
+        RoomTypeEntity roomTypeEntity = roomTypeRepository.findByIdAndDeletedFalse(roomEntity.getRoomType().getId())
+                .orElseThrow(() -> new EntityNotFoundException("Room type not or marked as deleted found with id -> " + roomEntity.getRoomType().getId()));
 
-        if (!isAvailable(roomEntity.getId(), bookingRequest.getCheckInDate(), bookingRequest.getCheckOutDate())) {
-            throw new IllegalArgumentException("Room type not available for these dates.");
+        if (!roomEntity.isAvailable()) {
+            throw new IllegalArgumentException("Room not available for now, choose other room");
         }
 
         if (bookingRequest.getCheckInDate().isAfter(bookingRequest.getCheckOutDate())) {
             throw new IllegalArgumentException("Invalid date range");
+        }
+
+        if (!isAvailable(roomEntity.getId(), bookingRequest.getCheckInDate(), bookingRequest.getCheckOutDate())) {
+            throw new IllegalArgumentException("Room type not available for these dates.");
         }
 
         BookingRoomEntity bookingEntity = new BookingRoomEntity();

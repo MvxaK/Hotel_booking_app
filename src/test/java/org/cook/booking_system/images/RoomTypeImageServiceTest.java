@@ -1,127 +1,119 @@
 package org.cook.booking_system.images;
 
 import jakarta.persistence.EntityNotFoundException;
-import org.cook.booking_system.entity.RoomTypeEntity;
-import org.cook.booking_system.entity.images.RoomTypeImageEntity;
-import org.cook.booking_system.mapper.images.RoomTypeImageMapper;
+import org.cook.booking_system.model.Hotel;
+import org.cook.booking_system.model.RoomType;
 import org.cook.booking_system.model.images.Image;
-import org.cook.booking_system.repository.RoomTypeRepository;
-import org.cook.booking_system.repository.images.RoomTypeImageRepository;
+import org.cook.booking_system.service.implementation.HotelServiceImpl;
+import org.cook.booking_system.service.implementation.RoomTypeServiceImpl;
 import org.cook.booking_system.service.implementation.images.RoomTypeImageServiceImpl;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.math.BigDecimal;
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 
-@ExtendWith(MockitoExtension.class)
+@ExtendWith(SpringExtension.class)
+@SpringBootTest
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class RoomTypeImageServiceTest {
 
-    @Mock
-    private RoomTypeImageRepository roomTypeImageRepository;
-
-    @Mock
-    private RoomTypeRepository roomTypeRepository;
-
-    @Mock
-    private RoomTypeImageMapper roomTypeImageMapper;
-
-    @InjectMocks
+    @Autowired
     private RoomTypeImageServiceImpl roomTypeImageService;
 
-    private RoomTypeEntity roomTypeEntity;
-    private RoomTypeImageEntity roomTypeImageEntity;
-    private Image image;
+    @Autowired
+    private RoomTypeServiceImpl roomTypeService;
 
-    private final Long roomTypeId = 1L;
-    private final Long imageId = 42L;
-    private final String url = "https://cdn-icons-png.flaticon.com/512/8068/8068148.png";
+    @Autowired
+    private HotelServiceImpl hotelService;
 
-    @BeforeEach
-    void testData(){
-        roomTypeEntity = new RoomTypeEntity();
-        roomTypeEntity.setId(roomTypeId);
-        roomTypeEntity.setDeleted(false);
+    private static Long testImageId;
+    private static Long testRoomTypeId;
+    private static Long testHotelId;
+    private static final String url = "https://images.pexels.com/photos/164595/pexels-photo-164595.jpeg?cs=srgb&dl=pexels-pixabay-164595.jpg&fm=jpg";
 
-        roomTypeImageEntity = new RoomTypeImageEntity();
-        roomTypeImageEntity.setId(imageId);
-        roomTypeImageEntity.setUrl(url);
-        roomTypeImageEntity.setRoomType(roomTypeEntity);
+    @Test
+    @Order(1)
+    void setupDependency() {
+        Hotel hotel = new Hotel();
+        hotel.setName("Amazing Hotel");
+        hotel.setAddress("St. Somewhere 42");
+        hotel.setDescription("Amazing Hotel description");
+        Hotel createdHotel = hotelService.createHotel(hotel);
+        testHotelId = createdHotel.getId();
 
-        image = new Image();
-        image.setId(imageId);
-        image.setUrl(url);
+        RoomType roomType = new RoomType();
+        roomType.setName("Amazing RoomType");
+        roomType.setDescription("Amazing RoomType description");
+        roomType.setHotelId(testHotelId);
+        roomType.setPricePerNight(BigDecimal.valueOf(80000));
+        roomType.setCapacity(2);
+        roomType.setBedsCount(1);
+        RoomType createdType = roomTypeService.createRoomTypeForHotel(roomType);
+        testRoomTypeId = createdType.getId();
+
+        assertNotNull(testHotelId);
+        assertNotNull(testRoomTypeId);
     }
 
     @Test
-    void addImage(){
-        when(roomTypeRepository.findByIdAndDeletedFalse(roomTypeId)).thenReturn(Optional.of(roomTypeEntity));
-        when(roomTypeImageRepository.save(any(RoomTypeImageEntity.class))).thenReturn(roomTypeImageEntity);
-        when(roomTypeImageMapper.toModel(any(RoomTypeImageEntity.class))).thenReturn(image);
-
-        Image result = roomTypeImageService.addImage(roomTypeId, url);
+    @Order(2)
+    void addImage() {
+        Image result = roomTypeImageService.addImage(testRoomTypeId, url);
 
         assertNotNull(result);
-        verify(roomTypeRepository).findByIdAndDeletedFalse(roomTypeId);
-        verify(roomTypeImageRepository).save(any());
+        assertEquals(url, result.getUrl());
+        assertNotNull(result.getId());
+
+        testImageId = result.getId();
+
+        roomTypeService.markAsDeletedRoomType(testRoomTypeId);
+
+        assertThrows(EntityNotFoundException.class, () -> {
+            roomTypeImageService.addImage(testRoomTypeId, "https://dq5r178u4t83b.cloudfront.net/wp-content/uploads/sites/125/2020/06/15182916/Sofitel-Dubai-Wafi-Luxury-Room-Bedroom-Skyline-View-Image1_WEB.jpg");
+        });
+
+        roomTypeService.markAsRestoredRoomType(testRoomTypeId);
     }
 
     @Test
-    void addImage_RoomTypeNotFoundOrDeleted(){
-        when(roomTypeRepository.findByIdAndDeletedFalse(roomTypeId)).thenReturn(Optional.empty());
+    @Order(3)
+    void getImages() {
+        List<Image> result = roomTypeImageService.getImages(testRoomTypeId);
+
+        assertNotNull(result);
+        for (Image image : result) {
+            assertNotNull(image.getId());
+            assertNotNull(image.getUrl());
+            assertNotNull(image.getAccommodationId());
+        }
 
         assertThrows(EntityNotFoundException.class, () -> {
-            Image result = roomTypeImageService.addImage(roomTypeId, url);
+            roomTypeImageService.getImages(-999L);
         });
     }
 
     @Test
-    void getImages(){
-        when(roomTypeRepository.findById(roomTypeId)).thenReturn(Optional.of(roomTypeEntity));
-        when(roomTypeImageRepository.findByRoomTypeId(roomTypeId)).thenReturn(List.of(roomTypeImageEntity, roomTypeImageEntity));
-        when(roomTypeImageMapper.toModel(roomTypeImageEntity)).thenReturn(image);
-
-        List<Image> result = roomTypeImageService.getImages(roomTypeId);
-
-        assertEquals(2, result.size());
-        verify(roomTypeImageRepository).findByRoomTypeId(roomTypeId);
-    }
-
-    @Test
+    @Order(4)
     void deleteImage() {
-        when(roomTypeRepository.findByIdAndDeletedFalse(roomTypeId)).thenReturn(Optional.of(roomTypeEntity));
-        when(roomTypeImageRepository.existsByIdAndRoomTypeId(imageId, roomTypeId)).thenReturn(true);
+        roomTypeService.markAsDeletedRoomType(testRoomTypeId);
+        assertThrows(EntityNotFoundException.class, () -> {
+            roomTypeImageService.deleteImage(testRoomTypeId, testImageId);
+        });
+        roomTypeService.markAsRestoredRoomType(testRoomTypeId);
 
-        roomTypeImageService.deleteImage(roomTypeId, imageId);
-
-        verify(roomTypeImageRepository).deleteById(imageId);
-    }
-
-    @Test
-    void deleteImage_RoomTypeNotFoundOrDeleted() {
-        when(roomTypeRepository.findByIdAndDeletedFalse(roomTypeId)).thenReturn(Optional.empty());
+        roomTypeImageService.deleteImage(testRoomTypeId, testImageId);
 
         assertThrows(EntityNotFoundException.class, () -> {
-            roomTypeImageService.deleteImage(roomTypeId, imageId);
+            roomTypeImageService.deleteImage(testRoomTypeId, testImageId);
         });
+
+        roomTypeService.deleteRoomType(testRoomTypeId);
+        hotelService.deleteHotel(testHotelId);
     }
-
-    @Test
-    void deleteImage_ImageNotBelongsToRoomType() {
-        when(roomTypeRepository.findByIdAndDeletedFalse(roomTypeId)).thenReturn(Optional.of(roomTypeEntity));
-        when(roomTypeImageRepository.existsByIdAndRoomTypeId(imageId, roomTypeId)).thenReturn(false);
-
-        assertThrows(EntityNotFoundException.class, () -> {
-            roomTypeImageService.deleteImage(roomTypeId, imageId);
-        });
-    }
-
 }

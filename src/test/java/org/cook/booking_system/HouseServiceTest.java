@@ -1,202 +1,180 @@
 package org.cook.booking_system;
 
 import jakarta.persistence.EntityNotFoundException;
-import org.cook.booking_system.entity.HouseEntity;
-import org.cook.booking_system.mapper.HouseMapper;
 import org.cook.booking_system.model.House;
-import org.cook.booking_system.model.Status;
-import org.cook.booking_system.repository.HouseRepository;
-import org.cook.booking_system.repository.booking.BookingHouseRepository;
 import org.cook.booking_system.service.implementation.HouseServiceImpl;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.math.BigDecimal;
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 
-@ExtendWith(MockitoExtension.class)
+@ExtendWith(SpringExtension.class)
+@SpringBootTest
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class HouseServiceTest {
 
-    @Mock
-    private HouseMapper houseMapper;
-
-    @Mock
-    private  HouseRepository houseRepository;
-
-    @Mock
-    private BookingHouseRepository bookingHouseRepository;
-
-    @InjectMocks
+    @Autowired
     private HouseServiceImpl houseService;
 
-    private HouseEntity houseEntity;
-    private House house;
+    private static Long houseId;
 
-    private final Long id = 42L;
-    private final Long invalid_id = 67L;
+    private House house = new House();
+    private House houseToUpdate = new House();
 
     @BeforeEach
-    void testData(){
-        houseEntity = new HouseEntity();
-        houseEntity.setId(id);
-        houseEntity.setName("Luxury Cottage");
-        houseEntity.setAvailable(true);
-        houseEntity.setDeleted(false);
-
-        house = new House();
-        house.setId(id);
-        house.setName("Luxury Cottage");
+    void houseData(){
+        house.setName("Amazing House");
+        house.setLocation("St. Something 42");
+        house.setCapacity(10);
+        house.setPricePerNight(BigDecimal.valueOf(100000));
         house.setAvailable(true);
-        house.setDeleted(false);
+        house.setRoomsNumber(4);
+        house.setBedsCount(6);
+        house.setParkingSlots(4);
+        house.setDescription("Amazing description");
+
+        houseToUpdate.setName("Amazing House");
+        houseToUpdate.setLocation("St. Something 42");
+        houseToUpdate.setCapacity(6);
+        houseToUpdate.setPricePerNight(BigDecimal.valueOf(150000));
+        houseToUpdate.setAvailable(false);
+        houseToUpdate.setRoomsNumber(4);
+        houseToUpdate.setBedsCount(3);
+        houseToUpdate.setParkingSlots(2);
+        houseToUpdate.setDescription("Amazing description");
     }
 
     @Test
-    void getAllHouses() {
-        when(houseRepository.findAll()).thenReturn(List.of(houseEntity, houseEntity));
-        when(houseMapper.toModel(houseEntity)).thenReturn(house);
-
-        List<House> result = houseService.getAllHouses();
-
-        assertEquals(2, result.size());
-        verify(houseRepository).findAll();
-    }
-
-    @Test
-    void getAllHousesDeletedTrue() {
-        houseEntity.setDeleted(true);
-        when(houseRepository.findByDeletedTrue()).thenReturn(List.of(houseEntity, houseEntity));
-        when(houseMapper.toModel(houseEntity)).thenReturn(house);
-
-        List<House> result = houseService.getAllHousesDeletedTrue();
-
-        assertEquals(2, result.size());
-        verify(houseRepository).findByDeletedTrue();
-    }
-
-    @Test
-    void getHouseById() {
-        when(houseRepository.findByIdAndDeletedFalse(id)).thenReturn(Optional.of(houseEntity));
-        when(houseMapper.toModel(houseEntity)).thenReturn(house);
-
-        House result = houseService.getHouseById(id);
-
-        assertNotNull(result);
-        assertEquals(id, result.getId());
-    }
-
-    @Test
-    void getHouseById_NotFound() {
-        when(houseRepository.findByIdAndDeletedFalse(invalid_id)).thenReturn(Optional.empty());
-
-        assertThrows(EntityNotFoundException.class, () -> {
-            houseService.getHouseById(invalid_id);
-        });
-    }
-
-    @Test
+    @Order(1)
     void createHouse() {
-        when(houseMapper.toEntity(any(House.class))).thenReturn(houseEntity);
-        when(houseRepository.save(any(HouseEntity.class))).thenReturn(houseEntity);
-        when(houseMapper.toModel(any(HouseEntity.class))).thenReturn(house);
-
         House result = houseService.createHouse(house);
 
         assertNotNull(result);
-        assertFalse(houseEntity.isDeleted());
-        verify(houseRepository).save(houseEntity);
+        assertNotNull(result.getName());
+        assertNotNull(result.getPricePerNight());
+        assertTrue(result.isAvailable());
+        assertFalse(result.isDeleted());
+
+        houseId = result.getId();
     }
 
     @Test
-    void updateHouse() {
-        when(houseRepository.findById(id)).thenReturn(Optional.of(houseEntity));
-        when(houseRepository.save(any(HouseEntity.class))).thenReturn(houseEntity);
-        when(houseMapper.toModel(any(HouseEntity.class))).thenReturn(house);
-
-        House result = houseService.updateHouse(id, house);
+    @Order(2)
+    void getAllHouses() {
+        List<House> result = houseService.getAllHouses();
 
         assertNotNull(result);
-        verify(houseRepository).save(houseEntity);
+        for (House house: result){
+            assertNotNull(house.getId());
+            assertNotNull(house.getPricePerNight());
+            assertNotNull(house.getDescription());
+            assertFalse(house.isDeleted());
+        }
     }
 
     @Test
-    void updateHouse_AlreadyDeleted() {
-        houseEntity.setDeleted(true);
-        when(houseRepository.findById(id)).thenReturn(Optional.of(houseEntity));
+    @Order(3)
+    void getHouseById() {
+        House result = houseService.getHouseById(houseId);
 
-        assertThrows(IllegalStateException.class, () -> {
-            houseService.updateHouse(id, house);
-        });
-    }
+        assertNotNull(result);
+        assertEquals(houseId, result.getId());
+        assertFalse(result.isDeleted());
 
-
-    @Test
-    void deleteHouse() {
-        when(houseRepository.existsById(id)).thenReturn(true);
-        when(bookingHouseRepository.existsActiveBookingsByHouseId(eq(id), any(), eq(Status.RESERVED))).thenReturn(false);
-        houseService.deleteHouse(id);
-
-        verify(bookingHouseRepository).deleteByHouseId(id);
-        verify(houseRepository).deleteById(id);
-    }
-
-    @Test
-    void deleteHouse_HasActiveBookings() {
-        when(houseRepository.existsById(id)).thenReturn(true);
-        when(bookingHouseRepository.existsActiveBookingsByHouseId(eq(id), any(), eq(Status.RESERVED))).thenReturn(true);
-        assertThrows(IllegalStateException.class, () -> {
-            houseService.deleteHouse(id);
+        assertThrows(EntityNotFoundException.class, () -> {
+            houseService.getHouseById(-999L);
         });
     }
 
     @Test
+    @Order(4)
+    void updateHouse() {
+        House result = houseService.updateHouse(houseId, houseToUpdate);
+
+        assertNotNull(result);
+
+        assertEquals(houseId, result.getId());
+        assertEquals(houseToUpdate.getCapacity(), result.getCapacity());
+        assertEquals(houseToUpdate.getPricePerNight(), result.getPricePerNight());
+        assertEquals(houseToUpdate.getBedsCount(), result.getBedsCount());
+        assertEquals(houseToUpdate.getParkingSlots(), result.getParkingSlots());
+
+
+        assertThrows(EntityNotFoundException.class, () -> {
+            houseService.updateHouse(-999L, houseToUpdate);
+        });
+
+
+        houseService.markAsDeletedHouse(houseId);
+
+        assertThrows(IllegalStateException.class, () -> {
+            houseService.updateHouse(houseId, houseToUpdate);
+        });
+
+        houseService.markAsRestoredHouse(houseId);
+    }
+
+    @Test
+    @Order(5)
     void markAsDeletedHouse() {
-        when(houseRepository.findById(id)).thenReturn(Optional.of(houseEntity));
-        when(bookingHouseRepository.existsActiveBookingsByHouseId(eq(id), any(), eq(Status.RESERVED))).thenReturn(false);
-        houseService.markAsDeletedHouse(id);
-
-        assertTrue(houseEntity.isDeleted());
-        assertFalse(houseEntity.isAvailable());
-        verify(houseRepository).save(houseEntity);
-    }
-
-    @Test
-    void markAsDeletedHouse_AlreadyDeleted() {
-        houseEntity.setDeleted(true);
-        when(houseRepository.findById(id)).thenReturn(Optional.of(houseEntity));
+        houseService.markAsDeletedHouse(houseId);
 
         assertThrows(IllegalStateException.class, () -> {
-            houseService.markAsDeletedHouse(id);
+            houseService.markAsDeletedHouse(houseId);
         });
     }
 
     @Test
-    void markAsRestoredHouse() {
-        houseEntity.setDeleted(true);
-        houseEntity.setAvailable(false);
-        when(houseRepository.findById(id)).thenReturn(Optional.of(houseEntity));
+    @Order(6)
+    void getHouseByIdDeletedTrue() {
+        House result = houseService.getHouseByIdDeletedTrue(houseId);
 
-        houseService.markAsRestoredHouse(id);
+        assertNotNull(result);
+        assertEquals(houseId, result.getId());
+        assertTrue(result.isDeleted());
 
-        assertFalse(houseEntity.isDeleted());
-        assertTrue(houseEntity.isAvailable());
-        verify(houseRepository).save(houseEntity);
+        assertThrows(EntityNotFoundException.class, () -> {
+            houseService.getHouseById(-999L);
+        });
     }
 
     @Test
-    void markAsRestoredHouse_NotDeleted() {
-        houseEntity.setDeleted(false);
-        when(houseRepository.findById(id)).thenReturn(Optional.of(houseEntity));
+    @Order(7)
+    void getAllHousesDeletedTrue() {
+        List<House> result = houseService.getAllHousesDeletedTrue();
+
+        assertNotNull(result);
+        for (House house: result){
+            assertNotNull(house.getId());
+            assertNotNull(house.getPricePerNight());
+            assertNotNull(house.getDescription());
+            assertTrue(house.isDeleted());
+        }
+    }
+
+    @Test
+    @Order(8)
+    void markAsRestoredHouse() {
+        houseService.markAsRestoredHouse(houseId);
 
         assertThrows(IllegalStateException.class, () -> {
-            houseService.markAsRestoredHouse(id);
+            houseService.markAsRestoredHouse(houseId);
+        });
+    }
+
+    @Test
+    @Order(9)
+    void deleteHouse() {
+        houseService.deleteHouse(houseId);
+
+        assertThrows(EntityNotFoundException.class, () -> {
+            houseService.deleteHouse(houseId);
         });
     }
 

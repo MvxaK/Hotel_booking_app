@@ -45,7 +45,7 @@ public class RoomTypeServiceImpl implements RoomTypeService {
     }
 
     @Transactional(readOnly = true)
-    public List<RoomType> findAllIncludeDeleted() {
+    public List<RoomType> getAllIncludeDeleted() {
         return roomTypeRepository.findAllIncludeDeleted().stream()
                 .map(roomTypeMapper::toModel)
                 .toList();

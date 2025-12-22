@@ -41,11 +41,12 @@ public class JwtService {
     public String generateToken(UserDetails userDetails){
         Map<String, Object> extraClaims = new HashMap<>();
 
-        List<String> rolesList = userDetails.getAuthorities().stream()
+        String role = userDetails.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.toList());
+                .findFirst()
+                .orElse("ROLE_USER");
 
-        extraClaims.put("roles", rolesList);
+        extraClaims.put("role", role);
 
         return generateToken(extraClaims, userDetails);
     }

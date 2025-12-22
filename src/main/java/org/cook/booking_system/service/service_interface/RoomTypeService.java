@@ -11,7 +11,7 @@ public interface RoomTypeService {
 
     List<RoomType> getAllRoomTypes();
     List<RoomType> getAllRoomTypesDeletedTrue();
-    List<RoomType> findAllIncludeDeleted();
+    List<RoomType> getAllIncludeDeleted();
     RoomType getRoomTypeById(Long id);
     RoomType getRoomTypeByIdDeletedTrue(Long id);
     RoomType getRoomTypeByIdIncludeDeleted(Long id);

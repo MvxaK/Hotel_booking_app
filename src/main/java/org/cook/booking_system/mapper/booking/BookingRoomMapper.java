@@ -10,7 +10,7 @@ import org.mapstruct.Mapping;
 public interface BookingRoomMapper {
 
     @Mapping(target = "userId", expression = "java(EntityIdUtils.extractId(entity.getUser()))")
-    @Mapping(target = "roomTypeId", expression = "java(EntityIdUtils.extractId(entity.getRoom().getRoomType()))")
+    @Mapping(target = "roomId", expression = "java(EntityIdUtils.extractId(entity.getRoom()))")
     BookingRoom toModel(BookingRoomEntity entity);
 
     @Mapping(target = "user", ignore = true)

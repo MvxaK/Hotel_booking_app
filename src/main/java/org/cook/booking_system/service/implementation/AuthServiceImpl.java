@@ -1,6 +1,5 @@
 package org.cook.booking_system.service.implementation;
 
-import jakarta.servlet.http.Cookie;
 import lombok.RequiredArgsConstructor;
 import org.cook.booking_system.entity.RoleEntity;
 import org.cook.booking_system.entity.UserEntity;
@@ -20,9 +19,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -47,11 +43,9 @@ public class AuthServiceImpl implements AuthService {
         UserEntity userEntity = userRepository.findByUserName(loginRequest.getUserName())
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-        List<String> rolesList = userEntity.getRoles().stream()
-                .map(roleEntity -> roleEntity.getRole().name())
-                .toList();
+        String role = userEntity.getRole().getRole().name();
 
-        return new AuthResponse(jwt, "Bearer", userDetails.getUsername(), userEntity.getEmail(), userEntity.getId(), rolesList);
+        return new AuthResponse(jwt, "Bearer", userDetails.getUsername(), userEntity.getEmail(), userEntity.getId(), role);
     }
 
     @Transactional
@@ -70,7 +64,7 @@ public class AuthServiceImpl implements AuthService {
         userEntity.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
 
         RoleEntity userRole = roleRepository.findByRole(Role.ROLE_USER);
-        userEntity.setRoles(Set.of(userRole));
+        userEntity.setRole(userRole);
 
         UserEntity savedUser = userRepository.save(userEntity);
 
@@ -83,10 +77,8 @@ public class AuthServiceImpl implements AuthService {
 
         String jwt = jwtService.generateToken(userDetails);
 
-        List<String> rolesList = savedUser.getRoles().stream()
-                .map(roleEntity -> roleEntity.getRole().name())
-                .toList();
+        String role = savedUser.getRole().getRole().name();
 
-        return new AuthResponse(jwt, "Bearer", userDetails.getUsername(), savedUser.getEmail(), savedUser.getId(), rolesList);
+        return new AuthResponse(jwt, "Bearer", userDetails.getUsername(), savedUser.getEmail(), savedUser.getId(), role);
     }
 }

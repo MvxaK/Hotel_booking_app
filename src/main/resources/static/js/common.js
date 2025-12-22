@@ -60,59 +60,54 @@ function checkAuth() {
 
 
 function checkAdminAccess() {
-    if (!isAuthenticated()) {
-        return false;
-    }
+    if (!isAuthenticated()) return false;
 
     const user = getUser();
-    if (user && user.roles) {
-        return user.roles.includes('ROLE_ADMIN');
+    if (user && user.role) {
+        return user.role === 'ROLE_ADMIN';
     }
 
     try {
         const token = getToken();
+        if (!token) return false;
         const payload = JSON.parse(atob(token.split('.')[1]));
-        return payload.roles && payload.roles.includes('ROLE_ADMIN');
+        return payload.role === 'ROLE_ADMIN';
     } catch (err) {
         return false;
     }
 }
 
 function checkHouseKeeperAccess() {
-    if (!isAuthenticated()) {
-        return false;
-    }
+    if (!isAuthenticated()) return false;
 
     const user = getUser();
-    if (user && user.roles) {
-        return user.roles.includes('ROLE_HOUSE_KEEPER');
+    if (user && user.role) {
+        return user.role === 'ROLE_HOUSE_KEEPER';
     }
 
     try {
         const token = getToken();
         if (!token) return false;
         const payload = JSON.parse(atob(token.split('.')[1]));
-        return payload.roles && payload.roles.includes('ROLE_HOUSE_KEEPER');
+        return payload.role === 'ROLE_HOUSE_KEEPER';
     } catch (err) {
         return false;
     }
 }
 
 function checkHotelKeeperAccess() {
-    if (!isAuthenticated()) {
-        return false;
-    }
+    if (!isAuthenticated()) return false;
 
     const user = getUser();
-    if (user && user.roles) {
-        return user.roles.includes('ROLE_HOTEL_KEEPER');
+    if (user && user.role) {
+        return user.role === 'ROLE_HOTEL_KEEPER';
     }
 
     try {
         const token = getToken();
         if (!token) return false;
         const payload = JSON.parse(atob(token.split('.')[1]));
-        return payload.roles && payload.roles.includes('ROLE_HOTEL_KEEPER');
+        return payload.role === 'ROLE_HOTEL_KEEPER';
     } catch (err) {
         return false;
     }
