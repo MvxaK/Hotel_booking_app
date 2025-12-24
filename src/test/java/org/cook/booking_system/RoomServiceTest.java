@@ -1,12 +1,17 @@
 package org.cook.booking_system;
 
 import jakarta.persistence.EntityNotFoundException;
+import org.cook.booking_system.entity.UserEntity;
 import org.cook.booking_system.model.Hotel;
 import org.cook.booking_system.model.Room;
 import org.cook.booking_system.model.RoomType;
+import org.cook.booking_system.model.booking.BookingRoomRequest;
+import org.cook.booking_system.repository.UserRepository;
+import org.cook.booking_system.repository.booking.BookingRoomRepository;
 import org.cook.booking_system.service.implementation.HotelServiceImpl;
 import org.cook.booking_system.service.implementation.RoomServiceImpl;
 import org.cook.booking_system.service.implementation.RoomTypeServiceImpl;
+import org.cook.booking_system.service.implementation.booking.BookingRoomServiceImpl;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +19,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -32,9 +38,19 @@ public class RoomServiceTest {
     @Autowired
     private HotelServiceImpl hotelService;
 
+    @Autowired
+    private BookingRoomServiceImpl bookingRoomService;
+
+    @Autowired
+    private BookingRoomRepository bookingRoomRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
     private static Long testRoomId;
     private static Long testRoomTypeId;
     private static Long testHotelId;
+    private static Long testUserId;
 
     private Room room = new Room();
     private Room roomToUpdate = new Room();
@@ -59,8 +75,8 @@ public class RoomServiceTest {
         hotel.setName("Amazing Hotel");
         hotel.setAddress("St. Somewhere 42");
         hotel.setDescription("Amazing Hotel description");
-        Hotel createdHotel = hotelService.createHotel(hotel);
-        testHotelId = createdHotel.getId();
+
+        testHotelId = hotelService.createHotel(hotel).getId();
 
         RoomType roomType = new RoomType();
         roomType.setName("Amazing RoomType");
@@ -70,11 +86,18 @@ public class RoomServiceTest {
         roomType.setCapacity(4);
         roomType.setBedsCount(2);
 
-        RoomType createdType = roomTypeService.createRoomTypeForHotel(roomType);
-        testRoomTypeId = createdType.getId();
+        testRoomTypeId = roomTypeService.createRoomTypeForHotel(roomType).getId();
+
+        UserEntity user = new UserEntity();
+        user.setUserName("Immortal_NoName");
+        user.setEmail("immortal_noname@gmail.com");
+        user.setPassword("noname");
+
+        testUserId = userRepository.save(user).getId();
 
         assertNotNull(testHotelId);
         assertNotNull(testRoomTypeId);
+        assertNotNull(testUserId);
     }
 
     @Test
@@ -135,6 +158,28 @@ public class RoomServiceTest {
 
     @Test
     @Order(6)
+    void deleteRoom_markAsDeletedRoom_hasActiveBookings() {
+        BookingRoomRequest bookingRequest = new BookingRoomRequest();
+        bookingRequest.setRoomId(testRoomId);
+        bookingRequest.setCheckInDate(LocalDate.now().plusDays(1));
+        bookingRequest.setCheckOutDate(LocalDate.now().plusDays(5));
+
+        bookingRoomService.createBookingForUser(testUserId, bookingRequest);
+
+        assertThrows(IllegalStateException.class, () -> {
+            roomService.markAsDeletedRoom(testRoomId);
+        });
+
+        assertThrows(IllegalStateException.class, () -> {
+            roomService.deleteRoom(testRoomId);
+        });
+
+        bookingRoomRepository.deleteByRoomId(testRoomId);
+        userRepository.deleteById(testUserId);
+    }
+
+    @Test
+    @Order(7)
     void markAsDeletedRoom() {
         roomService.markAsDeletedRoom(testRoomId);
 
@@ -144,7 +189,7 @@ public class RoomServiceTest {
     }
 
     @Test
-    @Order(7)
+    @Order(8)
     void getRoomByIdDeletedTrue() {
         Room result = roomService.getRoomByIdDeletedTrue(testRoomId);
 
@@ -157,7 +202,7 @@ public class RoomServiceTest {
     }
 
     @Test
-    @Order(8)
+    @Order(9)
     void getAllRoomsDeletedTrue() {
         List<Room> result = roomService.getAllRoomsDeletedTrue();
 
@@ -170,7 +215,7 @@ public class RoomServiceTest {
     }
 
     @Test
-    @Order(9)
+    @Order(10)
     void markAsRestoredRoom() {
         roomService.markAsRestoredRoom(testRoomId);
 
@@ -186,7 +231,7 @@ public class RoomServiceTest {
     }
 
     @Test
-    @Order(10)
+    @Order(11)
     void deleteRoom() {
         roomService.deleteRoom(testRoomId);
 

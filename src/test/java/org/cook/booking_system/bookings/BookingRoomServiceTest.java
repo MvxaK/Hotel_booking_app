@@ -68,16 +68,14 @@ public class BookingRoomServiceTest {
         user.setEmail("immortal_noname@gmail.com");
         user.setPassword("noname");
 
-        UserEntity savedUser = userRepository.save(user);
-        testUserId = savedUser.getId();
+        testUserId = userRepository.save(user).getId();
 
         Hotel hotel = new Hotel();
         hotel.setName("Amazing Hotel");
         hotel.setAddress("St. Somewhere 42");
         hotel.setDescription("Amazing Hotel description");
 
-        Hotel createdHotel = hotelService.createHotel(hotel);
-        testHotelId = createdHotel.getId();
+        testHotelId = hotelService.createHotel(hotel).getId();
 
         RoomType roomType = new RoomType();
         roomType.setName("Amazing RoomType");
@@ -87,8 +85,7 @@ public class BookingRoomServiceTest {
         roomType.setBedsCount(1);
         roomType.setHotelId(testHotelId);
 
-        RoomType createdType = roomTypeService.createRoomTypeForHotel(roomType);
-        testRoomTypeId = createdType.getId();
+        testRoomTypeId = roomTypeService.createRoomTypeForHotel(roomType).getId();
 
         Room room = new Room();
         room.setRoomNumber("A101");
@@ -96,8 +93,7 @@ public class BookingRoomServiceTest {
         room.setHotelId(testHotelId);
         room.setRoomTypeId(testRoomTypeId);
 
-        Room createRoom = roomService.createRoomForHotel(room);
-        testRoomId = createRoom.getId();
+        testRoomId = roomService.createRoomForHotel(room).getId();
 
         assertNotNull(testUserId);
         assertNotNull(testRoomId);

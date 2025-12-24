@@ -55,8 +55,8 @@ public class BookingHouseServiceTest {
         user.setUserName("Immortal_NoName");
         user.setEmail("immortal_noname@gmail.com");
         user.setPassword("noname");
-        UserEntity savedUser = userRepository.save(user);
-        testUserId = savedUser.getId();
+
+        testUserId = userRepository.save(user).getId();
 
         House house = new House();
         house.setName("Amazing House");
@@ -68,8 +68,8 @@ public class BookingHouseServiceTest {
         house.setBedsCount(6);
         house.setParkingSlots(4);
         house.setDescription("Amazing description");
-        House createdHouse = houseService.createHouse(house);
-        testHouseId = createdHouse.getId();
+
+        testHouseId = houseService.createHouse(house).getId();
 
         assertNotNull(testUserId);
         assertNotNull(testHouseId);

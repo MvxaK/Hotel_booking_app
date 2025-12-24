@@ -1,0 +1,2179 @@
+{
+	"info": {
+		"_postman_id": "5ef86e6c-0321-4df4-8af3-e02d08dd65df",
+		"name": "StayFinder - Booking System",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "48055774",
+		"_collection_link": "https://amirkamalov2006-5324890.postman.co/workspace/7b398a78-6f82-42a8-8ffa-a2e95fd44229/collection/48055774-5ef86e6c-0321-4df4-8af3-e02d08dd65df?action=share&source=collection_link&creator=48055774"
+	},
+	"item": [
+		{
+			"name": "hotels",
+			"item": [
+				{
+					"name": "hotels",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}{{api-hotels}}",
+							"host": [
+								"{{baseUrl}}{{api-hotels}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "hotels deleted",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}{{api-hotels}}/deleted",
+							"host": [
+								"{{baseUrl}}{{api-hotels}}"
+							],
+							"path": [
+								"deleted"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "hotel by id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}{{api-hotels}}/5",
+							"host": [
+								"{{baseUrl}}{{api-hotels}}"
+							],
+							"path": [
+								"5"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "hotel by id deleted",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}{{api-hotels}}/deleted/5",
+							"host": [
+								"{{baseUrl}}{{api-hotels}}"
+							],
+							"path": [
+								"deleted",
+								"5"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create hotel",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\":\"World hotel\",\r\n    \"address\":\"St. Worlds 42\",\r\n    \"description\":\"Unique World hotel on Worlds street. Withamazing architecture\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}{{api-hotels}}",
+							"host": [
+								"{{baseUrl}}{{api-hotels}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update hotel",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\":\"Worlds hotel\",\r\n    \"address\":\"St. Worlds 42\",\r\n    \"description\":\"Unique World hotel on Worlds street. With amazing architecture\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}{{api-hotels}}/2",
+							"host": [
+								"{{baseUrl}}{{api-hotels}}"
+							],
+							"path": [
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "rooms by hotel id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}{{api-hotels}}/2/rooms",
+							"host": [
+								"{{baseUrl}}{{api-hotels}}"
+							],
+							"path": [
+								"2",
+								"rooms"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "room-types by hotel id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}{{api-hotels}}/2/room-types",
+							"host": [
+								"{{baseUrl}}{{api-hotels}}"
+							],
+							"path": [
+								"2",
+								"room-types"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete hotel",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}{{api-hotels}}/15",
+							"host": [
+								"{{baseUrl}}{{api-hotels}}"
+							],
+							"path": [
+								"15"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "mark as deleted hotel",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}{{api-hotels}}/2/delete",
+							"host": [
+								"{{baseUrl}}{{api-hotels}}"
+							],
+							"path": [
+								"2",
+								"delete"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "mark as restored hotel",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}{{api-hotels}}/2/restore",
+							"host": [
+								"{{baseUrl}}{{api-hotels}}"
+							],
+							"path": [
+								"2",
+								"restore"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "houses",
+			"item": [
+				{
+					"name": "houses",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}{{api-houses}}",
+							"host": [
+								"{{baseUrl}}{{api-houses}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "houses deleted",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}{{api-houses}}/deleted",
+							"host": [
+								"{{baseUrl}}{{api-houses}}"
+							],
+							"path": [
+								"deleted"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "house by id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}{{api-houses}}/1",
+							"host": [
+								"{{baseUrl}}{{api-houses}}"
+							],
+							"path": [
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "house by id deleted",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}{{api-houses}}/deleted/1",
+							"host": [
+								"{{baseUrl}}{{api-houses}}"
+							],
+							"path": [
+								"deleted",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create house",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\":\"Digital House\",\r\n    \"location\":\"St. Circus 42\",\r\n    \"capacity\":10,\r\n    \"pricePerNight\":125000.00,\r\n    \"available\":true,\r\n    \"roomsNumber\":7,\r\n    \"bedsCount\":5,\r\n    \"parkingSlots\":2,\r\n    \"description\":\"The house designed by Gooseworx\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}{{api-houses}}",
+							"host": [
+								"{{baseUrl}}{{api-houses}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update house",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\":\"Digital House\",\r\n    \"location\":\"St. Circus 42\",\r\n    \"capacity\":12,\r\n    \"pricePerNight\":125000.00,\r\n    \"available\":true,\r\n    \"roomsNumber\":7,\r\n    \"bedsCount\":6,\r\n    \"parkingSlots\":2,\r\n    \"description\":\"The house designed by Gooseworx\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}{{api-houses}}/4",
+							"host": [
+								"{{baseUrl}}{{api-houses}}"
+							],
+							"path": [
+								"4"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete house",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}{{api-houses}}/18",
+							"host": [
+								"{{baseUrl}}{{api-houses}}"
+							],
+							"path": [
+								"18"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "mark as deleted house",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}{{api-houses}}/4/delete",
+							"host": [
+								"{{baseUrl}}{{api-houses}}"
+							],
+							"path": [
+								"4",
+								"delete"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "mark as restored house",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}{{api-houses}}/4/restore",
+							"host": [
+								"{{baseUrl}}{{api-houses}}"
+							],
+							"path": [
+								"4",
+								"restore"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "room-types",
+			"item": [
+				{
+					"name": "room-types",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}{{api-room-types}}",
+							"host": [
+								"{{baseUrl}}{{api-room-types}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "room-types deleted",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}{{api-room-types}}/deleted",
+							"host": [
+								"{{baseUrl}}{{api-room-types}}"
+							],
+							"path": [
+								"deleted"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "room-type by id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}{{api-room-types}}/15",
+							"host": [
+								"{{baseUrl}}{{api-room-types}}"
+							],
+							"path": [
+								"15"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "rooms by roomType id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}{{api-room-types}}/1/rooms",
+							"host": [
+								"{{baseUrl}}{{api-room-types}}"
+							],
+							"path": [
+								"1",
+								"rooms"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "room-type by id deleted",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}{{api-room-types}}/deleted/15",
+							"host": [
+								"{{baseUrl}}{{api-room-types}}"
+							],
+							"path": [
+								"deleted",
+								"15"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create room-type",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\":\"Super Elite room\",\r\n    \"capacity\":4,\r\n    \"description\":\"Super elite worlds room with 2 rooms and 2 beds\",\r\n    \"pricePerNight\":90000.00,\r\n    \"bedsCount\":2,\r\n    \"hotelId\":5\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}{{api-room-types}}",
+							"host": [
+								"{{baseUrl}}{{api-room-types}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update room-type",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\":\"Super Elite rooms\",\r\n    \"capacity\":4,\r\n    \"description\":\"Super elite worlds room with 2 rooms and 2 beds\",\r\n    \"pricePerNight\":95000.00,\r\n    \"bedsCount\":2,\r\n    \"hotelId\":5\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}{{api-room-types}}/15",
+							"host": [
+								"{{baseUrl}}{{api-room-types}}"
+							],
+							"path": [
+								"15"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete room-type",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}{{api-room-types}}/15",
+							"host": [
+								"{{baseUrl}}{{api-room-types}}"
+							],
+							"path": [
+								"15"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "mark as deleted room-type",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}{{api-room-types}}/15/delete",
+							"host": [
+								"{{baseUrl}}{{api-room-types}}"
+							],
+							"path": [
+								"15",
+								"delete"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "mark as restored room-type",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}{{api-room-types}}/8/restore",
+							"host": [
+								"{{baseUrl}}{{api-room-types}}"
+							],
+							"path": [
+								"8",
+								"restore"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "rooms",
+			"item": [
+				{
+					"name": "rooms",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}{{api-rooms}}",
+							"host": [
+								"{{baseUrl}}{{api-rooms}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "rooms deleted",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}{{api-rooms}}/deleted",
+							"host": [
+								"{{baseUrl}}{{api-rooms}}"
+							],
+							"path": [
+								"deleted"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "room by id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}{{api-rooms}}/1",
+							"host": [
+								"{{baseUrl}}{{api-rooms}}"
+							],
+							"path": [
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "room by id deleted",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}{{api-rooms}}/deleted/12",
+							"host": [
+								"{{baseUrl}}{{api-rooms}}"
+							],
+							"path": [
+								"deleted",
+								"12"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update room",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"roomNumber\": \"1201\",\r\n    \"available\": true,\r\n    \"hotelId\": 5,\r\n    \"roomTypeId\":15\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}{{api-rooms}}/11",
+							"host": [
+								"{{baseUrl}}{{api-rooms}}"
+							],
+							"path": [
+								"11"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create room",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"roomNumber\": \"A201\",\r\n    \"available\": true,\r\n    \"hotelId\": 5,\r\n    \"roomTypeId\":15\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}{{api-rooms}}",
+							"host": [
+								"{{baseUrl}}{{api-rooms}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete room",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}{{api-rooms}}/12",
+							"host": [
+								"{{baseUrl}}{{api-rooms}}"
+							],
+							"path": [
+								"12"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "mark as deleted room",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}{{api-rooms}}/2/delete",
+							"host": [
+								"{{baseUrl}}{{api-rooms}}"
+							],
+							"path": [
+								"2",
+								"delete"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "mark as restored room",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}{{api-rooms}}/2/restore",
+							"host": [
+								"{{baseUrl}}{{api-rooms}}"
+							],
+							"path": [
+								"2",
+								"restore"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "bookings/rooms",
+			"item": [
+				{
+					"name": "room booking by id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}{{api-bookings-rooms}}/8",
+							"host": [
+								"{{baseUrl}}{{api-bookings-rooms}}"
+							],
+							"path": [
+								"8"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "room booking by user id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}{{api-bookings-rooms}}/users/1",
+							"host": [
+								"{{baseUrl}}{{api-bookings-rooms}}"
+							],
+							"path": [
+								"users",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create room booking",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"roomId\":1,\r\n    \"checkInDate\":\"2025-12-24\",\r\n    \"checkOutDate\":\"2025-12-26\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}{{api-bookings-rooms}}",
+							"host": [
+								"{{baseUrl}}{{api-bookings-rooms}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "cancel room booking",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}{{api-bookings-rooms}}/8/cancel",
+							"host": [
+								"{{baseUrl}}{{api-bookings-rooms}}"
+							],
+							"path": [
+								"8",
+								"cancel"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete room booking",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}{{api-bookings-rooms}}/32",
+							"host": [
+								"{{baseUrl}}{{api-bookings-rooms}}"
+							],
+							"path": [
+								"32"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "bookings/houses",
+			"item": [
+				{
+					"name": "house booking by id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}{{api-bookings-houses}}/1",
+							"host": [
+								"{{baseUrl}}{{api-bookings-houses}}"
+							],
+							"path": [
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "house booking by user id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}{{api-bookings-houses}}/users/2",
+							"host": [
+								"{{baseUrl}}{{api-bookings-houses}}"
+							],
+							"path": [
+								"users",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create house booking",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"houseId\":4,\r\n    \"checkInDate\":\"2025-12-25\",\r\n    \"checkOutDate\":\"2025-12-28\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}{{api-bookings-houses}}",
+							"host": [
+								"{{baseUrl}}{{api-bookings-houses}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "cancel house booking",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}{{api-bookings-houses}}/8/cancel",
+							"host": [
+								"{{baseUrl}}{{api-bookings-houses}}"
+							],
+							"path": [
+								"8",
+								"cancel"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete house booking",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}{{api-bookings-houses}}/10",
+							"host": [
+								"{{baseUrl}}{{api-bookings-houses}}"
+							],
+							"path": [
+								"10"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "users",
+			"item": [
+				{
+					"name": "users",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}{{api-users}}",
+							"host": [
+								"{{baseUrl}}{{api-users}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "user by id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}{{api-users}}/7",
+							"host": [
+								"{{baseUrl}}{{api-users}}"
+							],
+							"path": [
+								"7"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create user",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"userName\":\"John\",\r\n    \"email\":\"john@gmail.com\",\r\n    \"password\":\"john\",\r\n    \"role\":\"ROLE_HOUSE_KEEPER\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}{{api-users}}",
+							"host": [
+								"{{baseUrl}}{{api-users}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update user",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}{{api-users}}/8/update-info?newEmail=john@gmail.com&currentPassword=john",
+							"host": [
+								"{{baseUrl}}{{api-users}}"
+							],
+							"path": [
+								"8",
+								"update-info"
+							],
+							"query": [
+								{
+									"key": "newEmail",
+									"value": "john@gmail.com"
+								},
+								{
+									"key": "currentPassword",
+									"value": "john"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update password user",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}{{api-users}}/7/update-password?newPassword=john&currentPassword=john2",
+							"host": [
+								"{{baseUrl}}{{api-users}}"
+							],
+							"path": [
+								"7",
+								"update-password"
+							],
+							"query": [
+								{
+									"key": "newPassword",
+									"value": "john"
+								},
+								{
+									"key": "currentPassword",
+									"value": "john2"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete user",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}{{api-users}}/7",
+							"host": [
+								"{{baseUrl}}{{api-users}}"
+							],
+							"path": [
+								"7"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "auth",
+			"item": [
+				{
+					"name": "login",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"userName\":\"admin\",\r\n    \"password\":\"admin\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}{{api-auth}}/login",
+							"host": [
+								"{{baseUrl}}{{api-auth}}"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "register",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"userName\":\"Gosha\",\r\n    \"email\":\"gosha@gmail.com\",\r\n    \"password\":\"gosha\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}{{api-auth}}/register",
+							"host": [
+								"{{baseUrl}}{{api-auth}}"
+							],
+							"path": [
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "logout",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}{{api-auth}}/logout",
+							"host": [
+								"{{baseUrl}}{{api-auth}}"
+							],
+							"path": [
+								"logout"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "images",
+			"item": [
+				{
+					"name": "houses",
+					"item": [
+						{
+							"name": "images by house id",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}{{api-houses}}/4/images",
+									"host": [
+										"{{baseUrl}}{{api-houses}}"
+									],
+									"path": [
+										"4",
+										"images"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create images by house id",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n   \"imageUrl\":\"https://images.squarespace-cdn.com/content/v1/5e72c8bfe21ad940ba788673/1634891374710-1RDAPIIX74HLA0YGG7W7/what-is-a-guest-house-thumbnail.jpg\" \r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}{{api-houses}}/4/images",
+									"host": [
+										"{{baseUrl}}{{api-houses}}"
+									],
+									"path": [
+										"4",
+										"images"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "delete image by house id",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}{{api-houses}}/3/images/23",
+									"host": [
+										"{{baseUrl}}{{api-houses}}"
+									],
+									"path": [
+										"3",
+										"images",
+										"23"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "room-types",
+					"item": [
+						{
+							"name": "images by room-type id",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}{{api-room-types}}/3/images",
+									"host": [
+										"{{baseUrl}}{{api-room-types}}"
+									],
+									"path": [
+										"3",
+										"images"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create image by room-type id",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n   \"imageUrl\":\"https://www.journalstudentliving.com.au/wp-content/uploads/2025/03/GRATTAN-STREET-II-256.jpg\" \r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}{{api-room-types}}/2/images",
+									"host": [
+										"{{baseUrl}}{{api-room-types}}"
+									],
+									"path": [
+										"2",
+										"images"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "delete image by room-type id",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}{{api-room-types}}/2/images/22",
+									"host": [
+										"{{baseUrl}}{{api-room-types}}"
+									],
+									"path": [
+										"2",
+										"images",
+										"22"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "hotels",
+					"item": [
+						{
+							"name": "images by hotel id",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}{{api-hotels}}/2/images",
+									"host": [
+										"{{baseUrl}}{{api-hotels}}"
+									],
+									"path": [
+										"2",
+										"images"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create images by hotel id",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n   \"imageUrl\":\"https://cdn.britannica.com/96/115096-050-5AFDAF5D/Bellagio-Hotel-Casino-Las-Vegas.jpg\" \r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}{{api-hotels}}/2/images",
+									"host": [
+										"{{baseUrl}}{{api-hotels}}"
+									],
+									"path": [
+										"2",
+										"images"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "delete image by hotel id",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}{{api-hotels}}/2/images/19",
+									"host": [
+										"{{baseUrl}}{{api-hotels}}"
+									],
+									"path": [
+										"2",
+										"images",
+										"19"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer"
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "api-hotels",
+			"value": "/api/hotels"
+		},
+		{
+			"key": "api-room-types",
+			"value": "/api/room-types"
+		},
+		{
+			"key": "api-rooms",
+			"value": "/api/rooms"
+		},
+		{
+			"key": "api-users",
+			"value": "/api/users"
+		},
+		{
+			"key": "token",
+			"value": ""
+		},
+		{
+			"key": "api-auth",
+			"value": "/api/auth"
+		},
+		{
+			"key": "api-bookings-rooms",
+			"value": "/api/bookings/rooms"
+		},
+		{
+			"key": "api-bookings-houses",
+			"value": "/api/bookings/houses"
+		},
+		{
+			"key": "api-houses",
+			"value": "/api/houses"
+		},
+		{
+			"key": "baseUrl",
+			"value": "localhost:8080"
+		}
+	]
+}

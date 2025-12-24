@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -29,13 +30,18 @@ public interface BookingRoomRepository extends JpaRepository<BookingRoomEntity, 
     @Query("select case when count(b) > 0 then true else false end from BookingRoomEntity b where b.room.id = :roomId and b.checkOutDate >= :currentDate and b.status = :status")
     boolean existsActiveBookingsByRoomId(@Param("roomId") Long roomId, @Param("currentDate") LocalDate currentDate, @Param("status") Status status);
 
+    @Modifying
+    @Transactional
+    @Query("delete from BookingRoomEntity b where b.room.id = :id")
     void deleteByRoomId(Long id);
 
     @Modifying
+    @Transactional
     @Query("delete from BookingRoomEntity b where b.room.roomType.id = :id")
     void deleteByRoomTypeId(Long id);
 
     @Modifying
+    @Transactional
     @Query("delete from BookingRoomEntity b where b.room.hotel.id = :id")
     void deleteByHotelId(Long id);
 }
