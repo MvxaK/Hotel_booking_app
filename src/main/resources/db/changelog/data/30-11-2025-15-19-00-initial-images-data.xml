@@ -174,7 +174,27 @@
         </insert>
         <insert tableName="room_type_images">
             <column name="room_type_id" valueNumeric="1"/>
-            <column name="image_url" value="https://dq5r178u4t83b.cloudfront.net/wp-content/uploads/sites/125/2020/06/15175706/SO19451.jpg"/>
+            <column name="image_url" value="https://image-tc.galaxy.tf/wijpeg-c5lizdo9mqu8183436s4wfn31/premier-marina-bay-view-room-king-1_wide.jpg?crop=0%2C105%2C2000%2C1125"/>
+        </insert>
+        <insert tableName="room_type_images">
+            <column name="room_type_id" valueNumeric="2"/>
+            <column name="image_url" value="https://image-tc.galaxy.tf/wijpeg-700mru9woc7a8zdb6ubntti8g/fullerton-01_wide.jpg?crop=0%2C94%2C1800%2C1013"/>
+        </insert>
+        <insert tableName="room_type_images">
+            <column name="room_type_id" valueNumeric="3"/>
+            <column name="image_url" value="https://image-tc.galaxy.tf/wijpeg-d6g4mwebz0bzjdwy6bfid7lvj/heritage-room-king-1-1_wide.jpg?crop=0%2C119%2C2000%2C1125"/>
+        </insert>
+        <insert tableName="room_type_images">
+            <column name="room_type_id" valueNumeric="4"/>
+            <column name="image_url" value="https://image-tc.galaxy.tf/wijpeg-9tnuexzpjpse67342j1cqez6b/premier-courtyard-room-orig_wide.jpg?crop=222%2C0%2C1156%2C650"/>
+        </insert>
+        <insert tableName="room_type_images">
+            <column name="room_type_id" valueNumeric="5"/>
+            <column name="image_url" value="https://image-tc.galaxy.tf/wijpeg-6rrbhpuyovh7n4dq534g2bw09/premier-esplanade-room-king-1_wide.jpg?crop=217%2C0%2C1566%2C881"/>
+        </insert>
+        <insert tableName="room_type_images">
+            <column name="room_type_id" valueNumeric="6"/>
+            <column name="image_url" value="https://image-tc.galaxy.tf/wijpeg-1eig0iuemkwahujusvxzamqpq/quay-room-king_wide.jpg?crop=0%2C104%2C2000%2C1125"/>
         </insert>
     </changeSet>
 
