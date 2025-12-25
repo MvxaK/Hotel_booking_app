@@ -70,6 +70,10 @@ public class AccommodationLinker {
                 throw new IllegalArgumentException("RoomType not belongs to entered hotel");
             }
 
+            if(roomType.isDeleted()){
+                throw new IllegalStateException("Cannot create room with for roomType that marked as deleted.");
+            }
+
             roomEntity.setRoomType(roomType);
         }
     }

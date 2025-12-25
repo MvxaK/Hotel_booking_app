@@ -56,7 +56,7 @@ public class BookingRoomServiceImpl implements BookingRoomService{
         }
 
         if (!isAvailable(roomEntity.getId(), bookingRequest.getCheckInDate(), bookingRequest.getCheckOutDate())) {
-            throw new IllegalArgumentException("Room type not available for these dates.");
+            throw new IllegalArgumentException("Room not available for these dates.");
         }
 
         BookingRoomEntity bookingEntity = new BookingRoomEntity();
