@@ -23,6 +23,8 @@ public interface RoomRepository extends JpaRepository<RoomEntity, Long> {
 
     List<RoomEntity> findByRoomTypeIdAndDeletedFalse(Long roomTypeId);
 
+    List<RoomEntity> findByRoomTypeIdAndDeletedTrue(Long roomTypeId);
+
     List<RoomEntity> findByHotelIdAndDeletedTrue(Long hotelId);
 
     List<RoomEntity> findByDeletedTrue();

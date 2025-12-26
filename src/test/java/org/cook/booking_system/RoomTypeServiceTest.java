@@ -165,6 +165,17 @@ public class RoomTypeServiceTest {
 
     @Test
     @Order(8)
+    void getRoomsByRoomTypeIdDeletedTrue() {
+        List<Room> result = roomTypeService.getRoomsByRoomTypeIdDeletedTrue(testRoomTypeId);
+        assertNotNull(result);
+
+        assertThrows(EntityNotFoundException.class, () -> {
+            roomTypeService.getRoomsByRoomTypeIdDeletedTrue(-999L);
+        });
+    }
+
+    @Test
+    @Order(9)
     void updateRoomType() {
         RoomType result = roomTypeService.updateRoomType(testRoomTypeId, roomTypeToUpdate);
 
@@ -181,7 +192,7 @@ public class RoomTypeServiceTest {
     }
 
     @Test
-    @Order(9)
+    @Order(10)
     void deleteRoom_markAsDeletedRoomType_hasActiveBookings() {
         Room room = new Room();
         room.setRoomNumber("RT-101");
@@ -212,7 +223,7 @@ public class RoomTypeServiceTest {
     }
 
     @Test
-    @Order(10)
+    @Order(11)
     void markAsDeletedRoomType() {
         roomTypeService.markAsDeletedRoomType(testRoomTypeId);
 
@@ -222,7 +233,7 @@ public class RoomTypeServiceTest {
     }
 
     @Test
-    @Order(11)
+    @Order(12)
     void getRoomTypeByIdDeletedTrue() {
         RoomType result = roomTypeService.getRoomTypeByIdDeletedTrue(testRoomTypeId);
 
@@ -231,7 +242,7 @@ public class RoomTypeServiceTest {
     }
 
     @Test
-    @Order(12)
+    @Order(13)
     void getAllRoomTypesDeletedTrue() {
         List<RoomType> result = roomTypeService.getAllRoomTypesDeletedTrue();
 
@@ -243,7 +254,7 @@ public class RoomTypeServiceTest {
     }
 
     @Test
-    @Order(13)
+    @Order(14)
     void markAsRestoredRoomType() {
         roomTypeService.markAsRestoredRoomType(testRoomTypeId);
 
@@ -253,7 +264,7 @@ public class RoomTypeServiceTest {
     }
 
     @Test
-    @Order(14)
+    @Order(15)
     void deleteRoomType() {
         roomTypeService.deleteRoomType(testRoomTypeId);
 

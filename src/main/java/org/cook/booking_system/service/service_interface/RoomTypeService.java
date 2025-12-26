@@ -16,6 +16,7 @@ public interface RoomTypeService {
     RoomType getRoomTypeByIdDeletedTrue(Long id);
     RoomType getRoomTypeByIdIncludeDeleted(Long id);
     List<Room> getRoomsByRoomTypeId(Long id);
+    List<Room> getRoomsByRoomTypeIdDeletedTrue(Long id);
     RoomType createRoomTypeForHotel(RoomType roomType);
     RoomType updateRoomType(Long id, RoomType updated);
     void deleteRoomType(Long id);

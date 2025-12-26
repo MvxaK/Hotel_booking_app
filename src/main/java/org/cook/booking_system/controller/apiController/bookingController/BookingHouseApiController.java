@@ -25,6 +25,7 @@ public class BookingHouseApiController {
     private final UserService userService;
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<BookingHouse> getBookingById(@PathVariable Long id) {
         BookingHouse booking = bookingHouseService.getBookingById(id);
 
@@ -32,6 +33,7 @@ public class BookingHouseApiController {
     }
 
     @GetMapping("/users/{userId}")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<List<BookingHouse>> getAllBookingsByUserId(@PathVariable Long userId) {
         List<BookingHouse> bookings = bookingHouseService.getAllBookingByUserId(userId);
 

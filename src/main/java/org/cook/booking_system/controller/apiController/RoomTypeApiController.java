@@ -40,6 +40,14 @@ public class RoomTypeApiController {
         return ResponseEntity.ok(rooms);
     }
 
+    @GetMapping("/{id}/rooms/deleted")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_HOTEL_KEEPER')")
+    public ResponseEntity<List<Room>> getRoomsByRoomTypeIdDeletedTrue(@PathVariable Long id){
+        List<Room> rooms = roomTypeService.getRoomsByRoomTypeIdDeletedTrue(id);
+
+        return ResponseEntity.ok(rooms);
+    }
+
     @GetMapping("/deleted/{id}")
     @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_HOTEL_KEEPER')")
     public ResponseEntity<RoomType> getRoomTypeByIdDeletedTrue(@PathVariable Long id){

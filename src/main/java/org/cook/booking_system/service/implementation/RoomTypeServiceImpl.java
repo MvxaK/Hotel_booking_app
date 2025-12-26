@@ -83,6 +83,17 @@ public class RoomTypeServiceImpl implements RoomTypeService {
                 .toList();
     }
 
+    @Transactional(readOnly = true)
+    public List<Room> getRoomsByRoomTypeIdDeletedTrue(Long id) {
+        if (!roomTypeRepository.findById(id).isPresent()) {
+            throw new EntityNotFoundException("RoomType not found with id -> " + id);
+        }
+
+        return roomRepository.findByRoomTypeIdAndDeletedTrue(id).stream()
+                .map(roomMapper::toModel)
+                .toList();
+    }
+
     @Transactional
     public RoomType createRoomTypeForHotel(RoomType roomType) {
         RoomTypeEntity roomTypeEntity = roomTypeMapper.toEntity(roomType);

@@ -71,7 +71,7 @@ public class AccommodationLinker {
             }
 
             if(roomType.isDeleted()){
-                throw new IllegalStateException("Cannot create room with for roomType that marked as deleted.");
+                throw new IllegalStateException("Cannot create room with roomType that marked as deleted.");
             }
 
             roomEntity.setRoomType(roomType);
@@ -84,7 +84,7 @@ public class AccommodationLinker {
                     .orElseThrow(() -> new EntityNotFoundException("There is no hotel with id -> " + hotelId));
 
             if(hotel.isDeleted()){
-                throw new IllegalStateException("Cannot create room with for Hotel that marked as deleted.");
+                throw new IllegalStateException("Cannot create room with hotel that marked as deleted.");
             }
 
             roomEntity.setHotel(hotel);
@@ -110,7 +110,7 @@ public class AccommodationLinker {
                     .orElseThrow(() -> new EntityNotFoundException("There is no hotel with id -> " + hotelId));
 
             if (hotel.isDeleted()) {
-                throw new IllegalStateException("Cannot link RoomType to a deleted Hotel");
+                throw new IllegalStateException("Cannot create RoomType with hotel that marked as deleted.");
             }
 
             roomTypeEntity.setHotel(hotel);

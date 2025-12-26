@@ -76,9 +76,25 @@ public class HotelApiController {
         return ResponseEntity.ok(rooms);
     }
 
+    @GetMapping("/{id}/rooms/deleted")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_HOTEL_KEEPER')")
+    public ResponseEntity<List<Room>> getRoomsByHotelIdDeletedTrue(@PathVariable Long id) {
+        List<Room> rooms = hotelService.getRoomsByHotelIdDeletedTrue(id);
+
+        return ResponseEntity.ok(rooms);
+    }
+
     @GetMapping("/{id}/room-types")
     public ResponseEntity<List<RoomType>> getRoomTypesByHotelId(@PathVariable Long id) {
         List<RoomType> roomTypes = hotelService.getRoomTypesByHotelId(id);
+
+        return ResponseEntity.ok(roomTypes);
+    }
+
+    @GetMapping("/{id}/room-types/deleted")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_HOTEL_KEEPER')")
+    public ResponseEntity<List<RoomType>> getRoomTypesByHotelIdDeletedTrue(@PathVariable Long id) {
+        List<RoomType> roomTypes = hotelService.getRoomTypesByHotelIdDeletedTrue(id);
 
         return ResponseEntity.ok(roomTypes);
     }
