@@ -4,7 +4,7 @@
 		"name": "StayFinder - Booking System",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "48055774",
-		"_collection_link": "https://amirkamalov2006-5324890.postman.co/workspace/7b398a78-6f82-42a8-8ffa-a2e95fd44229/collection/48055774-5ef86e6c-0321-4df4-8af3-e02d08dd65df?action=share&source=collection_link&creator=48055774"
+		"_collection_link": "https://amirkamalov2006-5324890.postman.co/workspace/Amir-Kamalov's-Workspace~7b398a78-6f82-42a8-8ffa-a2e95fd44229/collection/48055774-5ef86e6c-0321-4df4-8af3-e02d08dd65df?action=share&source=collection_link&creator=48055774"
 	},
 	"item": [
 		{
@@ -35,7 +35,7 @@
 					"response": []
 				},
 				{
-					"name": "hotels deleted",
+					"name": "deleted hotels",
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -77,19 +77,19 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}{{api-hotels}}/5",
+							"raw": "{{baseUrl}}{{api-hotels}}/1",
 							"host": [
 								"{{baseUrl}}{{api-hotels}}"
 							],
 							"path": [
-								"5"
+								"1"
 							]
 						}
 					},
 					"response": []
 				},
 				{
-					"name": "hotel by id deleted",
+					"name": "deleted hotel by id",
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -104,13 +104,13 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}{{api-hotels}}/deleted/5",
+							"raw": "{{baseUrl}}{{api-hotels}}/deleted/1",
 							"host": [
 								"{{baseUrl}}{{api-hotels}}"
 							],
 							"path": [
 								"deleted",
-								"5"
+								"1"
 							]
 						}
 					},
@@ -172,7 +172,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"name\":\"Worlds hotel\",\r\n    \"address\":\"St. Worlds 42\",\r\n    \"description\":\"Unique World hotel on Worlds street. With amazing architecture\"\r\n}",
+							"raw": "{\r\n    \"name\":\"World hotel\",\r\n    \"address\":\"St. Worlds 42\",\r\n    \"description\":\"Unique World hotel on Worlds street. With amazing architecture\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -180,12 +180,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{baseUrl}}{{api-hotels}}/2",
+							"raw": "{{baseUrl}}{{api-hotels}}/3",
 							"host": [
 								"{{baseUrl}}{{api-hotels}}"
 							],
 							"path": [
-								"2"
+								"3"
 							]
 						}
 					},
@@ -207,13 +207,42 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}{{api-hotels}}/2/rooms",
+							"raw": "{{baseUrl}}{{api-hotels}}/1/rooms",
 							"host": [
 								"{{baseUrl}}{{api-hotels}}"
 							],
 							"path": [
-								"2",
+								"1",
 								"rooms"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "deleted rooms by hotel id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}{{api-hotels}}/1/rooms/deleted",
+							"host": [
+								"{{baseUrl}}{{api-hotels}}"
+							],
+							"path": [
+								"1",
+								"rooms",
+								"deleted"
 							]
 						}
 					},
@@ -235,13 +264,42 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}{{api-hotels}}/2/room-types",
+							"raw": "{{baseUrl}}{{api-hotels}}/1/room-types",
 							"host": [
 								"{{baseUrl}}{{api-hotels}}"
 							],
 							"path": [
-								"2",
+								"1",
 								"room-types"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "deleted room-types by hotel id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}{{api-hotels}}/1/room-types/deleted",
+							"host": [
+								"{{baseUrl}}{{api-hotels}}"
+							],
+							"path": [
+								"1",
+								"room-types",
+								"deleted"
 							]
 						}
 					},
@@ -263,12 +321,12 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}{{api-hotels}}/15",
+							"raw": "{{baseUrl}}{{api-hotels}}/5",
 							"host": [
 								"{{baseUrl}}{{api-hotels}}"
 							],
 							"path": [
-								"15"
+								"5"
 							]
 						}
 					},
@@ -290,12 +348,12 @@
 						"method": "PATCH",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}{{api-hotels}}/2/delete",
+							"raw": "{{baseUrl}}{{api-hotels}}/5/delete",
 							"host": [
 								"{{baseUrl}}{{api-hotels}}"
 							],
 							"path": [
-								"2",
+								"5",
 								"delete"
 							]
 						}
@@ -318,12 +376,12 @@
 						"method": "PATCH",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}{{api-hotels}}/2/restore",
+							"raw": "{{baseUrl}}{{api-hotels}}/3/restore",
 							"host": [
 								"{{baseUrl}}{{api-hotels}}"
 							],
 							"path": [
-								"2",
+								"3",
 								"restore"
 							]
 						}
@@ -360,7 +418,7 @@
 					"response": []
 				},
 				{
-					"name": "houses deleted",
+					"name": "deleted houses",
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -414,7 +472,7 @@
 					"response": []
 				},
 				{
-					"name": "house by id deleted",
+					"name": "deleted house by id",
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -429,13 +487,13 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}{{api-houses}}/deleted/1",
+							"raw": "{{baseUrl}}{{api-houses}}/deleted/5",
 							"host": [
 								"{{baseUrl}}{{api-houses}}"
 							],
 							"path": [
 								"deleted",
-								"1"
+								"5"
 							]
 						}
 					},
@@ -503,7 +561,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"name\":\"Digital House\",\r\n    \"location\":\"St. Circus 42\",\r\n    \"capacity\":12,\r\n    \"pricePerNight\":125000.00,\r\n    \"available\":true,\r\n    \"roomsNumber\":7,\r\n    \"bedsCount\":6,\r\n    \"parkingSlots\":2,\r\n    \"description\":\"The house designed by Gooseworx\"\r\n}",
+							"raw": "{\r\n    \"name\":\"Digital House\",\r\n    \"location\":\"St. Circus 42\",\r\n    \"capacity\":12,\r\n    \"pricePerNight\":125000.00,\r\n    \"available\":false,\r\n    \"roomsNumber\":7,\r\n    \"bedsCount\":6,\r\n    \"parkingSlots\":2,\r\n    \"description\":\"The house designed by Gooseworx\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -511,12 +569,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{baseUrl}}{{api-houses}}/4",
+							"raw": "{{baseUrl}}{{api-houses}}/5",
 							"host": [
 								"{{baseUrl}}{{api-houses}}"
 							],
 							"path": [
-								"4"
+								"5"
 							]
 						}
 					},
@@ -538,12 +596,12 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}{{api-houses}}/18",
+							"raw": "{{baseUrl}}{{api-houses}}/5",
 							"host": [
 								"{{baseUrl}}{{api-houses}}"
 							],
 							"path": [
-								"18"
+								"5"
 							]
 						}
 					},
@@ -565,12 +623,12 @@
 						"method": "PATCH",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}{{api-houses}}/4/delete",
+							"raw": "{{baseUrl}}{{api-houses}}/5/delete",
 							"host": [
 								"{{baseUrl}}{{api-houses}}"
 							],
 							"path": [
-								"4",
+								"5",
 								"delete"
 							]
 						}
@@ -593,12 +651,12 @@
 						"method": "PATCH",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}{{api-houses}}/4/restore",
+							"raw": "{{baseUrl}}{{api-houses}}/5/restore",
 							"host": [
 								"{{baseUrl}}{{api-houses}}"
 							],
 							"path": [
-								"4",
+								"5",
 								"restore"
 							]
 						}
@@ -635,7 +693,7 @@
 					"response": []
 				},
 				{
-					"name": "room-types deleted",
+					"name": "deleted room-types",
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -677,12 +735,40 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}{{api-room-types}}/15",
+							"raw": "{{baseUrl}}{{api-room-types}}/1",
 							"host": [
 								"{{baseUrl}}{{api-room-types}}"
 							],
 							"path": [
-								"15"
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "deleted room-type by id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}{{api-room-types}}/deleted/1",
+							"host": [
+								"{{baseUrl}}{{api-room-types}}"
+							],
+							"path": [
+								"deleted",
+								"1"
 							]
 						}
 					},
@@ -717,7 +803,7 @@
 					"response": []
 				},
 				{
-					"name": "room-type by id deleted",
+					"name": "deleted rooms by roomType id",
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -732,13 +818,14 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}{{api-room-types}}/deleted/15",
+							"raw": "{{baseUrl}}{{api-room-types}}/1/rooms/deleted",
 							"host": [
 								"{{baseUrl}}{{api-room-types}}"
 							],
 							"path": [
-								"deleted",
-								"15"
+								"1",
+								"rooms",
+								"deleted"
 							]
 						}
 					},
@@ -806,7 +893,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"name\":\"Super Elite rooms\",\r\n    \"capacity\":4,\r\n    \"description\":\"Super elite worlds room with 2 rooms and 2 beds\",\r\n    \"pricePerNight\":95000.00,\r\n    \"bedsCount\":2,\r\n    \"hotelId\":5\r\n}",
+							"raw": "{\r\n    \"name\":\"Super Elite rooms\",\r\n    \"capacity\":4,\r\n    \"description\":\"Super elite worlds room with 2 rooms and 2 beds\",\r\n    \"pricePerNight\":95000.00,\r\n    \"bedsCount\":2,\r\n    \"hotelId\":3\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -814,12 +901,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{baseUrl}}{{api-room-types}}/15",
+							"raw": "{{baseUrl}}{{api-room-types}}/23",
 							"host": [
 								"{{baseUrl}}{{api-room-types}}"
 							],
 							"path": [
-								"15"
+								"23"
 							]
 						}
 					},
@@ -841,12 +928,12 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}{{api-room-types}}/15",
+							"raw": "{{baseUrl}}{{api-room-types}}/13",
 							"host": [
 								"{{baseUrl}}{{api-room-types}}"
 							],
 							"path": [
-								"15"
+								"13"
 							]
 						}
 					},
@@ -868,12 +955,12 @@
 						"method": "PATCH",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}{{api-room-types}}/15/delete",
+							"raw": "{{baseUrl}}{{api-room-types}}/13/delete",
 							"host": [
 								"{{baseUrl}}{{api-room-types}}"
 							],
 							"path": [
-								"15",
+								"13",
 								"delete"
 							]
 						}
@@ -896,12 +983,12 @@
 						"method": "PATCH",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}{{api-room-types}}/8/restore",
+							"raw": "{{baseUrl}}{{api-room-types}}/13/restore",
 							"host": [
 								"{{baseUrl}}{{api-room-types}}"
 							],
 							"path": [
-								"8",
+								"13",
 								"restore"
 							]
 						}
@@ -938,7 +1025,7 @@
 					"response": []
 				},
 				{
-					"name": "rooms deleted",
+					"name": "deleted rooms",
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -992,7 +1079,7 @@
 					"response": []
 				},
 				{
-					"name": "room by id deleted",
+					"name": "deleted room by id",
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -1007,55 +1094,13 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}{{api-rooms}}/deleted/12",
+							"raw": "{{baseUrl}}{{api-rooms}}/deleted/1",
 							"host": [
 								"{{baseUrl}}{{api-rooms}}"
 							],
 							"path": [
 								"deleted",
-								"12"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "update room",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "PUT",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"roomNumber\": \"1201\",\r\n    \"available\": true,\r\n    \"hotelId\": 5,\r\n    \"roomTypeId\":15\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{baseUrl}}{{api-rooms}}/11",
-							"host": [
-								"{{baseUrl}}{{api-rooms}}"
-							],
-							"path": [
-								"11"
+								"1"
 							]
 						}
 					},
@@ -1084,7 +1129,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"roomNumber\": \"A201\",\r\n    \"available\": true,\r\n    \"hotelId\": 5,\r\n    \"roomTypeId\":15\r\n}",
+							"raw": "{\r\n    \"roomNumber\": \"A101\",\r\n    \"available\": true,\r\n    \"hotelId\": 5,\r\n    \"roomTypeId\": 13\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1095,6 +1140,48 @@
 							"raw": "{{baseUrl}}{{api-rooms}}",
 							"host": [
 								"{{baseUrl}}{{api-rooms}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update room",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"roomNumber\": \"A106\",\r\n    \"available\": true,\r\n    \"hotelId\": 2,\r\n    \"roomTypeId\":12\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}{{api-rooms}}/6",
+							"host": [
+								"{{baseUrl}}{{api-rooms}}"
+							],
+							"path": [
+								"6"
 							]
 						}
 					},
@@ -1116,12 +1203,12 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}{{api-rooms}}/12",
+							"raw": "{{baseUrl}}{{api-rooms}}/13",
 							"host": [
 								"{{baseUrl}}{{api-rooms}}"
 							],
 							"path": [
-								"12"
+								"13"
 							]
 						}
 					},
@@ -1143,12 +1230,12 @@
 						"method": "PATCH",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}{{api-rooms}}/2/delete",
+							"raw": "{{baseUrl}}{{api-rooms}}/13/delete",
 							"host": [
 								"{{baseUrl}}{{api-rooms}}"
 							],
 							"path": [
-								"2",
+								"13",
 								"delete"
 							]
 						}
@@ -1171,12 +1258,12 @@
 						"method": "PATCH",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}{{api-rooms}}/2/restore",
+							"raw": "{{baseUrl}}{{api-rooms}}/13/restore",
 							"host": [
 								"{{baseUrl}}{{api-rooms}}"
 							],
 							"path": [
-								"2",
+								"13",
 								"restore"
 							]
 						}
@@ -1204,12 +1291,12 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}{{api-bookings-rooms}}/8",
+							"raw": "{{baseUrl}}{{api-bookings-rooms}}/1",
 							"host": [
 								"{{baseUrl}}{{api-bookings-rooms}}"
 							],
 							"path": [
-								"8"
+								"1"
 							]
 						}
 					},
@@ -1266,7 +1353,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"roomId\":1,\r\n    \"checkInDate\":\"2025-12-24\",\r\n    \"checkOutDate\":\"2025-12-26\"\r\n}",
+							"raw": "{\r\n    \"roomId\":6,\r\n    \"checkInDate\":\"2025-12-29\",\r\n    \"checkOutDate\":\"2025-12-31\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1420,7 +1507,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"houseId\":4,\r\n    \"checkInDate\":\"2025-12-25\",\r\n    \"checkOutDate\":\"2025-12-28\"\r\n}",
+							"raw": "{\r\n    \"houseId\":6,\r\n    \"checkInDate\":\"2025-12-27\",\r\n    \"checkOutDate\":\"2025-12-28\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1452,12 +1539,12 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}{{api-bookings-houses}}/8/cancel",
+							"raw": "{{baseUrl}}{{api-bookings-houses}}/6/cancel",
 							"host": [
 								"{{baseUrl}}{{api-bookings-houses}}"
 							],
 							"path": [
-								"8",
+								"6",
 								"cancel"
 							]
 						}
@@ -1480,12 +1567,12 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}{{api-bookings-houses}}/10",
+							"raw": "{{baseUrl}}{{api-bookings-houses}}/6",
 							"host": [
 								"{{baseUrl}}{{api-bookings-houses}}"
 							],
 							"path": [
-								"10"
+								"6"
 							]
 						}
 					},
@@ -1536,12 +1623,12 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}{{api-users}}/7",
+							"raw": "{{baseUrl}}{{api-users}}/1",
 							"host": [
 								"{{baseUrl}}{{api-users}}"
 							],
 							"path": [
-								"7"
+								"1"
 							]
 						}
 					},
@@ -1602,22 +1689,22 @@
 						"method": "PUT",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}{{api-users}}/8/update-info?newEmail=john@gmail.com&currentPassword=john",
+							"raw": "{{baseUrl}}{{api-users}}/1/update-info?newEmail=admin@gmail.com&currentPassword=admin",
 							"host": [
 								"{{baseUrl}}{{api-users}}"
 							],
 							"path": [
-								"8",
+								"1",
 								"update-info"
 							],
 							"query": [
 								{
 									"key": "newEmail",
-									"value": "john@gmail.com"
+									"value": "admin@gmail.com"
 								},
 								{
 									"key": "currentPassword",
-									"value": "john"
+									"value": "admin"
 								}
 							]
 						}
@@ -1640,22 +1727,22 @@
 						"method": "PATCH",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}{{api-users}}/7/update-password?newPassword=john&currentPassword=john2",
+							"raw": "{{baseUrl}}{{api-users}}/1/update-password?newPassword=ADMIN&currentPassword=admin",
 							"host": [
 								"{{baseUrl}}{{api-users}}"
 							],
 							"path": [
-								"7",
+								"1",
 								"update-password"
 							],
 							"query": [
 								{
 									"key": "newPassword",
-									"value": "john"
+									"value": "ADMIN"
 								},
 								{
 									"key": "currentPassword",
-									"value": "john2"
+									"value": "admin"
 								}
 							]
 						}
@@ -1678,12 +1765,12 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}{{api-users}}/7",
+							"raw": "{{baseUrl}}{{api-users}}/5",
 							"host": [
 								"{{baseUrl}}{{api-users}}"
 							],
 							"path": [
-								"7"
+								"5"
 							]
 						}
 					},
@@ -1808,12 +1895,12 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{baseUrl}}{{api-houses}}/4/images",
+									"raw": "{{baseUrl}}{{api-houses}}/1/images",
 									"host": [
 										"{{baseUrl}}{{api-houses}}"
 									],
 									"path": [
-										"4",
+										"1",
 										"images"
 									]
 								}
@@ -1851,12 +1938,12 @@
 									}
 								},
 								"url": {
-									"raw": "{{baseUrl}}{{api-houses}}/4/images",
+									"raw": "{{baseUrl}}{{api-houses}}/5/images",
 									"host": [
 										"{{baseUrl}}{{api-houses}}"
 									],
 									"path": [
-										"4",
+										"5",
 										"images"
 									]
 								}
@@ -1879,12 +1966,12 @@
 								"method": "DELETE",
 								"header": [],
 								"url": {
-									"raw": "{{baseUrl}}{{api-houses}}/3/images/23",
+									"raw": "{{baseUrl}}{{api-houses}}/5/images/23",
 									"host": [
 										"{{baseUrl}}{{api-houses}}"
 									],
 									"path": [
-										"3",
+										"5",
 										"images",
 										"23"
 									]
@@ -2089,14 +2176,14 @@
 								"method": "DELETE",
 								"header": [],
 								"url": {
-									"raw": "{{baseUrl}}{{api-hotels}}/2/images/19",
+									"raw": "{{baseUrl}}{{api-hotels}}/2/images/11",
 									"host": [
 										"{{baseUrl}}{{api-hotels}}"
 									],
 									"path": [
 										"2",
 										"images",
-										"19"
+										"11"
 									]
 								}
 							},
